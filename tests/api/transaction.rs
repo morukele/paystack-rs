@@ -1,6 +1,6 @@
 use fake::faker::internet::en::SafeEmail;
 use fake::Fake;
-use paystack_rs::TransactionBody;
+use paystack::TransactionBody;
 use rand::Rng;
 
 use crate::helpers::get_paystack_client;
