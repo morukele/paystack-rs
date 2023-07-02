@@ -6,7 +6,7 @@ Convenient rust bindings and types for the Paystakc HTTP API aiming to support t
 
 ## Documentation
 
-See the [Rust API docs](https://docs.rs/async-stripe) or the [examples](/examples).
+See the [Rust API docs](https://docs.rs/paystack-rs) or the [examples](/examples).
 
 ## Installation
 
