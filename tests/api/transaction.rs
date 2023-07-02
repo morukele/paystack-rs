@@ -10,7 +10,6 @@ async fn initialize_transaction_valid() {
     // Arrange
     // This is a test key and is used for testing purposes only
     let client = get_paystack_client();
-
     let mut rng = rand::thread_rng();
 
     // Act
@@ -18,9 +17,6 @@ async fn initialize_transaction_valid() {
         amount: rng.gen_range(100..=100000).to_string(),
         email: SafeEmail().fake(),
         currency: None,
-        plan: None,
-        transaction_charge: None,
-        bearer: None,
     };
 
     let res = client
@@ -44,9 +40,6 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_marchent
         amount: rng.gen_range(100..=100000).to_string(),
         email: SafeEmail().fake(),
         currency: Some("USD".to_string()),
-        plan: None,
-        transaction_charge: None,
-        bearer: None,
     };
 
     let res = client.initialize_transaction(body).await.err();
@@ -68,9 +61,6 @@ async fn valid_transaction_is_verified() {
         amount: rng.gen_range(100..=100000).to_string(),
         email: SafeEmail().fake(),
         currency: Some("NGN".to_string()),
-        plan: None,
-        transaction_charge: None,
-        bearer: None,
     };
     let content = client
         .initialize_transaction(body)
@@ -85,5 +75,22 @@ async fn valid_transaction_is_verified() {
     // Assert
     assert!(response.status);
     assert_eq!(response.message, "Verification successful");
-    assert!(!response.data.status.is_empty())
+    assert!(response.data.status.is_some());
+}
+
+#[tokio::test]
+async fn list_specified_number_of_transactions_in_the_integration() {
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    let response = client
+        .list_transactions(Some(5))
+        .await
+        .expect("unable to get list of integrated transactions");
+
+    // Assert
+    assert_eq!(5, response.data.len());
+    assert!(response.status);
+    assert_eq!("Transactions retrieved", response.message);
 }

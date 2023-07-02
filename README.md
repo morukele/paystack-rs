@@ -21,7 +21,7 @@ paystack-rs = "0.1"
 
 ## Contributing
 
-see [CONTRIBUTING.md](/CONTRIBUTING.md) for information on contributing to paystack-rs.
+See [CONTRIBUTING.md](/CONTRIBUTING.md) for information on contributing to paystack-rs.
 
 ## License
 

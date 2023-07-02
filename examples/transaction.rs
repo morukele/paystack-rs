@@ -20,9 +20,6 @@ async fn main() {
         email: "CUSTOMER EMAIL".to_string(),
         amount: "AMOUNT".to_string(),
         currency: Some("CURRENCY CODE".to_string()),
-        plan: None,
-        transaction_charge: None,
-        bearer: None,
     };
 
     let transaction = client
@@ -44,10 +41,22 @@ async fn main() {
         .await
         .expect("Unable to get transaction status");
 
-    println!("Status: {}", transaction_status.data.status);
+    println!("Status: {}", transaction_status.data.status.unwrap());
     println!(
         "Amount of {} {}",
-        transaction_status.data.amount, transaction_status.data.currency
+        transaction_status.data.amount.unwrap(),
+        transaction_status.data.currency.unwrap()
     );
-    println!("Channel: {}", transaction_status.data.channel);
+    println!("Channel: {}", transaction_status.data.channel.unwrap());
+
+    // List of transactiosn
+    let transactions = client
+        .list_transactions(Some(5))
+        .await
+        .expect("Unable to get all the transactions");
+
+    println!(
+        "{} transactions retrieved from the integration.",
+        transactions.data.len()
+    );
 }
