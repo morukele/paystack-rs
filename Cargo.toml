@@ -1,6 +1,8 @@
 [package]
 name = "paystack-rs"
 version = "0.1.0"
+description = "A unofficial client library for the Paystack API"
+authors = ["Oghenemarho Orukele <orukele.dev@gmail.com>"]
 edition = "2021"
 include = [
 	"src/**/*",
@@ -8,10 +10,9 @@ include = [
 	"README.md",
 	"LICENCE"
 ]
-authors = ["Oghenemarho Orukele <orukele.dev@gmail.com>"]
 homepage = "https://github.com/morukele/paystack-rs"
-description = "A unofficial client library for the Paystack API"
 repository = "https://github.com/morukele/paystack-rs"
+documentation = "https://docs.rs/paystack-rs"
 keywords = [
 	"payment",
 	"paystack",

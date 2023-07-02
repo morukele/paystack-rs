@@ -1,6 +1,8 @@
 # paystack-rs
 
-![example branch parameter](https://github.com/morukele/paystack-rs/actions/workflows/rust.yml/badge.svg)
+![CI](https://github.com/morukele/paystack-rs/actions/workflows/rust.yml/badge.svg)
+[![paystack-rs on crates.io](https://img.shields.io/crates/v/paystack-rs.svg)](https://crates.io/crates/paystack-rs)
+[![paystack-rs  on docs.rs](https://docs.rs/paystack-rs/badge.svg)](https://docs.rs/paystack-rs)
 
 Convenient rust bindings and types for the Paystakc HTTP API aiming to support the entire API surface. Not the case? Please open an issue. I update the definitions on a weekly basis.
 
