@@ -9,18 +9,19 @@
 //! This reqires building a transaction body.
 //! Please see the type definition to understand how it is constructed
 
-use paystack::{PaystackClient, TransactionBody};
+use paystack::{PaystackClient, TransactionBuilder};
 
 #[tokio::main]
 async fn main() {
     let api_key = "API KEY";
     let client = PaystackClient::new(api_key);
 
-    let body = TransactionBody {
-        email: "CUSTOMER EMAIL".to_string(),
-        amount: "AMOUNT".to_string(),
-        currency: Some("CURRENCY CODE".to_string()),
-    };
+    let body = TransactionBuilder::new()
+        .email("CUSTOMER EMAIL")
+        .amount("AMOUNT")
+        .currency("CURRENCY CODE")
+        .build()
+        .unwrap();
 
     let transaction = client
         .initialize_transaction(body)

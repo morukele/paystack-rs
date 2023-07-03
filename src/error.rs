@@ -7,6 +7,9 @@ pub enum PaystackError {
     #[error("Generic error: {0}")]
     Generic(String),
 
+    #[error("Transaction Creation Error: {0}")]
+    TransactionCreation(String),
+
     #[error("Request failed: `{0}`")]
     RequestNotSuccessful(#[from] RequestNotSuccessful),
 

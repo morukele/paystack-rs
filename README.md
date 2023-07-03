@@ -24,27 +24,29 @@ paystack-rs = "0.1"
 Initalizing an instance of the Paystack client and creating a transaction.
 
 ```rust
-
-    use paystack::{PaystackClient, TransactionBody}
+    use Error;
+    use paystack::{PaystackClient, TransactionBuilder}
 
     #[tokio::main]
-    async fn main() {
-        let api_key = "API KEY";
+    async fn main() -> Result<(), Error>{
+        let api_key = "API_KEY";
         let client = PaystackClient::new(api_key);
 
-        let body = TransactionBody {
-        email: "CUSTOMER EMAIL".to_string(),
-        amount: "AMOUNT".to_string(),
-        currency: Some("CURRENCY CODE".to_string()),
-    };
+        let body = TransactionBuilder::new()
+            .email("email@example.com")
+            .amount("200000")
+            .currency("NGN")
+            .build()
+            .unwrap();
 
-    let transaction = client
-        .initialize_transaction(body)
-        .await
-        .expect("Unable to create transaction");
+        let transaction = client
+            .initialize_transaction(body)
+            .await
+            .expect("Unable to create transaction");
+
+        Ok(())
     }
 ```
-
 
 ## Contributing
 

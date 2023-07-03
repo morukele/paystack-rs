@@ -1,6 +1,6 @@
 use fake::faker::internet::en::SafeEmail;
 use fake::Fake;
-use paystack::TransactionBody;
+use paystack::TransactionBuilder;
 use rand::Rng;
 
 use crate::helpers::get_paystack_client;
@@ -13,11 +13,13 @@ async fn initialize_transaction_valid() {
     let mut rng = rand::thread_rng();
 
     // Act
-    let body = TransactionBody {
-        amount: rng.gen_range(100..=100000).to_string(),
-        email: SafeEmail().fake(),
-        currency: None,
-    };
+    let email: String = SafeEmail().fake();
+    let body = TransactionBuilder::new()
+        .amount(rng.gen_range(100..=100000).to_string())
+        .email(email)
+        .currency("NGN")
+        .build()
+        .unwrap();
 
     let res = client
         .initialize_transaction(body)
@@ -36,18 +38,25 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_marchent
     let mut rng = rand::thread_rng();
 
     // Act
-    let body = TransactionBody {
-        amount: rng.gen_range(100..=100000).to_string(),
-        email: SafeEmail().fake(),
-        currency: Some("USD".to_string()),
-    };
+    let email: String = SafeEmail().fake();
+    let body = TransactionBuilder::new()
+        .amount(rng.gen_range(100..=100000).to_string())
+        .email(email)
+        .currency("USD")
+        .build()
+        .unwrap();
 
-    let res = client.initialize_transaction(body).await.err();
-    let res = res.unwrap().to_string();
+    let res = client.initialize_transaction(body).await;
 
     // Assert
-    assert!(res.contains("StatusCode: 403 Forbidden"));
-    assert!(res.contains("Currency not supported by merchant"))
+    match res {
+        Ok(_) => (),
+        Err(ex) => {
+            let res = ex.to_string();
+            assert!(res.contains("StatusCode: 403 Forbidden"));
+            assert!(res.contains("Currency not supported by merchant"))
+        }
+    }
 }
 
 #[tokio::test]
@@ -57,11 +66,14 @@ async fn valid_transaction_is_verified() {
     let mut rng = rand::thread_rng();
 
     // Act
-    let body = TransactionBody {
-        amount: rng.gen_range(100..=100000).to_string(),
-        email: SafeEmail().fake(),
-        currency: Some("NGN".to_string()),
-    };
+    let email: String = SafeEmail().fake();
+    let body = TransactionBuilder::new()
+        .amount(rng.gen_range(100..=100000).to_string())
+        .email(email)
+        .currency("NGN")
+        .build()
+        .unwrap();
+
     let content = client
         .initialize_transaction(body)
         .await

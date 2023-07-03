@@ -1,9 +1,10 @@
 extern crate reqwest;
 extern crate serde_json;
 
-use crate::error::RequestNotSuccessful;
-use crate::response::{TransactionStatus, TransactionStatusList};
-use crate::{PaystackResult, TransactionResponse};
+use crate::{
+    PaystackResult, RequestNotSuccessful, Transaction, TransactionResponse, TransactionStatus,
+    TransactionStatusList,
+};
 
 static BASE_URL: &str = "https://api.paystack.co";
 
@@ -15,25 +16,12 @@ pub struct PaystackClient {
     api_key: String,
 }
 
-/// This struct is used to create a transaction body for creating a transaction using the Paystack API.
-///
-/// The struct has the following fields:
-///     - amount: Amount should be in the smallest unit of the currency e.g. kobo if in NGN and cents if in USD
-///     - email: Customer's email address
-///     - currency (Optional): The transaction currency (NGN, GHS, ZAR or USD). Defaults to your integration currency.
-#[derive(serde::Serialize)]
-pub struct TransactionBody {
-    pub amount: String,
-    pub email: String,
-    pub currency: Option<String>,
-}
-
 impl PaystackClient {
     /// This method creates a new PayStack client with the specified API key.
     ///
     /// It takes the following parameters:
     ///     - key: Paystack API key.
-    pub fn new<S: Into<String>>(key: S) -> Self {
+    pub fn new(key: impl Into<String>) -> Self {
         Self {
             client: reqwest::Client::new(),
             api_key: key.into(),
@@ -42,10 +30,10 @@ impl PaystackClient {
 
     /// This method initalizes a new transaction using the Paystack API.
     ///
-    /// It takes a TransactionBody type as its parameter
+    /// It takes a Transaction type as its parameter
     pub async fn initialize_transaction(
         &self,
-        transaction_body: TransactionBody,
+        transaction_body: Transaction,
     ) -> PaystackResult<TransactionResponse> {
         let url = format!("{}/transaction/initialize", BASE_URL);
 
@@ -120,7 +108,6 @@ impl PaystackClient {
         }
 
         let contents = response.json::<TransactionStatusList>().await?;
-        println!("{:#?}", contents);
         Ok(contents)
     }
 }
