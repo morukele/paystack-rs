@@ -7,6 +7,8 @@ mod response;
 // mapping results to our custom error type
 pub type PaystackResult<T> = std::result::Result<T, error::PaystackError>;
 pub use client::{PaystackClient, TransactionBody};
-pub use error::PaystackError;
-pub use error::RequestNotSuccessful;
-pub use response::TransactionResponse;
+pub use error::{PaystackError, RequestNotSuccessful};
+pub use response::{
+    Customer, TransactionResponse, TransactionResponseData, TransactionStatus,
+    TransactionStatusData, TransactionStatusList,
+};

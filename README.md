@@ -19,6 +19,33 @@ See the [Rust API docs](https://docs.rs/paystack-rs) or the [examples](/examples
 paystack-rs = "0.1"
 ```
 
+## Usage
+
+Initalizing an instance of the Paystack client and creating a transaction.
+
+```rust
+
+    use paystack::{PaystackClient, TransactionBody}
+
+    #[tokio::main]
+    async fn main() {
+        let api_key = "API KEY";
+        let client = PaystackClient::new(api_key);
+
+        let body = TransactionBody {
+        email: "CUSTOMER EMAIL".to_string(),
+        amount: "AMOUNT".to_string(),
+        currency: Some("CURRENCY CODE".to_string()),
+    };
+
+    let transaction = client
+        .initialize_transaction(body)
+        .await
+        .expect("Unable to create transaction");
+    }
+```
+
+
 ## Contributing
 
 See [CONTRIBUTING.md](/CONTRIBUTING.md) for information on contributing to paystack-rs.

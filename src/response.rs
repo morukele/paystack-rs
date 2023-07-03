@@ -1,3 +1,10 @@
+//! Response
+//! ==========
+//! This file contains the structs needed to represent the different response
+//! of the Paystack API.
+//!
+//!
+
 use serde::{Deserialize, Serialize};
 
 /// This struct represents the response of the Paystack transaction initalization.
