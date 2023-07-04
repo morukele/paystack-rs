@@ -61,7 +61,7 @@ mod response;
 // public re-exports
 pub use client::PaystackClient;
 pub use error::{PaystackError, RequestNotSuccessful};
-pub use request::{Transaction, TransactionBuilder};
+pub use request::{Charge, ChargeBuilder, Transaction, TransactionBuilder};
 pub use response::{
     Customer, TransactionResponse, TransactionResponseData, TransactionStatus,
     TransactionStatusData, TransactionStatusList,

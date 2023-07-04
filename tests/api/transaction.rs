@@ -1,6 +1,6 @@
 use fake::faker::internet::en::SafeEmail;
 use fake::Fake;
-use paystack::TransactionBuilder;
+use paystack::{ChargeBuilder, TransactionBuilder};
 use rand::Rng;
 
 use crate::helpers::get_paystack_client;
@@ -105,4 +105,92 @@ async fn list_specified_number_of_transactions_in_the_integration() {
     assert_eq!(5, response.data.len());
     assert!(response.status);
     assert_eq!("Transactions retrieved", response.message);
+}
+
+#[tokio::test]
+async fn fetch_transaction_succeeds() {
+    // Arrange
+    let client = get_paystack_client();
+    let mut rng = rand::thread_rng();
+
+    // Act
+    let email: String = SafeEmail().fake();
+    let body = TransactionBuilder::new()
+        .amount(rng.gen_range(100..=100000).to_string())
+        .email(email)
+        .currency("NGN")
+        .build()
+        .unwrap();
+
+    let transaction = client
+        .initialize_transaction(body)
+        .await
+        .expect("unable to initiate transaction");
+
+    let verified_transaction = client
+        .verify_transaction(transaction.data.reference.clone())
+        .await
+        .expect("unable to verify transaction");
+
+    let fetched_transaction = client
+        .fetch_transactions(verified_transaction.data.id.unwrap())
+        .await
+        .expect("unable to fetch transaction");
+
+    // Assert
+    assert_eq!(verified_transaction.data.id, fetched_transaction.data.id);
+    assert_eq!(
+        transaction.data.reference.clone(),
+        fetched_transaction.data.reference.unwrap()
+    );
+}
+
+#[tokio::test]
+async fn charge_authorization_succeeds() {
+    // Arrange
+    let client = get_paystack_client();
+    let mut rng = rand::thread_rng();
+
+    // Act
+    // In this test, an already created customer in the integration is used
+    let charge = ChargeBuilder::new()
+        .amount(rng.gen_range(100..=100000).to_string())
+        .email("melyssa@example.net")
+        .authorization_code("AUTH_9v3686msvt")
+        .currency("NGN")
+        .channel(vec!["card".to_string()])
+        .transaction_charge(100)
+        .build()
+        .unwrap();
+
+    let charge_response = client
+        .charge_authorization(charge)
+        .await
+        .expect("unable to authorize charge");
+
+    // Assert
+    assert!(charge_response.status);
+    assert_eq!(
+        charge_response.data.customer.unwrap().email.unwrap(),
+        "melyssa@example.net"
+    );
+    assert_eq!(
+        charge_response
+            .data
+            .authorization
+            .clone()
+            .unwrap()
+            .channel
+            .unwrap(),
+        "card"
+    );
+    assert_eq!(
+        charge_response
+            .data
+            .authorization
+            .unwrap()
+            .authorization_code
+            .unwrap(),
+        "AUTH_9v3686msvt"
+    );
 }

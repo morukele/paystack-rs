@@ -14,6 +14,9 @@ pub enum PaystackError {
     #[error("Transaction Creation Error: {0}")]
     TransactionCreation(String),
 
+    #[error("Charge Creation Error: {0}")]
+    ChargeCreation(String),
+
     #[error("Request failed: `{0}`")]
     RequestNotSuccessful(#[from] RequestNotSuccessful),
 
