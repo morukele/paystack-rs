@@ -55,11 +55,11 @@ impl TransactionBuilder {
     /// Build the Transaction object
     pub fn build(self) -> PaystackResult<Transaction> {
         let Some(email) = self.email else {
-            return Err(error::PaystackError::TransactionCreation("email is required for transaction".to_string()))
+            return Err(error::PaystackError::Transaction("email is required for transaction".to_string()))
         };
 
         let Some(amount) = self.amount else {
-            return Err(error::PaystackError::TransactionCreation("amount is required for transaction".to_string()))
+            return Err(error::PaystackError::Transaction("amount is required for transaction".to_string()))
         };
 
         Ok(Transaction {
@@ -81,8 +81,9 @@ impl TransactionBuilder {
 ///     - authorizatuin_code: A valid authorization code to charge
 ///     - reference (Optional): Unique transaction reference. Only -, ., = and alphanumeric characters allowed.
 ///     - channel (Optional): Send us 'card' or 'bank' or 'card','bank' as an array to specify what options to show the user paying
-///     - transaction_charge (Optional): A flat fee to charge the subaccount for this transaction (in kobo if currency is NGN, pesewas,
-///     if currency is GHS, and cents, if currency is ZAR). This overrides the split percentage set when the subaccount was created.
+///     - transaction_charge (Optional): A flat fee to charge the subaccount for this transaction
+///     (in kobo if currency is NGN, pesewas, if currency is GHS, and cents, if currency is ZAR).
+///     This overrides the split percentage set when the subaccount was created.
 ///     Ideally, you will need to use this if you are splitting in flat rates
 ///     (since subaccount creation only allows for percentage split). e.g. 7000 for a 70 naira
 
@@ -157,19 +158,20 @@ impl ChargeBuilder {
         self
     }
 
+    /// Build the Charge object
     pub fn build(self) -> PaystackResult<Charge> {
         let Some(email) = self.email else {
-            return Err(error::PaystackError::ChargeCreation("email is required for creating a charge".to_string()))
+            return Err(error::PaystackError::Charge("email is required for creating a charge".to_string()))
         };
 
         let Some(amount) = self.amount else {
-            return Err(error::PaystackError::ChargeCreation(
+            return Err(error::PaystackError::Charge(
                 "amount is required for creating charge".to_string()
             ))
         };
 
         let Some(authorization_code) = self.authorization_code else {
-            return Err(error::PaystackError::ChargeCreation(
+            return Err(error::PaystackError::Charge(
                 "authorization code is required for creating a charge".to_string()
             ))
         };

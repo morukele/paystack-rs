@@ -6,23 +6,30 @@ use std::fmt::Display;
 
 use reqwest::StatusCode;
 
+/// Custom Error for the Paystack API
 #[derive(thiserror::Error, Debug)]
 pub enum PaystackError {
+    /// Generic error, not used frequently
     #[error("Generic error: {0}")]
     Generic(String),
 
-    #[error("Transaction Creation Error: {0}")]
-    TransactionCreation(String),
+    /// Error associated with Transaction operation
+    #[error("Transaction Error: {0}")]
+    Transaction(String),
 
-    #[error("Charge Creation Error: {0}")]
-    ChargeCreation(String),
+    /// Error associated with Charge
+    #[error("Charge Error: {0}")]
+    Charge(String),
 
+    /// Error for unsuccessful request to the Paystack API
     #[error("Request failed: `{0}`")]
     RequestNotSuccessful(#[from] RequestNotSuccessful),
 
+    /// Error associated with failed parsing of response from the Paystack API
     #[error("Response parsing error: {0}")]
     ResponseParsing(String),
 
+    /// Default HTTP error from the Reqwest crate
     #[error(transparent)]
     Reqwest(#[from] reqwest::Error),
 }

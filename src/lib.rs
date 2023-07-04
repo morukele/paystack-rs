@@ -1,5 +1,9 @@
-//!Convenient rust bindings and types for the Paystakc HTTP API aiming to support the entire API surface. Not the case? Please open an issue. I update the definitions on a weekly basis.
-//! ## Documentatio
+#![deny(missing_docs)]
+
+//! Convenient rust bindings and types for the Paystakc HTTP API aiming to support the entire API surface.
+//! Not the case? Please open an issue. I update the definitions on a weekly basis.
+//!
+//! # Documentation
 //! See the [Rust API docs](https://docs.rs/paystack-rs) or the [examples](/examples).
 //!
 //! ## Installation
@@ -47,11 +51,9 @@
 //!
 //! See [CONTRIBUTING.md](/CONTRIBUTING.md) for information on contributing to paystack-rs.
 //!
-//! ## License
+// ## License
 //!
 //! Licensed under MIT license ([LICENSE-MIT](/LICENSE-MIT)).
-//!
-//!
 
 mod client;
 mod error;
@@ -59,13 +61,10 @@ mod request;
 mod response;
 
 // public re-exports
-pub use client::PaystackClient;
-pub use error::{PaystackError, RequestNotSuccessful};
-pub use request::{Charge, ChargeBuilder, Transaction, TransactionBuilder};
-pub use response::{
-    Customer, TransactionResponse, TransactionResponseData, TransactionStatus,
-    TransactionStatusData, TransactionStatusList,
-};
+pub use client::*;
+pub use error::*;
+pub use request::*;
+pub use response::*;
 
-// mapping results to our custom error type
+/// Custom result type for the Paystack API
 pub type PaystackResult<T> = std::result::Result<T, error::PaystackError>;
