@@ -1,3 +1,7 @@
+//! Error
+//! ========
+//! This file contaains the structs and definitions of the errors in this crate.
+
 use std::fmt::Display;
 
 use reqwest::StatusCode;

@@ -1,3 +1,7 @@
+//! Client
+//! ===========
+//! The file for the Paystack API client and it's associated functions
+
 extern crate reqwest;
 extern crate serde_json;
 

@@ -9,17 +9,21 @@
 //! This reqires building a transaction body.
 //! Please see the type definition to understand how it is constructed
 
+use dotenv::dotenv;
 use paystack::{PaystackClient, TransactionBuilder};
+use std::env;
 
 #[tokio::main]
 async fn main() {
-    let api_key = "API KEY";
+    dotenv().ok();
+
+    let api_key = env::var("PAYSTACK_API_KEY").unwrap();
     let client = PaystackClient::new(api_key);
 
     let body = TransactionBuilder::new()
-        .email("CUSTOMER EMAIL")
-        .amount("AMOUNT")
-        .currency("CURRENCY CODE")
+        .email("email@example.com")
+        .amount("2000")
+        .currency("NGN")
         .build()
         .unwrap();
 
@@ -38,7 +42,7 @@ async fn main() {
     // Verify transaction
     // Transaction reference can be a string or pulled out from the transaction response
     let transaction_status = client
-        .verify_transaction("TRANSACTION REFERENCE".to_string())
+        .verify_transaction(transaction.data.reference.to_string())
         .await
         .expect("Unable to get transaction status");
 
