@@ -24,12 +24,14 @@ paystack-rs = "0.1"
 Initalizing an instance of the Paystack client and creating a transaction.
 
 ```rust
-    use Error;
-    use paystack::{PaystackClient, TransactionBuilder}
+    use std::env;
+    use dotenv::dotenv;
+    use paystack::{PaystackClient, TransactionBuilder, PaystackError};
 
     #[tokio::main]
-    async fn main() -> Result<(), Error>{
-        let api_key = "API_KEY";
+    async fn main() -> Result<(), PaystackError>{
+        dotenv().ok()
+        let api_key = env::var("PAYSTACK_API_KEY").unwrap();
         let client = PaystackClient::new(api_key);
 
         let body = TransactionBuilder::new()
