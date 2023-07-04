@@ -59,20 +59,20 @@ pub struct TransactionStatusList {
 #[derive(Deserialize, Debug, Clone)]
 pub struct MetaData {
     /// This is the total number of transactions that were performed by the customer.
-    pub total: u32,
+    pub total: Option<u32>,
     /// This is the number of records skipped before the first record in the array returned.
-    pub skipped: u32,
+    pub skipped: Option<u32>,
     /// This is the maximum number of records that will be returned per request.
     /// This can be modified by passing a new value as a perPage query parameter. Default: 50
-    pub per_page: u32,
+    pub per_page: Option<u32>,
     /// This is the current page being returned.
     /// This is dependent on what page was requested using the page query parameter.
     ///
     /// `Default: 1`
-    pub page: u32,
+    pub page: Option<u32>,
     /// This is how many pages in total are available for retrieval considering the maximum records per page specified.
     /// For context, if there are 51 records and perPage is left at its default value, pageCount will have a value of 2.
-    pub page_count: u32,
+    pub page_count: Option<u32>,
 }
 
 /// This struct represents the data of the transaction status response.

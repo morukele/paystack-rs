@@ -88,15 +88,20 @@ impl PaystackClient {
 
     /// This method returns a Vec of transactions carried out on your integrations.
     ///
-    /// The method takes an Optional parameter for the number of transactions to return.
+    /// The method takes the following parameters:
+    ///     - perPage (Optional): Number of transactions to return. If None is passed as the parameter, the last 10 transactions are returned.
+    ///     - status (Optional): Filter transactions by status (`failed`, `success`, `abandoned`).
     ///
-    /// If None is passed as the parameter, the last 10 transactions are returned
     pub async fn list_transactions(
         &self,
         number_of_transactions: Option<u32>,
+        status: Option<String>,
     ) -> PaystackResult<TransactionStatusList> {
         let url = format!("{}/transaction", BASE_URL);
-        let query = vec![("perPage", number_of_transactions.unwrap_or(10))];
+        let query = vec![
+            ("perPage", number_of_transactions.unwrap_or(10).to_string()),
+            ("status", status.unwrap()),
+        ];
 
         let response = self
             .client

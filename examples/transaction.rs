@@ -56,7 +56,7 @@ async fn main() {
 
     // List of transactiosn
     let transactions = client
-        .list_transactions(Some(5))
+        .list_transactions(Some(5), Some("success".to_string()))
         .await
         .expect("Unable to get all the transactions");
 

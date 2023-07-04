@@ -97,9 +97,11 @@ async fn list_specified_number_of_transactions_in_the_integration() {
 
     // Act
     let response = client
-        .list_transactions(Some(5))
+        .list_transactions(Some(5), Some("success".to_string()))
         .await
         .expect("unable to get list of integrated transactions");
+
+    println!("{:#?}", response);
 
     // Assert
     assert_eq!(5, response.data.len());
