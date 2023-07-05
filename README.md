@@ -12,12 +12,14 @@ See the [Rust API docs](https://docs.rs/paystack-rs) or the [examples](/examples
 
 ## Installation
 
-`paystack-rs` uses the `reqwest` http client under the hood and the `tokio` runtime for async operations
+`paystack-rs` uses the `reqwest` http client under the hood and the `tokio` runtime for async operations.
 
 ```toml
 [dependencies]
 paystack-rs = "0.1"
 ```
+
+You can also download the source code and use in your code base directly if you prefer.
 
 ## Usage
 

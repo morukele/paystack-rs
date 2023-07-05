@@ -53,6 +53,52 @@ pub struct TransactionStatusList {
     pub meta: MetaData,
 }
 
+/// This struct represents the transaction timeline.
+#[derive(Deserialize, Debug, Clone)]
+pub struct TransactionTimeline {
+    /// This lets you know if your request was successful or not.
+    pub status: bool,
+    /// This is a summary of the response and its status.
+    pub message: String,
+    /// This contains the results of your request.
+    pub data: TransactionTimelineData,
+}
+
+/// This struct represents the transaction timeline data.
+#[derive(Deserialize, Debug, Clone)]
+pub struct TransactionTimelineData {
+    /// Time spent in carrying out the transaction in ms.
+    pub time_spent: u32,
+    /// Number of attempts for the transaction.
+    pub attempts: u32,
+    /// Authentication use for the transaction.
+    pub authentication: Option<String>,
+    /// Number of errors for the transaction.
+    pub errors: u32,
+    /// Sucess status of the transaction.
+    pub success: bool,
+    /// If transaction was carried out with mobile.
+    pub mobile: bool,
+    /// Transaction inputs i.e. messages associated with the transaction.
+    pub input: Option<String>,
+    /// Transaction channel.
+    pub channel: String,
+    /// Trasnaction history.
+    pub history: Vec<TranasctionHistory>,
+}
+
+/// This struct represents the transaction history data
+#[derive(Deserialize, Debug, Clone)]
+pub struct TranasctionHistory {
+    /// Transaction action.
+    #[serde(rename = "type")]
+    pub action_type: String,
+    /// Description of the action.
+    pub message: String,
+    /// Time action was taken in ms.
+    pub time: u32,
+}
+
 /// This struct represents the mata data of the response.
 #[derive(Deserialize, Debug, Clone)]
 pub struct MetaData {
