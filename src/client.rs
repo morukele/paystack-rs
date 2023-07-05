@@ -7,7 +7,7 @@ extern crate serde_json;
 
 use crate::{
     Charge, PaystackResult, RequestNotSuccessful, Transaction, TransactionResponse,
-    TransactionStatus, TransactionStatusList,
+    TransactionStatus, TransactionStatusList, TransactionTimeline,
 };
 
 static BASE_URL: &str = "https://api.paystack.co";
@@ -171,6 +171,42 @@ impl PaystackClient {
             );
         }
         let content = response.json::<TransactionStatus>().await?;
+
+        Ok(content)
+    }
+
+    /// View the timeline of a transaction
+    ///
+    /// This function takes in the Transaction id or reference as a parameter
+    pub async fn view_transaction_timeline(
+        &self,
+        id: Option<u32>,
+        reference: Option<String>,
+    ) -> PaystackResult<TransactionTimeline> {
+        // This is a hacky implementation to ensure that the transaction reference or id is not empty.
+        // If they are empyt, a url without them as parameter is created.
+        let url = match (id, reference) {
+            (Some(id), None) => format!("{}/transaction/timeline/{}", BASE_URL, id),
+            (None, Some(reference)) => {
+                format!("{}/transaction/timeline/{}", BASE_URL, &reference)
+            }
+            _ => format!("{}/transaction/timeline/", BASE_URL),
+        };
+
+        let response = self
+            .client
+            .get(url)
+            .bearer_auth(&self.api_key)
+            .header("Content-Type", "application/json")
+            .send()
+            .await?;
+
+        if response.error_for_status_ref().is_err() {
+            return Err(
+                RequestNotSuccessful::new(response.status(), response.text().await?).into(),
+            );
+        }
+        let content = response.json::<TransactionTimeline>().await?;
 
         Ok(content)
     }

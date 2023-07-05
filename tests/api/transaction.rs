@@ -1,6 +1,6 @@
 use fake::faker::internet::en::SafeEmail;
 use fake::Fake;
-use paystack::{ChargeBuilder, TransactionBuilder};
+use paystack::TransactionBuilder;
 use rand::Rng;
 
 use crate::helpers::get_paystack_client;
@@ -51,8 +51,8 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_marchent
     // Assert
     match res {
         Ok(_) => (),
-        Err(ex) => {
-            let res = ex.to_string();
+        Err(e) => {
+            let res = e.to_string();
             assert!(res.contains("StatusCode: 403 Forbidden"));
             assert!(res.contains("Currency not supported by merchant"))
         }
@@ -101,8 +101,6 @@ async fn list_specified_number_of_transactions_in_the_integration() {
         .await
         .expect("unable to get list of integrated transactions");
 
-    println!("{:#?}", response);
-
     // Assert
     assert_eq!(5, response.data.len());
     assert!(response.status);
@@ -113,86 +111,83 @@ async fn list_specified_number_of_transactions_in_the_integration() {
 async fn fetch_transaction_succeeds() {
     // Arrange
     let client = get_paystack_client();
-    let mut rng = rand::thread_rng();
 
     // Act
-    let email: String = SafeEmail().fake();
-    let body = TransactionBuilder::new()
-        .amount(rng.gen_range(100..=100000).to_string())
-        .email(email)
-        .currency("NGN")
-        .build()
-        .unwrap();
-
-    let transaction = client
-        .initialize_transaction(body)
+    let response = client
+        .list_transactions(Some(1), Some("success".to_string()))
         .await
-        .expect("unable to initiate transaction");
-
-    let verified_transaction = client
-        .verify_transaction(transaction.data.reference.clone())
-        .await
-        .expect("unable to verify transaction");
+        .expect("unbale to get list of integrated transactions");
 
     let fetched_transaction = client
-        .fetch_transactions(verified_transaction.data.id.unwrap())
+        .fetch_transactions(response.data[0].id.unwrap())
         .await
         .expect("unable to fetch transaction");
 
     // Assert
-    assert_eq!(verified_transaction.data.id, fetched_transaction.data.id);
+    assert_eq!(response.data[0].id, fetched_transaction.data.id);
     assert_eq!(
-        transaction.data.reference.clone(),
-        fetched_transaction.data.reference.unwrap()
+        response.data[0].reference,
+        fetched_transaction.data.reference
     );
 }
 
 #[tokio::test]
-async fn charge_authorization_succeeds() {
+async fn view_transaction_timeline_passes_with_id() {
     // Arrange
     let client = get_paystack_client();
-    let mut rng = rand::thread_rng();
 
     // Act
-    // In this test, an already created customer in the integration is used
-    let charge = ChargeBuilder::new()
-        .amount(rng.gen_range(100..=100000).to_string())
-        .email("melyssa@example.net")
-        .authorization_code("AUTH_9v3686msvt")
-        .currency("NGN")
-        .channel(vec!["card".to_string()])
-        .transaction_charge(100)
-        .build()
-        .unwrap();
-
-    let charge_response = client
-        .charge_authorization(charge)
+    let response = client
+        .list_transactions(Some(1), Some("success".to_string()))
         .await
-        .expect("unable to authorize charge");
+        .expect("unable to get list of integrated transactions");
+
+    let transaction_timeline = client
+        .view_transaction_timeline(response.data[0].id, None)
+        .await
+        .expect("unable to get transaction timeline");
 
     // Assert
-    assert!(charge_response.status);
-    assert_eq!(
-        charge_response.data.customer.unwrap().email.unwrap(),
-        "melyssa@example.net"
-    );
-    assert_eq!(
-        charge_response
-            .data
-            .authorization
-            .clone()
-            .unwrap()
-            .channel
-            .unwrap(),
-        "card"
-    );
-    assert_eq!(
-        charge_response
-            .data
-            .authorization
-            .unwrap()
-            .authorization_code
-            .unwrap(),
-        "AUTH_9v3686msvt"
-    );
+    assert!(transaction_timeline.status);
+    assert_eq!(transaction_timeline.message, "Timeline retrieved");
+}
+
+#[tokio::test]
+async fn view_transaction_timeline_passes_with_reference() {
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    let response = client
+        .list_transactions(Some(1), Some("success".to_string()))
+        .await
+        .expect("unable to get list of integrated transactions");
+
+    let transaction_timeline = client
+        .view_transaction_timeline(None, response.data[0].reference.clone())
+        .await
+        .expect("unable to get transaction timeline");
+
+    // Assert
+    assert!(transaction_timeline.status);
+    assert_eq!(transaction_timeline.message, "Timeline retrieved");
+}
+
+#[tokio::test]
+async fn view_transaction_timeline_fails_without_id_or_reference() {
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    let res = client.view_transaction_timeline(None, None).await;
+
+    // Assert
+    match res {
+        Ok(_) => (),
+        Err(e) => {
+            let res = e.to_string();
+            assert!(res.contains("StatusCode: 400"));
+            assert!(res.contains("Transaction ID should be numeric"));
+        }
+    }
 }

@@ -68,23 +68,23 @@ pub struct TransactionTimeline {
 #[derive(Deserialize, Debug, Clone)]
 pub struct TransactionTimelineData {
     /// Time spent in carrying out the transaction in ms.
-    pub time_spent: u32,
+    pub time_spent: Option<u32>,
     /// Number of attempts for the transaction.
-    pub attempts: u32,
+    pub attempts: Option<u32>,
     /// Authentication use for the transaction.
     pub authentication: Option<String>,
     /// Number of errors for the transaction.
-    pub errors: u32,
+    pub errors: Option<u32>,
     /// Sucess status of the transaction.
-    pub success: bool,
+    pub success: Option<bool>,
     /// If transaction was carried out with mobile.
-    pub mobile: bool,
+    pub mobile: Option<bool>,
     /// Transaction inputs i.e. messages associated with the transaction.
     pub input: Option<String>,
     /// Transaction channel.
-    pub channel: String,
+    pub channel: Option<String>,
     /// Trasnaction history.
-    pub history: Vec<TranasctionHistory>,
+    pub history: Option<Vec<TranasctionHistory>>,
 }
 
 /// This struct represents the transaction history data
