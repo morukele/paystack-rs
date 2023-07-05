@@ -2,8 +2,6 @@
 //! ==========
 //! This file contains the structs needed to represent the different response
 //! of the Paystack API.
-//!
-//!
 
 use serde::{Deserialize, Serialize};
 

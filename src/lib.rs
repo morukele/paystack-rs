@@ -57,13 +57,13 @@
 
 mod client;
 mod error;
-mod request;
+mod resources;
 mod response;
 
 // public re-exports
 pub use client::*;
 pub use error::*;
-pub use request::*;
+pub use resources::*;
 pub use response::*;
 
 /// Custom result type for the Paystack API
