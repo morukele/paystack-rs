@@ -185,13 +185,19 @@ impl PaystackClient {
     ) -> PaystackResult<TransactionTimeline> {
         // This is a hacky implementation to ensure that the transaction reference or id is not empty.
         // If they are empyt, a url without them as parameter is created.
-        let url = match (id, reference) {
-            (Some(id), None) => format!("{}/transaction/timeline/{}", BASE_URL, id),
+        let url: PaystackResult<String> = match (id, reference) {
+            (Some(id), None) => Ok(format!("{}/transaction/timeline/{}", BASE_URL, id)),
             (None, Some(reference)) => {
-                format!("{}/transaction/timeline/{}", BASE_URL, &reference)
+                Ok(format!("{}/transaction/timeline/{}", BASE_URL, &reference))
             }
-            _ => format!("{}/transaction/timeline/", BASE_URL),
+            _ => {
+                return Err(crate::PaystackError::Transaction(
+                    "Transaction Id or Reference is need to view transaction timeline".to_string(),
+                ))
+            }
         };
+
+        let url = url.unwrap(); // Send the error back up the function
 
         let response = self
             .client

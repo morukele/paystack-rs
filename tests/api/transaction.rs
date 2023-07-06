@@ -186,8 +186,9 @@ async fn view_transaction_timeline_fails_without_id_or_reference() {
         Ok(_) => (),
         Err(e) => {
             let res = e.to_string();
-            assert!(res.contains("StatusCode: 400"));
-            assert!(res.contains("Transaction ID should be numeric"));
+            assert!(
+                res.contains("Transaction Id or Reference is need to view transaction timeline")
+            );
         }
     }
 }
