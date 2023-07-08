@@ -207,3 +207,40 @@ pub struct Customer {
     /// Customer's phone number in international format.
     pub international_format_phone: Option<String>,
 }
+
+/// Total amount received on your account
+#[derive(Debug, Deserialize)]
+pub struct TransactionTotalsResponse {
+    /// This lets you know if your request was succesful or not.
+    pub status: bool,
+    /// This is a summary of the response and its status.
+    pub message: String,
+    /// This contains the results of your request.
+    pub data: TransactionTotalData,
+}
+
+/// Transaction total data.
+#[derive(Debug, serde::Deserialize)]
+pub struct TransactionTotalData {
+    /// Total number of transactions in the intergration.
+    pub total_transactions: Option<u32>,
+    /// Total of unique number of customers in the integration.
+    pub unique_customers: Option<u32>,
+    /// Total volume of transaction in the integration.
+    pub total_volume: Option<u32>,
+    /// Total volume of transaction broken down by currency.
+    pub total_volume_by_currency: Option<Vec<VolumeByCurrency>>,
+    /// Total volume of pending transfers.
+    pub pending_transfers: Option<u32>,
+    /// Total volumn of pending transfer broken down by currency.
+    pub pending_transfers_by_currency: Option<Vec<VolumeByCurrency>>,
+}
+
+/// Transaction volume by currecny.
+#[derive(Debug, serde::Deserialize)]
+pub struct VolumeByCurrency {
+    /// Currency code.
+    pub currency: String,
+    /// Amount in the lowest denomincation of the currency.
+    pub amount: u32,
+}

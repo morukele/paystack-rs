@@ -7,7 +7,7 @@ extern crate serde_json;
 
 use crate::{
     Charge, PaystackResult, RequestNotSuccessful, Transaction, TransactionResponse,
-    TransactionStatus, TransactionStatusList, TransactionTimeline,
+    TransactionStatus, TransactionStatusList, TransactionTimeline, TransactionTotalsResponse,
 };
 
 static BASE_URL: &str = "https://api.paystack.co";
@@ -213,6 +213,34 @@ impl PaystackClient {
             );
         }
         let content = response.json::<TransactionTimeline>().await?;
+
+        Ok(content)
+    }
+
+    /// Total amount received on your account.
+    ///
+    /// This route normally takes a perPage or page query,
+    /// However in this case it is ignrored.
+    /// If you need it in your work please open an issue
+    /// and it will be implemented.
+    pub async fn total_transactions(&self) -> PaystackResult<TransactionTotalsResponse> {
+        let url = format!("{}/transaction/totals", BASE_URL);
+
+        let response = self
+            .client
+            .get(url)
+            .bearer_auth(&self.api_key)
+            .header("Content-Type", "application/json")
+            .send()
+            .await?;
+
+        if response.error_for_status_ref().is_err() {
+            return Err(
+                RequestNotSuccessful::new(response.status(), response.text().await?).into(),
+            );
+        }
+
+        let content = response.json::<TransactionTotalsResponse>().await?;
 
         Ok(content)
     }

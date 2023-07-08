@@ -192,3 +192,21 @@ async fn view_transaction_timeline_fails_without_id_or_reference() {
         }
     }
 }
+
+#[tokio::test]
+async fn get_transaction_total_is_successful() {
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    let res = client
+        .total_transactions()
+        .await
+        .expect("unable to get transaction total");
+
+    // Assert
+    assert!(res.status);
+    assert_eq!(res.message, "Transaction totals");
+    assert!(res.data.total_transactions.is_some());
+    assert!(res.data.total_volume.is_some());
+}
