@@ -17,6 +17,21 @@ pub enum Currency {
     USD,
     /// South African Rands
     ZAR,
+    /// Used when currency can be empty.
+    EMPTY,
+}
+
+impl fmt::Display for Currency {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let currency = match self {
+            Currency::NGN => "NGN",
+            Currency::GHS => "GHS",
+            Currency::USD => "USD",
+            Currency::ZAR => "ZAR",
+            Currency::EMPTY => "",
+        };
+        write!(f, "{}", currency)
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -35,13 +50,13 @@ pub enum Channel {
     MobileMoney,
     /// Payment with Bank Transfer
     BankTransfer,
+    /// Payment with Apple Pay
+    ApplePay,
 }
 
 impl fmt::Display for Channel {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{:?}", self)
-        // or, alternatively:
-        // fmt::Debug::fmt(self, f)
     }
 }
 
@@ -52,13 +67,18 @@ pub enum Status {
     /// A successful transaction.
     Success,
     /// An abadoned transaction.
-    Abadoned,
-    /// A failed transaction
+    Abandoned,
+    /// A failed transaction.
     Failed,
 }
 
 impl fmt::Display for Status {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        fmt::Debug::fmt(self, f)
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let lowercase_string = match self {
+            Status::Success => "success",
+            Status::Abandoned => "abandoned",
+            Status::Failed => "failed",
+        };
+        write!(f, "{}", lowercase_string)
     }
 }

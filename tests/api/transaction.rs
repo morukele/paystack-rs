@@ -1,6 +1,6 @@
 use fake::faker::internet::en::SafeEmail;
 use fake::Fake;
-use paystack::{Currency, Status, TransactionBuilder};
+use paystack::{Channel, Currency, PartialDebitTransactionBuilder, Status, TransactionBuilder};
 use rand::Rng;
 
 use crate::helpers::get_paystack_client;
@@ -18,6 +18,11 @@ async fn initialize_transaction_valid() {
         .amount(rng.gen_range(100..=100000).to_string())
         .email(email)
         .currency(Currency::NGN)
+        .channels(vec![
+            Channel::ApplePay,
+            Channel::BankTransfer,
+            Channel::Bank,
+        ])
         .build()
         .unwrap();
 
@@ -25,6 +30,8 @@ async fn initialize_transaction_valid() {
         .initialize_transaction(body)
         .await
         .expect("Unable to initalize transaction");
+
+    // println!("{:#?}", res);
 
     // Assert
     assert!(res.status);
@@ -97,13 +104,30 @@ async fn list_specified_number_of_transactions_in_the_integration() {
 
     // Act
     let response = client
-        .list_transactions(Some(5), Some(Status::Success))
+        .list_transactions(Some(5), Some(Status::Abandoned))
         .await
         .expect("unable to get list of integrated transactions");
 
     // Assert
     assert_eq!(5, response.data.len());
     assert!(response.status);
+    assert_eq!("Transactions retrieved", response.message);
+}
+
+#[tokio::test]
+async fn list_transactions_passes_with_default_values() {
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    let response = client
+        .list_transactions(None, None)
+        .await
+        .expect("unable to get list of integration transactions");
+
+    // Assert
+    assert!(response.status);
+    assert_eq!(10, response.data.len());
     assert_eq!("Transactions retrieved", response.message);
 }
 
@@ -209,4 +233,64 @@ async fn get_transaction_total_is_successful() {
     assert_eq!(res.message, "Transaction totals");
     assert!(res.data.total_transactions.is_some());
     assert!(res.data.total_volume.is_some());
+}
+
+#[tokio::test]
+async fn export_transaction_succeeds_with_default_parameters() {
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    let res = client
+        .export_transaction(None, None, None)
+        .await
+        .expect("unable to export transactions");
+
+    // Assert
+    assert!(res.status);
+    assert_eq!(res.message, "Export successful");
+    assert!(!res.data.path.is_empty());
+}
+
+#[tokio::test]
+async fn partial_debit_transaction_passes_or_fails_depending_on_marchent_status() {
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    let transaction = client
+        .list_transactions(Some(1), Some(Status::Success))
+        .await
+        .expect("Ubale to get transaction list");
+
+    let transaction = transaction.data[0].clone();
+    let body = PartialDebitTransactionBuilder::new()
+        .amount("10000")
+        .email(transaction.customer.unwrap().email.unwrap())
+        .authorization_code(
+            transaction
+                .authorization
+                .unwrap()
+                .authorization_code
+                .unwrap(),
+        )
+        .currency(Currency::NGN)
+        .build()
+        .unwrap();
+
+    let res = client.partial_debit(body).await;
+
+    // Assert
+    match res {
+        Ok(result) => {
+            assert!(result.status);
+            assert_eq!(result.message, "Charge attempted");
+            assert!(result.data.customer.unwrap().id.is_some())
+        }
+        Err(error) => {
+            let error = error.to_string();
+            assert!(error.contains("StatusCode: 400 Bad Request"));
+            assert!(error.contains("merchant is not enabled for Partial Debit"));
+        }
+    }
 }

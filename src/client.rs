@@ -6,8 +6,9 @@ extern crate reqwest;
 extern crate serde_json;
 
 use crate::{
-    Charge, PaystackResult, RequestNotSuccessful, Status, Transaction, TransactionResponse,
-    TransactionStatus, TransactionStatusList, TransactionTimeline, TransactionTotalsResponse,
+    Charge, Currency, ExportTransactionResponse, PartialDebitTransaction, PaystackResult,
+    RequestNotSuccessful, Status, Transaction, TransactionResponse, TransactionStatus,
+    TransactionStatusList, TransactionTimeline, TransactionTotalsResponse,
 };
 
 static BASE_URL: &str = "https://api.paystack.co";
@@ -90,7 +91,7 @@ impl PaystackClient {
     ///
     /// The method takes the following parameters:
     ///     - perPage (Optional): Number of transactions to return. If None is passed as the parameter, the last 10 transactions are returned.
-    ///     - status (Optional): Filter transactions by status (`failed`, `success`, `abandoned`).
+    ///     - status (Optional): Filter transactions by status, defaults to Success if no status is passed.
     ///
     pub async fn list_transactions(
         &self,
@@ -100,7 +101,7 @@ impl PaystackClient {
         let url = format!("{}/transaction", BASE_URL);
         let query = vec![
             ("perPage", number_of_transactions.unwrap_or(10).to_string()),
-            ("status", status.unwrap().to_string()),
+            ("status", status.unwrap_or(Status::Abandoned).to_string()),
         ];
 
         let response = self
@@ -238,9 +239,86 @@ impl PaystackClient {
             return Err(
                 RequestNotSuccessful::new(response.status(), response.text().await?).into(),
             );
-        }
+        };
 
         let content = response.json::<TransactionTotalsResponse>().await?;
+
+        Ok(content)
+    }
+
+    /// Export a list of transactions carried out on your integration
+    ///
+    /// This method takes the following parameters
+    /// - Status (Optional): The status of the transactions to export. Defaults to all
+    /// - Currency (Optional): The currency of the transactions to export. Defaults to NGN
+    /// - Settled (Optional): To state of the transactions to export. Defaults to False.
+    pub async fn export_transaction(
+        &self,
+        status: Option<Status>,
+        currency: Option<Currency>,
+        settled: Option<bool>,
+    ) -> PaystackResult<ExportTransactionResponse> {
+        let url = format!("{}/transaction/export", BASE_URL);
+
+        // Specify a default option for settled transactions.
+        let settled = match settled {
+            Some(settled) => settled.to_string(),
+            None => String::from(""),
+        };
+
+        let query = vec![
+            ("status", status.unwrap_or(Status::Success).to_string()),
+            ("currency", currency.unwrap_or(Currency::EMPTY).to_string()),
+            ("settled", settled),
+        ];
+
+        let response = self
+            .client
+            .get(url)
+            .query(&query)
+            .bearer_auth(&self.api_key)
+            .header("Content-Type", "application/json")
+            .send()
+            .await?;
+
+        if response.error_for_status_ref().is_err() {
+            return Err(
+                RequestNotSuccessful::new(response.status(), response.text().await?).into(),
+            );
+        };
+
+        let content = response.json::<ExportTransactionResponse>().await?;
+
+        Ok(content)
+    }
+
+    /// Retrieve part of a payment from a customer.
+    ///
+    /// It takes a PartialDebitTransaction type as a parameter.
+    ///
+    /// NB: it must be created with the PartialDebitTransaction Builder.
+    pub async fn partial_debit(
+        &self,
+        transaction_body: PartialDebitTransaction,
+    ) -> PaystackResult<TransactionStatus> {
+        let url = format!("{}/transaction/partial_debit", BASE_URL);
+
+        let response = self
+            .client
+            .post(url)
+            .bearer_auth(&self.api_key)
+            .header("Content-Type", "application/json")
+            .json(&transaction_body)
+            .send()
+            .await?;
+
+        if response.error_for_status_ref().is_err() {
+            return Err(
+                RequestNotSuccessful::new(response.status(), response.text().await?).into(),
+            );
+        }
+
+        let content = response.json::<TransactionStatus>().await?;
 
         Ok(content)
     }

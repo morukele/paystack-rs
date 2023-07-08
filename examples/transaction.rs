@@ -10,7 +10,7 @@
 //! Please see the type definition to understand how it is constructed
 
 use dotenv::dotenv;
-use paystack::{Currency, PaystackClient, Status, TransactionBuilder};
+use paystack::{Channel, Currency, PaystackClient, Status, TransactionBuilder};
 use std::env;
 
 #[tokio::main]
@@ -22,8 +22,9 @@ async fn main() {
 
     let body = TransactionBuilder::new()
         .email("email@example.com")
-        .amount("2000")
+        .amount("200000")
         .currency(Currency::NGN)
+        .channels(vec![Channel::Qr, Channel::Ussd, Channel::BankTransfer])
         .build()
         .unwrap();
 

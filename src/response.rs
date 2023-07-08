@@ -220,7 +220,7 @@ pub struct TransactionTotalsResponse {
 }
 
 /// Transaction total data.
-#[derive(Debug, serde::Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct TransactionTotalData {
     /// Total number of transactions in the intergration.
     pub total_transactions: Option<u32>,
@@ -237,10 +237,39 @@ pub struct TransactionTotalData {
 }
 
 /// Transaction volume by currecny.
-#[derive(Debug, serde::Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct VolumeByCurrency {
     /// Currency code.
     pub currency: String,
     /// Amount in the lowest denomincation of the currency.
     pub amount: u32,
+}
+
+/// Result of the export transaction information.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ExportTransactionResponse {
+    /// This lets you know if your request was succesful or not.
+    pub status: bool,
+    /// This is a summary of the response and its status.
+    pub message: String,
+    /// This contains the results of your request.
+    pub data: ExportTransactionData,
+}
+
+/// Export transaction response data.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ExportTransactionData {
+    /// Path to download the exported transaction file.
+    pub path: String,
+}
+
+/// Result of the partial debit transaction.
+#[derive(Debug, Deserialize)]
+pub struct PartialDebitTransactionResponse {
+    /// This lets you know if your request was succesful or not.
+    pub status: bool,
+    /// This is a summary of the response and its status.
+    pub message: String,
+    /// This contains the results of your request.
+    pub data: TransactionStatusData,
 }
