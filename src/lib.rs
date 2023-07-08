@@ -22,7 +22,7 @@
 //! ```rust
 //!     use std::env;
 //!     use dotenv::dotenv;
-//!     use paystack::{PaystackClient, TransactionBuilder, PaystackError};
+//!     use paystack::{PaystackClient, TransactionBuilder, PaystackError, Currency};
 //!
 //!     #[tokio::main]
 //!     async fn main() -> Result<(), PaystackError>{
@@ -33,7 +33,7 @@
 //!         let body = TransactionBuilder::new()
 //!             .email("email@example.com")
 //!             .amount("200000")
-//!             .currency("NGN")
+//!             .currency(Currency::NGN)
 //!             .build()
 //!             .unwrap();
 //!

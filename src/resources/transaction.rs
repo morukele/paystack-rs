@@ -3,7 +3,8 @@
 //! This file contains all the structs and definitions needed to
 //! create a transaction using the paystack API.
 
-use crate::{error, PaystackResult};
+use crate::{error, Currency, PaystackResult};
+use serde::Serialize;
 
 /// This struct is used to create a transaction body for creating a transaction using the Paystack API.
 ///
@@ -13,11 +14,11 @@ use crate::{error, PaystackResult};
 ///     - amount: Amount should be in the smallest unit of the currency e.g. kobo if in NGN and cents if in USD
 ///     - email: Customer's email address
 ///     - currency (Optional): Currency in which amount should be charged (NGN, GHS, ZAR or USD). Defaults to your integration currency.
-#[derive(serde::Serialize, Debug)]
+#[derive(Serialize, Debug)]
 pub struct Transaction {
     amount: String,
     email: String,
-    currency: Option<String>,
+    currency: Option<Currency>,
 }
 
 /// Builder for the Transaction object
@@ -25,7 +26,7 @@ pub struct Transaction {
 pub struct TransactionBuilder {
     amount: Option<String>,
     email: Option<String>,
-    currency: Option<String>,
+    currency: Option<Currency>,
 }
 
 impl TransactionBuilder {
@@ -47,8 +48,8 @@ impl TransactionBuilder {
     }
 
     /// Specify the Transaction currency
-    pub fn currency(mut self, currency: impl Into<String>) -> Self {
-        self.currency = Some(currency.into());
+    pub fn currency(mut self, currency: Currency) -> Self {
+        self.currency = Some(currency);
         self
     }
 

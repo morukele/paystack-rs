@@ -6,7 +6,7 @@ extern crate reqwest;
 extern crate serde_json;
 
 use crate::{
-    Charge, PaystackResult, RequestNotSuccessful, Transaction, TransactionResponse,
+    Charge, PaystackResult, RequestNotSuccessful, Status, Transaction, TransactionResponse,
     TransactionStatus, TransactionStatusList, TransactionTimeline, TransactionTotalsResponse,
 };
 
@@ -95,12 +95,12 @@ impl PaystackClient {
     pub async fn list_transactions(
         &self,
         number_of_transactions: Option<u32>,
-        status: Option<String>,
+        status: Option<Status>,
     ) -> PaystackResult<TransactionStatusList> {
         let url = format!("{}/transaction", BASE_URL);
         let query = vec![
             ("perPage", number_of_transactions.unwrap_or(10).to_string()),
-            ("status", status.unwrap()),
+            ("status", status.unwrap().to_string()),
         ];
 
         let response = self

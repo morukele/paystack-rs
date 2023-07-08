@@ -1,5 +1,5 @@
 use crate::helpers::get_paystack_client;
-use paystack::ChargeBuilder;
+use paystack::{Channel, ChargeBuilder, Currency};
 use rand::Rng;
 
 #[tokio::test]
@@ -14,8 +14,8 @@ async fn charge_authorization_succeeds() {
         .amount(rng.gen_range(100..=100000).to_string())
         .email("melyssa@example.net")
         .authorization_code("AUTH_9v3686msvt")
-        .currency("NGN")
-        .channel(vec!["card".to_string()])
+        .currency(Currency::NGN)
+        .channel(vec![Channel::Card])
         .transaction_charge(100)
         .build()
         .unwrap();

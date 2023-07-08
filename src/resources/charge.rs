@@ -3,7 +3,7 @@
 //! This file contains all the structs and definitions needed to
 //! create charges usingt the Paystack API.
 
-use crate::{error, PaystackResult};
+use crate::{error, Channel, Currency, PaystackResult};
 
 /// This struct is used to create a charge body for creating a Charge Authorization using the Paystack API.
 ///
@@ -13,9 +13,11 @@ use crate::{error, PaystackResult};
 ///     - amount: Amount should be in the smallest unit of the currency e.g. kobo if in NGN and cents if in USD
 ///     - email: Customer's email address
 ///     - currency (Optional): Currency in which amount should be charged (NGN, GHS, ZAR or USD). Defaults to your integration currency.
+///       An enum is used for type safety.
 ///     - authorizatuin_code: A valid authorization code to charge
 ///     - reference (Optional): Unique transaction reference. Only -, ., = and alphanumeric characters allowed.
-///     - channel (Optional): Send us 'card' or 'bank' or 'card','bank' as an array to specify what options to show the user paying
+///     - channel (Optional): Send us 'card' or 'bank' or 'card','bank' as an array to specify what options to show the user paying.
+///       An enum is used to implement this for type safety
 ///     - transaction_charge (Optional): A flat fee to charge the subaccount for this transaction
 ///     (in kobo if currency is NGN, pesewas, if currency is GHS, and cents, if currency is ZAR).
 ///     This overrides the split percentage set when the subaccount was created.
@@ -28,8 +30,8 @@ pub struct Charge {
     amount: String,
     authorization_code: String,
     reference: Option<String>,
-    currency: Option<String>,
-    channel: Option<Vec<String>>,
+    currency: Option<Currency>,
+    channel: Option<Vec<Channel>>,
     transaction_charge: Option<u32>,
 }
 
@@ -40,8 +42,8 @@ pub struct ChargeBuilder {
     amount: Option<String>,
     authorization_code: Option<String>,
     reference: Option<String>,
-    currency: Option<String>,
-    channel: Option<Vec<String>>,
+    currency: Option<Currency>,
+    channel: Option<Vec<Channel>>,
     transaction_charge: Option<u32>,
 }
 
@@ -76,13 +78,13 @@ impl ChargeBuilder {
     }
 
     /// Specify charge currency
-    pub fn currency(mut self, currency: impl Into<String>) -> Self {
-        self.currency = Some(currency.into());
+    pub fn currency(mut self, currency: Currency) -> Self {
+        self.currency = Some(currency);
         self
     }
 
     /// Specify charge channel
-    pub fn channel(mut self, channel: Vec<String>) -> Self {
+    pub fn channel(mut self, channel: Vec<Channel>) -> Self {
         self.channel = Some(channel);
         self
     }

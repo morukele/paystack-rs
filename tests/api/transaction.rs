@@ -1,6 +1,6 @@
 use fake::faker::internet::en::SafeEmail;
 use fake::Fake;
-use paystack::TransactionBuilder;
+use paystack::{Currency, Status, TransactionBuilder};
 use rand::Rng;
 
 use crate::helpers::get_paystack_client;
@@ -17,7 +17,7 @@ async fn initialize_transaction_valid() {
     let body = TransactionBuilder::new()
         .amount(rng.gen_range(100..=100000).to_string())
         .email(email)
-        .currency("NGN")
+        .currency(Currency::NGN)
         .build()
         .unwrap();
 
@@ -42,7 +42,7 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_marchent
     let body = TransactionBuilder::new()
         .amount(rng.gen_range(100..=100000).to_string())
         .email(email)
-        .currency("USD")
+        .currency(Currency::USD)
         .build()
         .unwrap();
 
@@ -70,7 +70,7 @@ async fn valid_transaction_is_verified() {
     let body = TransactionBuilder::new()
         .amount(rng.gen_range(100..=100000).to_string())
         .email(email)
-        .currency("NGN")
+        .currency(Currency::NGN)
         .build()
         .unwrap();
 
@@ -97,7 +97,7 @@ async fn list_specified_number_of_transactions_in_the_integration() {
 
     // Act
     let response = client
-        .list_transactions(Some(5), Some("success".to_string()))
+        .list_transactions(Some(5), Some(Status::Success))
         .await
         .expect("unable to get list of integrated transactions");
 
@@ -114,7 +114,7 @@ async fn fetch_transaction_succeeds() {
 
     // Act
     let response = client
-        .list_transactions(Some(1), Some("success".to_string()))
+        .list_transactions(Some(1), Some(Status::Success))
         .await
         .expect("unbale to get list of integrated transactions");
 
@@ -138,7 +138,7 @@ async fn view_transaction_timeline_passes_with_id() {
 
     // Act
     let response = client
-        .list_transactions(Some(1), Some("success".to_string()))
+        .list_transactions(Some(1), Some(Status::Success))
         .await
         .expect("unable to get list of integrated transactions");
 
@@ -159,7 +159,7 @@ async fn view_transaction_timeline_passes_with_reference() {
 
     // Act
     let response = client
-        .list_transactions(Some(1), Some("success".to_string()))
+        .list_transactions(Some(1), Some(Status::Success))
         .await
         .expect("unable to get list of integrated transactions");
 
