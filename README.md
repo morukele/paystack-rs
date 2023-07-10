@@ -3,8 +3,13 @@
 ![CI](https://github.com/morukele/paystack-rs/actions/workflows/rust.yml/badge.svg)
 [![paystack-rs on crates.io](https://img.shields.io/crates/v/paystack-rs.svg)](https://crates.io/crates/paystack-rs)
 [![paystack-rs  on docs.rs](https://docs.rs/paystack-rs/badge.svg)](https://docs.rs/paystack-rs)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Convenient **Async** rust bindings and types for the Paystack HTTP API aiming to support the entire API surface. Not the case? Please open an issue. I update the definitions on a weekly basis.
+
+The client current covers the follow section of the API:
+
+- Transactions
 
 ## Documentation
 
@@ -39,7 +44,8 @@ Initalizing an instance of the Paystack client and creating a transaction.
         let body = TransactionBuilder::new()
             .email("email@example.com")
             .amount("200000")
-            .currency("NGN")
+            .currency(Currency::NGN)
+            .channels(vec![Channel::Qr, Channel::Ussd, Channel::BankTransfer])
             .build()
             .unwrap();
 
