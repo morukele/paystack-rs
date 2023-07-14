@@ -92,6 +92,7 @@ async fn valid_transaction_is_verified() {
         .expect("unable to verify transaction");
 
     // Assert
+    // println!("{:#?}", response);
     assert!(response.status);
     assert_eq!(response.message, "Verification successful");
     assert!(response.data.status.is_some());
@@ -172,6 +173,7 @@ async fn view_transaction_timeline_passes_with_id() {
         .expect("unable to get transaction timeline");
 
     // Assert
+    // println!("{:#?}", transaction_timeline);
     assert!(transaction_timeline.status);
     assert_eq!(transaction_timeline.message, "Timeline retrieved");
 }

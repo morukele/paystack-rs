@@ -6,10 +6,11 @@ use std::fmt;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 /// Respresents the currencies supported by Paystack
 pub enum Currency {
     /// Nigerian Naira
+    #[default]
     NGN,
     /// Ghanian Cedis
     GHS,
