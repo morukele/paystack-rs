@@ -5,6 +5,11 @@
 extern crate reqwest;
 extern crate serde_json;
 
+use std::fmt::Debug;
+
+use reqwest::{Response, StatusCode};
+use serde::Serialize;
+
 use crate::{
     Charge, Currency, ExportTransactionResponse, PartialDebitTransaction, PaystackError,
     PaystackResult, RequestNotSuccessful, Status, Transaction, TransactionResponse,
@@ -33,6 +38,59 @@ impl PaystackClient {
         }
     }
 
+    /// A function for sending post requests to a specified url
+    /// using the reqwest client.
+    async fn post_request<T>(&self, url: &String, body: T) -> PaystackResult<Response>
+    where
+        T: Debug + Serialize,
+    {
+        let response = self
+            .client
+            .post(url)
+            .bearer_auth(&self.api_key)
+            .header("Content-Type", "application/json")
+            .json(&body)
+            .send()
+            .await;
+
+        match response {
+            Ok(response) => match response.status() {
+                StatusCode::OK => Ok(response),
+                _ => {
+                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                }
+            },
+            Err(err) => Err(PaystackError::Generic(err.to_string())),
+        }
+    }
+
+    /// A function for sending get request to a specified url
+    /// with optional query parameters using reqwest client.
+    async fn get_request(
+        &self,
+        url: &String,
+        query: Option<Vec<(&str, String)>>,
+    ) -> PaystackResult<Response> {
+        let response = self
+            .client
+            .get(url)
+            .query(&query)
+            .bearer_auth(&self.api_key)
+            .header("Content-Type", "application/json")
+            .send()
+            .await;
+
+        match response {
+            Ok(response) => match response.status() {
+                StatusCode::OK => Ok(response),
+                _ => {
+                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                }
+            },
+            Err(err) => Err(PaystackError::Generic(err.to_string())),
+        }
+    }
+
     /// This method initalizes a new transaction using the Paystack API.
     ///
     /// It takes a Transaction type as its parameter
@@ -42,21 +100,17 @@ impl PaystackClient {
     ) -> PaystackResult<TransactionResponse> {
         let url = format!("{}/transaction/initialize", BASE_URL);
 
-        let response = self
-            .client
-            .post(url)
-            .bearer_auth(&self.api_key)
-            .header("Content-Type", "application/json")
-            .json(&transaction_body)
-            .send()
-            .await?;
-
-        match response.status() {
-            reqwest::StatusCode::OK => match response.json::<TransactionResponse>().await {
-                Ok(content) => Ok(content),
-                Err(err) => Err(PaystackError::Transaction(err.to_string())),
+        match self.post_request(&url, transaction_body).await {
+            Ok(response) => match response.status() {
+                reqwest::StatusCode::OK => match response.json::<TransactionResponse>().await {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(PaystackError::Transaction(err.to_string())),
+                },
+                _ => {
+                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                }
             },
-            _ => Err(RequestNotSuccessful::new(response.status(), response.text().await?).into()),
+            Err(err) => Err(err),
         }
     }
 
@@ -67,20 +121,17 @@ impl PaystackClient {
     pub async fn verify_transaction(&self, reference: String) -> PaystackResult<TransactionStatus> {
         let url = format!("{}/transaction/verify/{}", BASE_URL, reference);
 
-        let response = self
-            .client
-            .get(url)
-            .bearer_auth(&self.api_key)
-            .header("Content-Type", "application/json")
-            .send()
-            .await?;
-
-        match response.status() {
-            reqwest::StatusCode::OK => match response.json::<TransactionStatus>().await {
-                Ok(content) => Ok(content),
-                Err(err) => Err(PaystackError::Transaction(err.to_string())),
+        match self.get_request(&url, None).await {
+            Ok(response) => match response.status() {
+                reqwest::StatusCode::OK => match response.json::<TransactionStatus>().await {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(PaystackError::Transaction(err.to_string())),
+                },
+                _ => {
+                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                }
             },
-            _ => Err(RequestNotSuccessful::new(response.status(), response.text().await?).into()),
+            Err(err) => Err(err),
         }
     }
 
@@ -101,21 +152,17 @@ impl PaystackClient {
             ("status", status.unwrap_or(Status::Success).to_string()),
         ];
 
-        let response = self
-            .client
-            .get(url)
-            .query(&query)
-            .bearer_auth(&self.api_key)
-            .header("Content-Type", "application.json")
-            .send()
-            .await?;
-
-        match response.status() {
-            reqwest::StatusCode::OK => match response.json::<TransactionStatusList>().await {
-                Ok(content) => Ok(content),
-                Err(err) => Err(PaystackError::Transaction(err.to_string())),
+        match self.get_request(&url, Some(query)).await {
+            Ok(response) => match response.status() {
+                reqwest::StatusCode::OK => match response.json::<TransactionStatusList>().await {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(PaystackError::Transaction(err.to_string())),
+                },
+                _ => {
+                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                }
             },
-            _ => Err(RequestNotSuccessful::new(response.status(), response.text().await?).into()),
+            Err(err) => Err(err),
         }
     }
 
@@ -128,20 +175,17 @@ impl PaystackClient {
     ) -> PaystackResult<TransactionStatus> {
         let url = format!("{}/transaction/{}", BASE_URL, transaction_id);
 
-        let response = self
-            .client
-            .get(url)
-            .bearer_auth(&self.api_key)
-            .header("Content-Type", "application/json")
-            .send()
-            .await?;
-
-        match response.status() {
-            reqwest::StatusCode::OK => match response.json::<TransactionStatus>().await {
-                Ok(content) => Ok(content),
-                Err(err) => Err(PaystackError::Transaction(err.to_string())),
+        match self.get_request(&url, None).await {
+            Ok(response) => match response.status() {
+                reqwest::StatusCode::OK => match response.json::<TransactionStatus>().await {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(PaystackError::Transaction(err.to_string())),
+                },
+                _ => {
+                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                }
             },
-            _ => Err(RequestNotSuccessful::new(response.status(), response.text().await?).into()),
+            Err(err) => Err(err),
         }
     }
 
@@ -151,21 +195,17 @@ impl PaystackClient {
     pub async fn charge_authorization(&self, charge: Charge) -> PaystackResult<TransactionStatus> {
         let url = format!("{}/transaction/charge_authorization", BASE_URL);
 
-        let response = self
-            .client
-            .post(url)
-            .bearer_auth(&self.api_key)
-            .header("Content-Type", "application/json")
-            .json(&charge)
-            .send()
-            .await?;
-
-        match response.status() {
-            reqwest::StatusCode::OK => match response.json::<TransactionStatus>().await {
-                Ok(content) => Ok(content),
-                Err(err) => Err(PaystackError::Charge(err.to_string())),
+        match self.post_request(&url, charge).await {
+            Ok(response) => match response.status() {
+                reqwest::StatusCode::OK => match response.json::<TransactionStatus>().await {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(PaystackError::Charge(err.to_string())),
+                },
+                _ => {
+                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                }
             },
-            _ => Err(RequestNotSuccessful::new(response.status(), response.text().await?).into()),
+            Err(err) => Err(err),
         }
     }
 
@@ -193,20 +233,17 @@ impl PaystackClient {
 
         let url = url.unwrap(); // Send the error back up the function
 
-        let response = self
-            .client
-            .get(url)
-            .bearer_auth(&self.api_key)
-            .header("Content-Type", "application/json")
-            .send()
-            .await?;
-
-        match response.status() {
-            reqwest::StatusCode::OK => match response.json::<TransactionTimeline>().await {
-                Ok(content) => Ok(content),
-                Err(err) => Err(PaystackError::Transaction(err.to_string())),
+        match self.get_request(&url, None).await {
+            Ok(response) => match response.status() {
+                reqwest::StatusCode::OK => match response.json::<TransactionTimeline>().await {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(PaystackError::Transaction(err.to_string())),
+                },
+                _ => {
+                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                }
             },
-            _ => Err(RequestNotSuccessful::new(response.status(), response.text().await?).into()),
+            Err(err) => Err(err),
         }
     }
 
@@ -219,20 +256,18 @@ impl PaystackClient {
     pub async fn total_transactions(&self) -> PaystackResult<TransactionTotalsResponse> {
         let url = format!("{}/transaction/totals", BASE_URL);
 
-        let response = self
-            .client
-            .get(url)
-            .bearer_auth(&self.api_key)
-            .header("Content-Type", "application/json")
-            .send()
-            .await?;
-
-        match response.status() {
-            reqwest::StatusCode::OK => match response.json::<TransactionTotalsResponse>().await {
-                Ok(content) => Ok(content),
-                Err(err) => Err(PaystackError::Transaction(err.to_string())),
+        match self.get_request(&url, None).await {
+            Ok(response) => match response.status() {
+                reqwest::StatusCode::OK => match response.json::<TransactionTotalsResponse>().await
+                {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(PaystackError::Transaction(err.to_string())),
+                },
+                _ => {
+                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                }
             },
-            _ => Err(RequestNotSuccessful::new(response.status(), response.text().await?).into()),
+            Err(err) => Err(err),
         }
     }
 
@@ -262,21 +297,18 @@ impl PaystackClient {
             ("settled", settled),
         ];
 
-        let response = self
-            .client
-            .get(url)
-            .query(&query)
-            .bearer_auth(&self.api_key)
-            .header("Content-Type", "application/json")
-            .send()
-            .await?;
-
-        match response.status() {
-            reqwest::StatusCode::OK => match response.json::<ExportTransactionResponse>().await {
-                Ok(content) => Ok(content),
-                Err(err) => Err(PaystackError::Transaction(err.to_string())),
+        match self.get_request(&url, Some(query)).await {
+            Ok(response) => match response.status() {
+                reqwest::StatusCode::OK => match response.json::<ExportTransactionResponse>().await
+                {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(PaystackError::Transaction(err.to_string())),
+                },
+                _ => {
+                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                }
             },
-            _ => Err(RequestNotSuccessful::new(response.status(), response.text().await?).into()),
+            Err(err) => Err(err),
         }
     }
 
@@ -291,21 +323,17 @@ impl PaystackClient {
     ) -> PaystackResult<TransactionStatus> {
         let url = format!("{}/transaction/partial_debit", BASE_URL);
 
-        let response = self
-            .client
-            .post(url)
-            .bearer_auth(&self.api_key)
-            .header("Content-Type", "application/json")
-            .json(&transaction_body)
-            .send()
-            .await?;
-
-        match response.status() {
-            reqwest::StatusCode::OK => match response.json::<TransactionStatus>().await {
-                Ok(content) => Ok(content),
-                Err(err) => Err(PaystackError::Transaction(err.to_string())),
+        match self.post_request(&url, transaction_body).await {
+            Ok(response) => match response.status() {
+                reqwest::StatusCode::OK => match response.json::<TransactionStatus>().await {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(PaystackError::Transaction(err.to_string())),
+                },
+                _ => {
+                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                }
             },
-            _ => Err(RequestNotSuccessful::new(response.status(), response.text().await?).into()),
+            Err(err) => Err(err),
         }
     }
 }

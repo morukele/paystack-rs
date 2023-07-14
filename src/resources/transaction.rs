@@ -3,8 +3,7 @@
 //! This file contains all the structs and definitions needed to
 //! create a transaction using the paystack API.
 
-use crate::error::PaystackError;
-use crate::{Channel, Currency, PaystackResult};
+use crate::{error::PaystackError, Channel, Currency, PaystackResult};
 use serde::Serialize;
 
 /// This struct is used to create a transaction body for creating a transaction using the Paystack API.
@@ -15,7 +14,7 @@ use serde::Serialize;
 ///     - amount: Amount should be in the smallest unit of the currency e.g. kobo if in NGN and cents if in USD
 ///     - email: Customer's email address
 ///     - currency (Optional): Currency in which amount should be charged (NGN, GHS, ZAR or USD). Defaults to your integration currency.
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, Default)]
 pub struct Transaction {
     amount: String,
     email: String,
@@ -94,7 +93,7 @@ impl TransactionBuilder {
 ///     - currency : Currency in which amount should be charged (NGN, GHS, ZAR or USD). Defaults to your integration currency.
 ///     - reference (Optional): Unique transaction reference.
 ///     - at_least: Minimum amount to charge
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Default)]
 pub struct PartialDebitTransaction {
     authorization_code: String,
     amount: String,
