@@ -24,7 +24,7 @@ async fn main() {
         .email("email@example.com")
         .amount("200000")
         .currency(Currency::NGN)
-        .channels(vec![Channel::Qr, Channel::Ussd, Channel::BankTransfer])
+        .channels(vec![Channel::Card])
         .build()
         .unwrap();
 
