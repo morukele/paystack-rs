@@ -10,6 +10,7 @@ Convenient **Async** rust bindings and types for the Paystack HTTP API aiming to
 The client current covers the follow section of the API:
 
 - Transactions
+- Transaction Splits
 
 ## Documentation
 

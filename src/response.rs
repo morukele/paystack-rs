@@ -49,8 +49,6 @@ pub struct TransactionStatusList {
     /// This contains the results of your request.
     /// In this case, it is a vector of objects.
     pub data: Vec<TransactionStatusData>,
-    /// This contains the meta data associated with the response.
-    pub meta: MetaData,
 }
 
 /// This struct represents the transaction timeline.
@@ -97,26 +95,6 @@ pub struct TranasctionHistory {
     pub message: String,
     /// Time action was taken in ms.
     pub time: u32,
-}
-
-/// This struct represents the mata data of the response.
-#[derive(Deserialize, Debug, Clone)]
-pub struct MetaData {
-    /// This is the total number of transactions that were performed by the customer.
-    pub total: Option<u32>,
-    /// This is the number of records skipped before the first record in the array returned.
-    pub skipped: Option<u32>,
-    /// This is the maximum number of records that will be returned per request.
-    /// This can be modified by passing a new value as a perPage query parameter. Default: 50
-    pub per_page: Option<u32>,
-    /// This is the current page being returned.
-    /// This is dependent on what page was requested using the page query parameter.
-    ///
-    /// `Default: 1`
-    pub page: Option<u32>,
-    /// This is how many pages in total are available for retrieval considering the maximum records per page specified.
-    /// For context, if there are 51 records and perPage is left at its default value, pageCount will have a value of 2.
-    pub page_count: Option<u32>,
 }
 
 /// This struct represents the data of the transaction status response.
@@ -208,7 +186,7 @@ pub struct Customer {
     pub international_format_phone: Option<String>,
 }
 
-/// Total amount received on your account
+/// Represents the response of the total amount received on your account
 #[derive(Debug, Deserialize)]
 pub struct TransactionTotalsResponse {
     /// This lets you know if your request was succesful or not.
@@ -245,7 +223,7 @@ pub struct VolumeByCurrency {
     pub amount: u32,
 }
 
-/// Result of the export transaction information.
+/// Represents the response of the export transaction.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ExportTransactionResponse {
     /// This lets you know if your request was succesful or not.
@@ -263,7 +241,7 @@ pub struct ExportTransactionData {
     pub path: String,
 }
 
-/// Result of the partial debit transaction.
+/// Represents the response of the partial debit transaction.
 #[derive(Debug, Deserialize)]
 pub struct PartialDebitTransactionResponse {
     /// This lets you know if your request was succesful or not.
@@ -272,4 +250,105 @@ pub struct PartialDebitTransactionResponse {
     pub message: String,
     /// This contains the results of your request.
     pub data: TransactionStatusData,
+}
+
+/// Represents the JSON response containing percentage split information.
+#[derive(Debug, Deserialize, Serialize)]
+pub struct TransactionSplitResponse {
+    /// The status of the JSON response.
+    pub status: bool,
+    /// The message associated with the JSON response.
+    pub message: String,
+    /// The percentage split data.
+    pub data: SplitData,
+}
+
+/// Represents the percentage split data received in the JSON response.
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SplitData {
+    /// The ID of the percentage split.
+    pub id: u32,
+    /// The name of the percentage split.
+    pub name: String,
+    /// The type of the percentage split.
+    #[serde(rename = "type")]
+    pub split_type: String,
+    /// The currency used for the percentage split.
+    pub currency: String,
+    /// The integration associated with the percentage split.
+    pub integration: u32,
+    /// The domain associated with the percentage split.
+    pub domain: String,
+    /// The split code of the percentage split.
+    pub split_code: String,
+    /// Indicates whether the percentage split is active or not.
+    pub active: Option<bool>,
+    /// The bearer type of the percentage split.
+    pub bearer_type: String,
+    /// The subaccount ID of the bearer associated with the percentage split.
+    pub bearer_subaccount: u32,
+    /// The creation timestamp of the percentage split.
+    pub created_at: String,
+    /// The last update timestamp of the percentage split.
+    pub updated_at: String,
+    /// The list of subaccounts involved in the percentage split.
+    pub subaccounts: Vec<SubaccountData>,
+    /// The total count of subaccounts in the percentage split.
+    pub total_subaccounts: u32,
+}
+
+/// Represents the data of th Subaccounts
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SubaccountData {
+    /// Sub account data
+    pub subaccount: SubaccountResponse,
+    /// Share of split assigned to this sub
+    pub share: u32,
+}
+
+/// Represents a subaccount in the percentage split data.
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SubaccountResponse {
+    /// The ID of the subaccount.
+    pub id: u32,
+    /// The code of the subaccount.
+    pub subaccount_code: String,
+    /// The name of the business associated with the subaccount.
+    pub business_name: String,
+    /// The description of the business associated with the subaccount.
+    pub description: String,
+    /// The name of the primary contact for the business, if available.
+    pub primary_contact_name: Option<String>,
+    /// The email of the primary contact for the business, if available.
+    pub primary_contact_email: Option<String>,
+    /// The phone number of the primary contact for the business, if available.
+    pub primary_contact_phone: Option<String>,
+    /// Additional metadata associated with the subaccount, if available.
+    pub metadata: Option<String>,
+    /// The percentage charge for transactions associated with the subaccount.
+    pub percentage_charge: u32,
+    /// The name of the settlement bank for the subaccount.
+    pub settlement_bank: String,
+    /// The account number of the subaccount.
+    pub account_number: String,
+}
+
+/// Represents the JSON response containing percentage split information.
+#[derive(Debug, Deserialize, Serialize)]
+pub struct TransactionSplitListResponse {
+    /// The status of the JSON response.
+    pub status: bool,
+    /// The message associated with the JSON response.
+    pub message: String,
+    /// The percentage split data.
+    pub data: Vec<SplitData>,
+}
+
+/// Represents the JSON response of the Paystack API when there is no data property
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ResponseWithoutData {
+    /// The status of the JSON response.
+    pub status: bool,
+    /// The message associated with the JSON response.
+    pub message: String,
 }

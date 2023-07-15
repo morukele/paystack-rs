@@ -1,6 +1,6 @@
 [package]
 name = "paystack-rs"
-version = "0.1.5"
+version = "0.1.6" # updated version number already
 description = "A unofficial client library for the Paystack API"
 authors = ["Oghenemarho Orukele <orukele.dev@gmail.com>"]
 edition = "2021"
