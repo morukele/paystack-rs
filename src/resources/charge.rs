@@ -4,6 +4,7 @@
 //! create charges usingt the Paystack API.
 
 use crate::{error, Channel, Currency, PaystackResult};
+use serde::Serialize;
 
 /// This struct is used to create a charge body for creating a Charge Authorization using the Paystack API.
 ///
@@ -24,7 +25,7 @@ use crate::{error, Channel, Currency, PaystackResult};
 ///     Ideally, you will need to use this if you are splitting in flat rates
 ///     (since subaccount creation only allows for percentage split). e.g. 7000 for a 70 naira
 
-#[derive(serde::Serialize, Debug)]
+#[derive(Serialize, Debug)]
 pub struct Charge {
     email: String,
     amount: String,
@@ -35,7 +36,29 @@ pub struct Charge {
     transaction_charge: Option<u32>,
 }
 
-/// Builder for the Charge object
+/// The `ChargeBuilder` struct provides a convenient way to construct a charge object
+/// with optional fields. Each field can be set individually using the builder's methods.
+/// Once all the desired fields are set, the `build` method can be called to create
+/// an instance of the `Charge` struct.
+///
+/// # Errors
+///
+/// Returns a `PaystackResult` with an `Err` variant if any required fields are missing,
+/// including email, amount, and authorization code. The error indicates which field is missing.
+///
+/// # Examples
+///
+/// ```rust
+/// use paystack::{Currency, Channel, ChargeBuilder};
+///
+/// let charge = ChargeBuilder::new()
+///         .email("user@example.com")
+///         .amount("10000")
+///         .authorization_code("AUTH_CODE")
+///         .currency(Currency::USD)
+///         .channel(vec![Channel::Card, Channel::Bank])
+///         .build();
+/// ```
 #[derive(Default, Clone)]
 pub struct ChargeBuilder {
     email: Option<String>,

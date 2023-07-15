@@ -21,6 +21,10 @@ pub enum PaystackError {
     #[error("Charge Error: {0}")]
     Charge(String),
 
+    /// Error associated with Transaction Split
+    #[error("Transaction Split Error: {0}")]
+    TransactionSplit(String),
+
     /// Error for unsuccessful request to the Paystack API
     #[error("Request failed: `{0}`")]
     RequestNotSuccessful(#[from] RequestNotSuccessful),
