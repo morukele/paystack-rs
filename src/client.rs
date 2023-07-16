@@ -5,10 +5,9 @@
 extern crate reqwest;
 extern crate serde_json;
 
-use std::fmt::Debug;
-
 use reqwest::{Response, StatusCode};
 use serde::Serialize;
+use std::fmt::Debug;
 
 use crate::{
     Charge, Currency, ExportTransactionResponse, PartialDebitTransaction, PaystackError,

@@ -19,6 +19,7 @@ pub struct Transaction {
     amount: String,
     email: String,
     currency: Option<Currency>,
+    channels: Option<Vec<Channel>>,
 }
 
 /// Builder for the Transaction object
@@ -78,6 +79,7 @@ impl TransactionBuilder {
             email,
             amount,
             currency: self.currency,
+            channels: self.channels,
         })
     }
 }
