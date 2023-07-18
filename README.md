@@ -5,7 +5,7 @@
 [![paystack-rs  on docs.rs](https://docs.rs/paystack-rs/badge.svg)](https://docs.rs/paystack-rs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Convenient **Async** rust bindings and types for the Paystack HTTP API aiming to support the entire API surface. Not the case? Please open an issue. I update the definitions on a weekly basis.
+Convenient **Async** rust bindings and types for the [Paystack](https://paystack.com) HTTP API aiming to support the entire API surface. Not the case? Please open an issue. I update the definitions on a weekly basis.
 
 The client currently covers the following section of the API:
 
