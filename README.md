@@ -7,10 +7,11 @@
 
 Convenient **Async** rust bindings and types for the Paystack HTTP API aiming to support the entire API surface. Not the case? Please open an issue. I update the definitions on a weekly basis.
 
-The client current covers the follow section of the API:
+The client currently covers the following section of the API:
 
-- Transactions
-- Transaction Splits
+- [x] Transaction
+- [x] Transaction Split
+
 
 ## Documentation
 
@@ -18,7 +19,7 @@ See the [Rust API docs](https://docs.rs/paystack-rs) or the [examples](/examples
 
 ## Installation
 
-`paystack-rs` uses the `reqwest` http client under the hood and the `tokio` runtime for async operations.
+`paystack-rs` uses the `reqwest` HTTP client under the hood and the `tokio` runtime for async operations.
 
 ```toml
 [dependencies]
@@ -29,7 +30,7 @@ You can also download the source code and use in your code base directly if you 
 
 ## Usage
 
-Initalizing an instance of the Paystack client and creating a transaction.
+Initializing an instance of the Paystack client and creating a transaction.
 
 ```rust
     use std::env;
