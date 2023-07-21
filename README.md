@@ -7,6 +7,8 @@
 
 Convenient **Async** rust bindings and types for the [Paystack](https://paystack.com) HTTP API aiming to support the entire API surface. Not the case? Please open an issue. I update the definitions on a weekly basis.
 
+The client aims to make recieving payments for African business or business with African clients building with Rust as hassle free as possible.
+
 The client currently covers the following section of the API:
 
 - [x] Transaction
@@ -22,7 +24,7 @@ See the [Rust API docs](https://docs.rs/paystack-rs) or the [examples](/examples
 
 ```toml
 [dependencies]
-paystack-rs = "0.1"
+paystack-rs = "0.X.X"
 ```
 
 You can also download the source code and use in your code base directly if you prefer.

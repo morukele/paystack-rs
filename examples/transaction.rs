@@ -24,7 +24,14 @@ async fn main() {
         .email("email@example.com")
         .amount("200000")
         .currency(Currency::NGN)
-        .channels(vec![Channel::Card])
+        .channels(vec![
+            Channel::Card,
+            Channel::Bank,
+            Channel::Ussd,
+            Channel::Qr,
+            Channel::BankTransfer,
+            Channel::ApplePay,
+        ])
         .build()
         .unwrap();
 
@@ -49,7 +56,7 @@ async fn main() {
 
     println!("Status: {}", transaction_status.data.status.unwrap());
     println!(
-        "Amount of {} {}",
+        "Amount of: {}; Currency: {}. NB: amount is in lowest denomination of specified curreny",
         transaction_status.data.amount.unwrap(),
         transaction_status.data.currency.unwrap()
     );

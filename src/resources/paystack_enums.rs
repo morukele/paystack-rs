@@ -94,7 +94,8 @@ impl fmt::Display for Currency {
 /// let bank_transfer_channel = Channel::BankTransfer;
 /// let apple_pay_channel = Channel::ApplePay;
 ///
-/// println!("{:?}", card_channel); // Prints: Card
+/// println!("{:?}", card_channel); // Prints: card
+/// println!("{:?}", mobile_money_channel); // Prints: mobile_money
 /// ```
 ///
 /// The example demonstrates the usage of the `Channel` enum from the Paystack crate,
@@ -121,7 +122,16 @@ pub enum Channel {
 
 impl fmt::Display for Channel {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}", self)
+        let lower_case = match self {
+            Channel::Card => "card",
+            Channel::Bank => "bank",
+            Channel::Ussd => "ussd",
+            Channel::Qr => "qr",
+            Channel::MobileMoney => "mobile_money",
+            Channel::BankTransfer => "bank_transfer",
+            Channel::ApplePay => "mobile_money",
+        };
+        write!(f, "{}", lower_case)
     }
 }
 
