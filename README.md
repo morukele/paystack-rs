@@ -12,7 +12,6 @@ The client currently covers the following section of the API:
 - [x] Transaction
 - [x] Transaction Split
 
-
 ## Documentation
 
 See the [Rust API docs](https://docs.rs/paystack-rs) or the [examples](/examples).
