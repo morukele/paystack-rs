@@ -13,6 +13,10 @@ pub enum PaystackError {
     #[error("Generic error: {0}")]
     Generic(String),
 
+    /// Error associated with failed API request
+    #[error("Failed Request Error: {0}")]
+    FailedRequest(String),
+
     /// Error associated with Transaction operation
     #[error("Transaction Error: {0}")]
     Transaction(String),

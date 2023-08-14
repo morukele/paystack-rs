@@ -30,7 +30,6 @@ async fn main() {
             Channel::Ussd,
             Channel::Qr,
             Channel::BankTransfer,
-            Channel::ApplePay,
         ])
         .build()
         .unwrap();

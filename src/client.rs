@@ -162,7 +162,7 @@ impl PaystackClient {
                     Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
                 }
             },
-            Err(err) => Err(err),
+            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
         }
     }
 
@@ -183,7 +183,7 @@ impl PaystackClient {
                     Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
                 }
             },
-            Err(err) => Err(err),
+            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
         }
     }
 
@@ -214,7 +214,7 @@ impl PaystackClient {
                     Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
                 }
             },
-            Err(err) => Err(err),
+            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
         }
     }
 
@@ -237,7 +237,7 @@ impl PaystackClient {
                     Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
                 }
             },
-            Err(err) => Err(err),
+            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
         }
     }
 
@@ -257,7 +257,7 @@ impl PaystackClient {
                     Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
                 }
             },
-            Err(err) => Err(err),
+            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
         }
     }
 
@@ -295,7 +295,7 @@ impl PaystackClient {
                     Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
                 }
             },
-            Err(err) => Err(err),
+            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
         }
     }
 
@@ -319,7 +319,7 @@ impl PaystackClient {
                     Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
                 }
             },
-            Err(err) => Err(err),
+            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
         }
     }
 
@@ -360,7 +360,7 @@ impl PaystackClient {
                     Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
                 }
             },
-            Err(err) => Err(err),
+            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
         }
     }
 
@@ -385,7 +385,7 @@ impl PaystackClient {
                     Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
                 }
             },
-            Err(err) => Err(err),
+            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
         }
     }
 
@@ -410,7 +410,7 @@ impl PaystackClient {
                     Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
                 }
             },
-            Err(err) => Err(err),
+            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
         }
     }
 
@@ -449,7 +449,7 @@ impl PaystackClient {
                     Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
                 }
             },
-            Err(err) => Err(err),
+            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
         }
     }
 
@@ -475,7 +475,7 @@ impl PaystackClient {
                     Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
                 }
             },
-            Err(err) => Err(err),
+            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
         }
     }
 
@@ -502,7 +502,7 @@ impl PaystackClient {
                 },
                 _ => Err(RequestNotSuccessful::new(respone.status(), respone.text().await?).into()),
             },
-            Err(err) => Err(err),
+            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
         }
     }
 
@@ -530,7 +530,7 @@ impl PaystackClient {
                     Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
                 }
             },
-            Err(err) => Err(err),
+            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
         }
     }
 
@@ -556,7 +556,7 @@ impl PaystackClient {
                     Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
                 }
             },
-            Err(err) => Err(err),
+            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
         }
     }
 }

@@ -36,7 +36,7 @@ Initializing an instance of the Paystack client and creating a transaction.
 ```rust
     use std::env;
     use dotenv::dotenv;
-    use paystack::{PaystackClient, TransactionBuilder, PaystackError};
+    use paystack::{Channel, Currency, PaystackClient, TransactionBuilder, PaystackError};
 
     #[tokio::main]
     async fn main() -> Result<(), PaystackError>{

@@ -60,6 +60,7 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_marchent
         Ok(_) => (),
         Err(e) => {
             let res = e.to_string();
+            println!("{:#?}", res);
             assert!(res.contains("StatusCode: 403 Forbidden"));
             assert!(res.contains("Currency not supported by merchant"))
         }
