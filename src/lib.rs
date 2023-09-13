@@ -28,7 +28,7 @@
 //!     async fn main() -> Result<(), PaystackError>{
 //!         dotenv().ok();
 //!         let api_key = env::var("PAYSTACK_API_KEY").unwrap();
-//!         let client = PaystackClient::new(api_key);
+//!         let client = PaystackClient::new(&api_key);
 //!
 //!         let body = TransactionBuilder::new()
 //!             .email("email@example.com")

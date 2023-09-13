@@ -88,7 +88,7 @@ async fn valid_transaction_is_verified() {
         .expect("unable to initiate transaction");
 
     let response = client
-        .verify_transaction(content.data.reference)
+        .verify_transaction(&content.data.reference)
         .await
         .expect("unable to verify transaction");
 

@@ -31,7 +31,7 @@ impl PaystackClient {
     ///
     /// It takes the following parameters:
     ///     - key: Paystack API key.
-    pub fn new(key: impl Into<String>) -> Self {
+    pub fn new(key: &String) -> Self {
         Self {
             client: reqwest::Client::new(),
             api_key: key.into(),
@@ -170,7 +170,10 @@ impl PaystackClient {
     ///
     /// It takes the following parameters:
     ///     - reference: The transaction reference used to intiate the transaction
-    pub async fn verify_transaction(&self, reference: String) -> PaystackResult<TransactionStatus> {
+    pub async fn verify_transaction(
+        &self,
+        reference: &String,
+    ) -> PaystackResult<TransactionStatus> {
         let url = format!("{}/transaction/verify/{}", BASE_URL, reference);
 
         match self.get_request(&url, None).await {
@@ -541,8 +544,8 @@ impl PaystackClient {
     ///     - subaccount: subaccount code to remove
     pub async fn remove_subaccount_from_transaction_split(
         &self,
-        split_id: String,
-        subaccount: String,
+        split_id: &String,
+        subaccount: &String,
     ) -> PaystackResult<ResponseWithoutData> {
         let url = format!("{}/split/{}/subaccount/remove", BASE_URL, split_id);
 

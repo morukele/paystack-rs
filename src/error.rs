@@ -8,6 +8,7 @@ use reqwest::StatusCode;
 
 /// Custom Error for the Paystack API
 #[derive(thiserror::Error, Debug)]
+#[non_exhaustive]
 pub enum PaystackError {
     /// Generic error, not used frequently
     #[error("Generic error: {0}")]

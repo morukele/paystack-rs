@@ -18,7 +18,7 @@ async fn main() {
     dotenv().ok();
 
     let api_key = env::var("PAYSTACK_API_KEY").unwrap();
-    let client = PaystackClient::new(api_key);
+    let client = PaystackClient::new(&api_key);
 
     let body = TransactionBuilder::new()
         .email("email@example.com")
@@ -49,7 +49,7 @@ async fn main() {
     // Verify transaction
     // Transaction reference can be a string or pulled out from the transaction response
     let transaction_status = client
-        .verify_transaction(transaction.data.reference.to_string())
+        .verify_transaction(&transaction.data.reference.to_string())
         .await
         .expect("Unable to get transaction status");
 
