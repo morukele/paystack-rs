@@ -7,12 +7,29 @@
 
 Convenient **Async** rust bindings and types for the [Paystack](https://paystack.com) HTTP API aiming to support the entire API surface. Not the case? Please open an issue. I update the definitions on a weekly basis.
 
-The client aims to make recieving payments for African business or business with African clients building with Rust as hassle free as possible.
+The client aims to make recieving payments for African business or business with African clients building with Rust as hassle-free as possible.
 
-The client currently covers the following section of the API:
+The client currently covers the following section of the API, and the sections to be implemented in order are left unchecked:
 
 - [x] Transaction
 - [x] Transaction Split
+- [ ] Terminal
+- [ ] Customers
+- [ ] Dedicated Virtual Account
+- [ ] Apple Pay
+- [ ] Subaccounts
+- [ ] Plans
+- [ ] Subscriptions
+- [ ] Transfer Recipients
+- [ ] Transfers
+- [ ] Transfers Control
+- [ ] Bulk Charges
+- [ ] Integration
+- [ ] Charge
+- [ ] Disputes
+- [ ] Refunds
+- [ ] Verifications
+- [ ] Miscellaneous
 
 ## Documentation
 

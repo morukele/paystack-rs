@@ -60,8 +60,8 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant
         Ok(_) => (),
         Err(e) => {
             let res = e.to_string();
-            println!("{:#?}", res);
-            assert!(res.contains("StatusCode: 403 Forbidden"));
+            // dbg!("{:#?}", &res);
+            assert!(res.contains("Status Code: 403 Forbidden"));
             assert!(res.contains("Currency not supported by merchant"))
         }
     }
@@ -292,7 +292,7 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status(
         }
         Err(error) => {
             let error = error.to_string();
-            assert!(error.contains("StatusCode: 400 Bad Request"));
+            assert!(error.contains("Status Code: 400 Bad Request"));
             assert!(error.contains("merchant is not enabled for Partial Debit"));
         }
     }

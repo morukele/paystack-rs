@@ -2,8 +2,6 @@
 //! ========
 //! This file contains the structs and definitions of the errors in this crate.
 
-use std::fmt::Display;
-use reqwest::StatusCode;
 
 /// Custom Error for the Paystack API
 #[derive(thiserror::Error, Debug)]
@@ -30,7 +28,7 @@ pub enum Error {
     TransactionSplit(String),
 
     /// Error for unsuccessful request to the Paystack API
-    #[error("Request failed - Status Code:`{0}` Body: `{1}`")]
+    #[error("Request failed - Status Code: {0} Body: {1}")]
     RequestNotSuccessful(String, String),
 
     /// Error associated with failed parsing of response from the Paystack API

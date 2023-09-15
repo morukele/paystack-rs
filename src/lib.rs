@@ -17,7 +17,7 @@
 //!
 //! ## Usage
 //!
-//! Initalizing an instance of the Paystack client and creating a transaction.
+//! Initializing an instance of the Paystack client and creating a transaction.
 //!
 //! ```rust
 //!     use std::env;
@@ -59,12 +59,14 @@ mod client;
 mod error;
 mod resources;
 mod response;
+mod utils;
 
 // public re-exports
 pub use client::*;
 pub use error::*;
 pub use resources::*;
 pub use response::*;
+pub use utils::*;
 
 /// Custom result type for the Paystack API
 pub type PaystackResult<T> = std::result::Result<T, error::Error>;
