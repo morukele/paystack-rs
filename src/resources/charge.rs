@@ -1,7 +1,7 @@
 //! Charge
 //! ===========
 //! This file contains all the structs and definitions needed to
-//! create charges usingt the Paystack API.
+//! create charges using the Paystack API.
 
 use crate::{error, Channel, Currency, PaystackResult};
 use serde::Serialize;
@@ -15,7 +15,7 @@ use serde::Serialize;
 ///     - email: Customer's email address
 ///     - currency (Optional): Currency in which amount should be charged (NGN, GHS, ZAR or USD). Defaults to your integration currency.
 ///       An enum is used for type safety.
-///     - authorizatuin_code: A valid authorization code to charge
+///     - authorization_code: A valid authorization code to charge
 ///     - reference (Optional): Unique transaction reference. Only -, ., = and alphanumeric characters allowed.
 ///     - channel (Optional): Send us 'card' or 'bank' or 'card','bank' as an array to specify what options to show the user paying.
 ///       An enum is used to implement this for type safety
@@ -121,17 +121,17 @@ impl ChargeBuilder {
     /// Build the Charge object
     pub fn build(self) -> PaystackResult<Charge> {
         let Some(email) = self.email else {
-            return Err(error::PaystackError::Charge("email is required for creating a charge".to_string()))
+            return Err(error::Error::Charge("email is required for creating a charge".to_string()))
         };
 
         let Some(amount) = self.amount else {
-            return Err(error::PaystackError::Charge(
+            return Err(error::Error::Charge(
                 "amount is required for creating charge".to_string()
             ))
         };
 
         let Some(authorization_code) = self.authorization_code else {
-            return Err(error::PaystackError::Charge(
+            return Err(error::Error::Charge(
                 "authorization code is required for creating a charge".to_string()
             ))
         };

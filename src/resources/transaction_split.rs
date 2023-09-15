@@ -3,7 +3,7 @@
 //! This file contains the structs and definitions need to create
 //! transaction splits for the Paystack API.
 
-use crate::{error::PaystackError, BearerType, Currency, PaystackResult, SplitType};
+use crate::{error::Error, BearerType, Currency, PaystackResult, SplitType};
 use serde::Serialize;
 
 /// This struct is used to create a split payment on your integration.
@@ -139,19 +139,19 @@ impl PercentageSplitBuilder {
     pub fn build(self) -> PaystackResult<TransactionSplit> {
         let Some(name) = self.name else {
             return Err(
-                PaystackError::TransactionSplit("name is required to create a transaction split".to_string())
+                Error::TransactionSplit("name is required to create a transaction split".to_string())
             )
         };
 
         let Some(split_type) = self.split_type else {
             return Err(
-                PaystackError::TransactionSplit("split type is required to create a transaction split".to_string())
+                Error::TransactionSplit("split type is required to create a transaction split".to_string())
             )
         };
 
         let Some(currency) = self.currency else {
             return Err(
-                PaystackError::Transaction(
+                Error::Transaction(
                     "currency is required to create a transaction split".to_string()
                 )
             )
@@ -159,7 +159,7 @@ impl PercentageSplitBuilder {
 
         let Some(subaccounts) = self.subaccounts else {
             return Err(
-                PaystackError::TransactionSplit(
+                Error::TransactionSplit(
                     "sub accounts are required to create a transaction split".to_string()
                 )
             )
@@ -167,7 +167,7 @@ impl PercentageSplitBuilder {
 
         let Some(bearer_type) = self.bearer_type else {
             return Err(
-                PaystackError::TransactionSplit(
+                Error::TransactionSplit(
                     "bearer type is required to create a transaction split".to_string()
                 )
             )
@@ -175,7 +175,7 @@ impl PercentageSplitBuilder {
 
         let Some(bearer_subaccount) = self.bearer_subaccount else {
             return Err(
-                PaystackError::TransactionSplit(
+                Error::TransactionSplit(
                     "bearer subaccount is required to create a transaction split".to_string()
                 )
             )

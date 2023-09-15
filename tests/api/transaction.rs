@@ -29,7 +29,7 @@ async fn initialize_transaction_valid() {
     let res = client
         .initialize_transaction(body)
         .await
-        .expect("Unable to initalize transaction");
+        .expect("Unable to initialize transaction");
 
     // println!("{:#?}", res);
 
@@ -39,7 +39,7 @@ async fn initialize_transaction_valid() {
 }
 
 #[tokio::test]
-async fn initialize_transaction_fails_when_currency_is_not_supported_by_marchent() {
+async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant() {
     // Arrange
     let client = get_paystack_client();
     let mut rng = rand::thread_rng();
@@ -141,7 +141,7 @@ async fn fetch_transaction_succeeds() {
     let response = client
         .list_transactions(Some(1), Some(Status::Success))
         .await
-        .expect("unbale to get list of integrated transactions");
+        .expect("unable to get list of integrated transactions");
 
     let fetched_transaction = client
         .fetch_transactions(response.data[0].id.unwrap())
@@ -256,7 +256,7 @@ async fn export_transaction_succeeds_with_default_parameters() {
 }
 
 #[tokio::test]
-async fn partial_debit_transaction_passes_or_fails_depending_on_marchent_status() {
+async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status() {
     // Arrange
     let client = get_paystack_client();
 
@@ -264,7 +264,7 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_marchent_status(
     let transaction = client
         .list_transactions(Some(1), Some(Status::Success))
         .await
-        .expect("Ubale to get transaction list");
+        .expect("Unable to get transaction list");
 
     let transaction = transaction.data[0].clone();
     let body = PartialDebitTransactionBuilder::new()

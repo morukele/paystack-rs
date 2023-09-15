@@ -42,7 +42,7 @@ pub enum Currency {
     /// Nigerian Naira
     #[default]
     NGN,
-    /// Ghanian Cedis
+    /// Ghanaian Cedis
     GHS,
     /// American Dollar
     USD,
@@ -165,7 +165,7 @@ impl fmt::Display for Channel {
 pub enum Status {
     /// A successful transaction.
     Success,
-    /// An abadoned transaction.
+    /// An abandoned transaction.
     Abandoned,
     /// A failed transaction.
     Failed,

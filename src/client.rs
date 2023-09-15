@@ -8,10 +8,9 @@ extern crate serde_json;
 use reqwest::{Response, StatusCode};
 use serde::Serialize;
 use std::fmt::Debug;
-
 use crate::{
-    Charge, Currency, ExportTransactionResponse, PartialDebitTransaction, PaystackError,
-    PaystackResult, RequestNotSuccessful, ResponseWithoutData, Status, Subaccount, Transaction,
+    Charge, Currency, ExportTransactionResponse, PartialDebitTransaction, Error,
+    PaystackResult, ResponseWithoutData, Status, Subaccount, Transaction,
     TransactionResponse, TransactionSplit, TransactionSplitListResponse, TransactionSplitResponse,
     TransactionStatus, TransactionStatusList, TransactionTimeline, TransactionTotalsResponse,
 };
@@ -57,11 +56,9 @@ impl PaystackClient {
         match response {
             Ok(response) => match response.status() {
                 StatusCode::OK => Ok(response),
-                _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
-                }
+                _ => Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
             },
-            Err(err) => Err(PaystackError::Generic(err.to_string())),
+            Err(err) => Err(Error::Generic(err.to_string())),
         }
     }
 
@@ -84,10 +81,10 @@ impl PaystackClient {
             Ok(response) => match response.status() {
                 StatusCode::OK => Ok(response),
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::Generic(err.to_string())),
+            Err(err) => Err(Error::Generic(err.to_string())),
         }
     }
 
@@ -110,10 +107,10 @@ impl PaystackClient {
             Ok(response) => match response.status() {
                 StatusCode::OK => Ok(response),
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::Generic(err.to_string())),
+            Err(err) => Err(Error::Generic(err.to_string())),
         }
     }
 
@@ -136,14 +133,14 @@ impl PaystackClient {
             Ok(response) => match response.status() {
                 StatusCode::OK => Ok(response),
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::Generic(err.to_string())),
+            Err(err) => Err(Error::Generic(err.to_string())),
         }
     }
 
-    /// This method initalizes a new transaction using the Paystack API.
+    /// This method initializes a new transaction using the Paystack API.
     ///
     /// It takes a Transaction type as its parameter
     pub async fn initialize_transaction(
@@ -154,22 +151,22 @@ impl PaystackClient {
 
         match self.post_request(&url, transaction_body).await {
             Ok(response) => match response.status() {
-                reqwest::StatusCode::OK => match response.json::<TransactionResponse>().await {
+                StatusCode::OK => match response.json::<TransactionResponse>().await {
                     Ok(content) => Ok(content),
-                    Err(err) => Err(PaystackError::Transaction(err.to_string())),
+                    Err(err) => Err(Error::Transaction(err.to_string())),
                 },
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
     }
 
     /// This method confirms the status of a transaction.
     ///
     /// It takes the following parameters:
-    ///     - reference: The transaction reference used to intiate the transaction
+    ///     - reference: The transaction reference used to initiate the transaction
     pub async fn verify_transaction(
         &self,
         reference: &String,
@@ -178,15 +175,15 @@ impl PaystackClient {
 
         match self.get_request(&url, None).await {
             Ok(response) => match response.status() {
-                reqwest::StatusCode::OK => match response.json::<TransactionStatus>().await {
+                StatusCode::OK => match response.json::<TransactionStatus>().await {
                     Ok(content) => Ok(content),
-                    Err(err) => Err(PaystackError::Transaction(err.to_string())),
+                    Err(err) => Err(Error::Transaction(err.to_string())),
                 },
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
     }
 
@@ -209,15 +206,15 @@ impl PaystackClient {
 
         match self.get_request(&url, Some(query)).await {
             Ok(response) => match response.status() {
-                reqwest::StatusCode::OK => match response.json::<TransactionStatusList>().await {
+                StatusCode::OK => match response.json::<TransactionStatusList>().await {
                     Ok(content) => Ok(content),
-                    Err(err) => Err(PaystackError::Transaction(err.to_string())),
+                    Err(err) => Err(Error::Transaction(err.to_string())),
                 },
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
     }
 
@@ -232,15 +229,15 @@ impl PaystackClient {
 
         match self.get_request(&url, None).await {
             Ok(response) => match response.status() {
-                reqwest::StatusCode::OK => match response.json::<TransactionStatus>().await {
+                StatusCode::OK => match response.json::<TransactionStatus>().await {
                     Ok(content) => Ok(content),
-                    Err(err) => Err(PaystackError::Transaction(err.to_string())),
+                    Err(err) => Err(Error::Transaction(err.to_string())),
                 },
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
     }
 
@@ -252,15 +249,15 @@ impl PaystackClient {
 
         match self.post_request(&url, charge).await {
             Ok(response) => match response.status() {
-                reqwest::StatusCode::OK => match response.json::<TransactionStatus>().await {
+                StatusCode::OK => match response.json::<TransactionStatus>().await {
                     Ok(content) => Ok(content),
-                    Err(err) => Err(PaystackError::Charge(err.to_string())),
+                    Err(err) => Err(Error::Charge(err.to_string())),
                 },
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
     }
 
@@ -273,14 +270,14 @@ impl PaystackClient {
         reference: Option<String>,
     ) -> PaystackResult<TransactionTimeline> {
         // This is a hacky implementation to ensure that the transaction reference or id is not empty.
-        // If they are empyt, a url without them as parameter is created.
+        // If they are empty, a url without them as parameter is created.
         let url: PaystackResult<String> = match (id, reference) {
             (Some(id), None) => Ok(format!("{}/transaction/timeline/{}", BASE_URL, id)),
             (None, Some(reference)) => {
                 Ok(format!("{}/transaction/timeline/{}", BASE_URL, &reference))
             }
             _ => {
-                return Err(PaystackError::Transaction(
+                return Err(Error::Transaction(
                     "Transaction Id or Reference is need to view transaction timeline".to_string(),
                 ))
             }
@@ -290,22 +287,22 @@ impl PaystackClient {
 
         match self.get_request(&url, None).await {
             Ok(response) => match response.status() {
-                reqwest::StatusCode::OK => match response.json::<TransactionTimeline>().await {
+                StatusCode::OK => match response.json::<TransactionTimeline>().await {
                     Ok(content) => Ok(content),
-                    Err(err) => Err(PaystackError::Transaction(err.to_string())),
+                    Err(err) => Err(Error::Transaction(err.to_string())),
                 },
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
     }
 
     /// Total amount received on your account.
     ///
     /// This route normally takes a perPage or page query,
-    /// However in this case it is ignrored.
+    /// However in this case it is ignored.
     /// If you need it in your work please open an issue
     /// and it will be implemented.
     pub async fn total_transactions(&self) -> PaystackResult<TransactionTotalsResponse> {
@@ -313,16 +310,16 @@ impl PaystackClient {
 
         match self.get_request(&url, None).await {
             Ok(response) => match response.status() {
-                reqwest::StatusCode::OK => match response.json::<TransactionTotalsResponse>().await
+                StatusCode::OK => match response.json::<TransactionTotalsResponse>().await
                 {
                     Ok(content) => Ok(content),
-                    Err(err) => Err(PaystackError::Transaction(err.to_string())),
+                    Err(err) => Err(Error::Transaction(err.to_string())),
                 },
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
     }
 
@@ -354,16 +351,16 @@ impl PaystackClient {
 
         match self.get_request(&url, Some(query)).await {
             Ok(response) => match response.status() {
-                reqwest::StatusCode::OK => match response.json::<ExportTransactionResponse>().await
+                StatusCode::OK => match response.json::<ExportTransactionResponse>().await
                 {
                     Ok(content) => Ok(content),
-                    Err(err) => Err(PaystackError::Transaction(err.to_string())),
+                    Err(err) => Err(Error::Transaction(err.to_string())),
                 },
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
     }
 
@@ -380,15 +377,15 @@ impl PaystackClient {
 
         match self.post_request(&url, transaction_body).await {
             Ok(response) => match response.status() {
-                reqwest::StatusCode::OK => match response.json::<TransactionStatus>().await {
+                StatusCode::OK => match response.json::<TransactionStatus>().await {
                     Ok(content) => Ok(content),
-                    Err(err) => Err(PaystackError::Transaction(err.to_string())),
+                    Err(err) => Err(Error::Transaction(err.to_string())),
                 },
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
     }
 
@@ -403,17 +400,17 @@ impl PaystackClient {
 
         match self.post_request(&url, split_body).await {
             Ok(response) => match response.status() {
-                reqwest::StatusCode::OK => {
+                StatusCode::OK => {
                     match response.json::<TransactionSplitResponse>().await {
                         Ok(content) => Ok(content),
-                        Err(err) => Err(PaystackError::TransactionSplit(err.to_string())),
+                        Err(err) => Err(Error::TransactionSplit(err.to_string())),
                     }
                 }
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
     }
 
@@ -442,17 +439,17 @@ impl PaystackClient {
 
         match self.get_request(&url, Some(query)).await {
             Ok(response) => match response.status() {
-                reqwest::StatusCode::OK => {
+                StatusCode::OK => {
                     match response.json::<TransactionSplitListResponse>().await {
                         Ok(content) => Ok(content),
-                        Err(err) => Err(PaystackError::TransactionSplit(err.to_string())),
+                        Err(err) => Err(Error::TransactionSplit(err.to_string())),
                     }
                 }
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
     }
 
@@ -468,17 +465,17 @@ impl PaystackClient {
 
         match self.get_request(&url, None).await {
             Ok(response) => match response.status() {
-                reqwest::StatusCode::OK => {
+                StatusCode::OK => {
                     match response.json::<TransactionSplitResponse>().await {
                         Ok(content) => Ok(content),
-                        Err(err) => Err(PaystackError::TransactionSplit(err.to_string())),
+                        Err(err) => Err(Error::TransactionSplit(err.to_string())),
                     }
                 }
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
     }
 
@@ -498,14 +495,14 @@ impl PaystackClient {
         let url = format!("{}/split/{}", BASE_URL, split_id);
 
         match self.put_request(&url, body).await {
-            Ok(respone) => match respone.status() {
-                reqwest::StatusCode::OK => match respone.json::<TransactionSplitResponse>().await {
+            Ok(response) => match response.status() {
+                StatusCode::OK => match response.json::<TransactionSplitResponse>().await {
                     Ok(content) => Ok(content),
-                    Err(err) => Err(PaystackError::TransactionSplit(err.to_string())),
+                    Err(err) => Err(Error::TransactionSplit(err.to_string())),
                 },
-                _ => Err(RequestNotSuccessful::new(respone.status(), respone.text().await?).into()),
+                _ => Err(Error::RequestNotSuccessful(response.status().to_string(), response.text())),
             },
-            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
     }
 
@@ -513,7 +510,7 @@ impl PaystackClient {
     ///
     /// Takes in the following parameters:
     ///     - `split_id`: Id of the transaction split to update.
-    ///     - `body`: Subacount to add to the transaction split.
+    ///     - `body`: Subaccount to add to the transaction split.
     pub async fn add_or_update_subaccount_split(
         &self,
         split_id: String,
@@ -523,17 +520,17 @@ impl PaystackClient {
 
         match self.post_request(&url, body).await {
             Ok(response) => match response.status() {
-                reqwest::StatusCode::OK => {
+                StatusCode::OK => {
                     match response.json::<TransactionSplitResponse>().await {
                         Ok(content) => Ok(content),
-                        Err(err) => Err(PaystackError::TransactionSplit(err.to_string())),
+                        Err(err) => Err(Error::TransactionSplit(err.to_string())),
                     }
                 }
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
     }
 
@@ -551,15 +548,15 @@ impl PaystackClient {
 
         match self.post_request(&url, subaccount).await {
             Ok(response) => match response.status() {
-                reqwest::StatusCode::OK => match response.json::<ResponseWithoutData>().await {
+                StatusCode::OK => match response.json::<ResponseWithoutData>().await {
                     Ok(content) => Ok(content),
-                    Err(err) => Err(PaystackError::TransactionSplit(err.to_string())),
+                    Err(err) => Err(Error::TransactionSplit(err.to_string())),
                 },
                 _ => {
-                    Err(RequestNotSuccessful::new(response.status(), response.text().await?).into())
+                    Err(Error::RequestNotSuccessful(response.status().to_string(), response.text()))
                 }
             },
-            Err(err) => Err(PaystackError::FailedRequest(err.to_string())),
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
     }
 }

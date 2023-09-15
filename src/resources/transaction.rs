@@ -3,7 +3,7 @@
 //! This file contains all the structs and definitions needed to
 //! create a transaction using the paystack API.
 
-use crate::{error::PaystackError, Channel, Currency, PaystackResult};
+use crate::{error::Error, Channel, Currency, PaystackResult};
 use serde::Serialize;
 
 /// This struct is used to create a transaction body for creating a transaction using the Paystack API.
@@ -65,13 +65,13 @@ impl TransactionBuilder {
     pub fn build(self) -> PaystackResult<Transaction> {
         let Some(email) = self.email else {
             return Err(
-                PaystackError::Transaction("email is required for transaction".to_string())
+                Error::Transaction("email is required for transaction".to_string())
             )
         };
 
         let Some(amount) = self.amount else {
             return Err(
-                PaystackError::Transaction("amount is required for transaction".to_string())
+                Error::Transaction("amount is required for transaction".to_string())
             )
         };
 
@@ -162,25 +162,25 @@ impl PartialDebitTransactionBuilder {
     pub fn build(self) -> PaystackResult<PartialDebitTransaction> {
         let Some(authorization_code) = self.authorization_code else {
             return Err(
-                PaystackError::Transaction("authorization code is required for partial debit transaction".to_string())
+                Error::Transaction("authorization code is required for partial debit transaction".to_string())
             )
         };
 
         let Some(email) = self.email else {
             return Err(
-                PaystackError::Transaction("email is required for transaction".to_string())
+                Error::Transaction("email is required for transaction".to_string())
             )
         };
 
         let Some(currency) = self.currency else {
             return Err(
-                PaystackError::Transaction("currency is required for transaction".to_string())
+                Error::Transaction("currency is required for transaction".to_string())
             )
         };
 
         let Some(amount) = self.amount else {
             return Err(
-                PaystackError::Transaction("amount is required for transaction".to_string())
+                Error::Transaction("amount is required for transaction".to_string())
             )
         };
 

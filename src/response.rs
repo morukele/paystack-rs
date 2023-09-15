@@ -5,10 +5,10 @@
 
 use serde::{Deserialize, Serialize};
 
-/// This struct represents the response of the Paystack transaction initalization.
+/// This struct represents the response of the Paystack transaction initialization.
 #[derive(Deserialize, Debug, Clone)]
 pub struct TransactionResponse {
-    /// This lets you know if your request was succesful or not.
+    /// This lets you know if your request was successful or not.
     pub status: bool,
     /// This is a summary of the response and its status.
     pub message: String,
@@ -19,7 +19,7 @@ pub struct TransactionResponse {
 /// This struct represents the data of the transaction response.
 #[derive(Deserialize, Debug, Clone)]
 pub struct TransactionResponseData {
-    /// Generated URL to authroize the transaction.
+    /// Generated URL to authorize the transaction.
     pub authorization_url: String,
     /// Access code of the transaction.
     pub access_code: String,
@@ -30,7 +30,7 @@ pub struct TransactionResponseData {
 /// This struct represents the transaction status response.
 #[derive(Deserialize, Debug, Clone)]
 pub struct TransactionStatus {
-    /// This lets you know if your request was succesful or not.
+    /// This lets you know if your request was successful or not.
     pub status: bool,
     /// This is a summary of the response and its status.
     pub message: String,
@@ -42,7 +42,7 @@ pub struct TransactionStatus {
 /// This struct represents a list of transaction status.
 #[derive(Deserialize, Debug, Clone)]
 pub struct TransactionStatusList {
-    /// This lets you know if your request was succesful or not.
+    /// This lets you know if your request was successful or not.
     pub status: bool,
     /// This is a summary of the response and its status.
     pub message: String,
@@ -73,7 +73,7 @@ pub struct TransactionTimelineData {
     pub authentication: Option<String>,
     /// Number of errors for the transaction.
     pub errors: Option<u32>,
-    /// Sucess status of the transaction.
+    /// Success status of the transaction.
     pub success: Option<bool>,
     /// If transaction was carried out with mobile.
     pub mobile: Option<bool>,
@@ -81,13 +81,13 @@ pub struct TransactionTimelineData {
     pub input: Option<String>,
     /// Transaction channel.
     pub channel: Option<String>,
-    /// Trasnaction history.
-    pub history: Option<Vec<TranasctionHistory>>,
+    /// Transaction history.
+    pub history: Option<Vec<TransactionHistory>>,
 }
 
 /// This struct represents the transaction history data
 #[derive(Deserialize, Debug, Clone)]
-pub struct TranasctionHistory {
+pub struct TransactionHistory {
     /// Transaction action.
     #[serde(rename = "type")]
     pub action_type: String,
@@ -102,7 +102,7 @@ pub struct TranasctionHistory {
 pub struct TransactionStatusData {
     /// Id of the Transaction
     pub id: Option<u32>,
-    /// Status of the Transaction. It can be `success`, `abadoned` or `failed`
+    /// Status of the Transaction. It can be `success`, `abandoned` or `failed`
     pub status: Option<String>,
     /// Reference of the Transaction
     pub reference: Option<String>,
@@ -110,7 +110,7 @@ pub struct TransactionStatusData {
     pub amount: Option<u32>,
     /// Message from the transaction.
     pub message: Option<String>,
-    /// Response from the paymeent gateway.
+    /// Response from the payment gateway.
     pub gateway_response: Option<String>,
     /// Time the Transaction was completed.
     pub paid_at: Option<String>,
@@ -124,7 +124,7 @@ pub struct TransactionStatusData {
     pub ip_address: Option<String>,
     /// Meta data associated with the Transaction.
     pub metadata: Option<String>,
-    /// Transaction fees to overide the default fees specified in the integration.
+    /// Transaction fees to override the default fees specified in the integration.
     pub fees: Option<i32>,
     /// Transaction customer data.
     pub customer: Option<Customer>,
@@ -143,7 +143,7 @@ pub struct Authorization {
     pub last4: Option<String>,
     /// Authorized card expiry month.
     pub exp_month: Option<String>,
-    /// Authorized card expirey year.
+    /// Authorized card expiry year.
     pub exp_year: Option<String>,
     /// Authorization channel. It could be `card` or `bank`.
     pub channel: Option<String>,
@@ -151,11 +151,11 @@ pub struct Authorization {
     pub card_type: Option<String>,
     /// Name of bank associated with the Authorization.
     pub bank: Option<String>,
-    /// Country code of the Authroization.
+    /// Country code of the Authorization.
     pub country_code: Option<String>,
-    /// Brand of of the Authroization if it is a card.
+    /// Brand of of the Authorization if it is a card.
     pub brand: Option<String>,
-    /// Specifies if the Authroization is reuseable.
+    /// Specifies if the Authorization is reusable.
     pub reusable: Option<bool>,
     /// Signature of the Authorization.
     pub signature: Option<String>,
@@ -189,7 +189,7 @@ pub struct Customer {
 /// Represents the response of the total amount received on your account
 #[derive(Debug, Deserialize)]
 pub struct TransactionTotalsResponse {
-    /// This lets you know if your request was succesful or not.
+    /// This lets you know if your request was successful or not.
     pub status: bool,
     /// This is a summary of the response and its status.
     pub message: String,
@@ -200,7 +200,7 @@ pub struct TransactionTotalsResponse {
 /// Transaction total data.
 #[derive(Debug, Deserialize)]
 pub struct TransactionTotalData {
-    /// Total number of transactions in the intergration.
+    /// Total number of transactions in the integration.
     pub total_transactions: Option<u32>,
     /// Total of unique number of customers in the integration.
     pub unique_customers: Option<u32>,
@@ -210,23 +210,23 @@ pub struct TransactionTotalData {
     pub total_volume_by_currency: Option<Vec<VolumeByCurrency>>,
     /// Total volume of pending transfers.
     pub pending_transfers: Option<u32>,
-    /// Total volumn of pending transfer broken down by currency.
+    /// Total volume of pending transfer broken down by currency.
     pub pending_transfers_by_currency: Option<Vec<VolumeByCurrency>>,
 }
 
-/// Transaction volume by currecny.
+/// Transaction volume by currency.
 #[derive(Debug, Deserialize)]
 pub struct VolumeByCurrency {
     /// Currency code.
     pub currency: String,
-    /// Amount in the lowest denomincation of the currency.
+    /// Amount in the lowest denomination of the currency.
     pub amount: u32,
 }
 
 /// Represents the response of the export transaction.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ExportTransactionResponse {
-    /// This lets you know if your request was succesful or not.
+    /// This lets you know if your request was successful or not.
     pub status: bool,
     /// This is a summary of the response and its status.
     pub message: String,
@@ -244,7 +244,7 @@ pub struct ExportTransactionData {
 /// Represents the response of the partial debit transaction.
 #[derive(Debug, Deserialize)]
 pub struct PartialDebitTransactionResponse {
-    /// This lets you know if your request was succesful or not.
+    /// This lets you know if your request was successful or not.
     pub status: bool,
     /// This is a summary of the response and its status.
     pub message: String,
@@ -291,7 +291,7 @@ pub struct SplitData {
     pub created_at: String,
     /// The last update timestamp of the percentage split.
     pub updated_at: String,
-    /// The list of subaccounts involved in the percentage split.
+    /// The list of sub accounts involved in the percentage split.
     pub subaccounts: Vec<SubaccountData>,
     /// The total count of subaccounts in the percentage split.
     pub total_subaccounts: u32,

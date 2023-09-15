@@ -22,10 +22,10 @@
 //! ```rust
 //!     use std::env;
 //!     use dotenv::dotenv;
-//!     use paystack::{PaystackClient, TransactionBuilder, PaystackError, Currency};
+//!     use paystack::{PaystackClient, TransactionBuilder, Error, Currency};
 //!
 //!     #[tokio::main]
-//!     async fn main() -> Result<(), PaystackError>{
+//!     async fn main() -> Result<(), Error>{
 //!         dotenv().ok();
 //!         let api_key = env::var("PAYSTACK_API_KEY").unwrap();
 //!         let client = PaystackClient::new(&api_key);
@@ -67,4 +67,4 @@ pub use resources::*;
 pub use response::*;
 
 /// Custom result type for the Paystack API
-pub type PaystackResult<T> = std::result::Result<T, error::PaystackError>;
+pub type PaystackResult<T> = std::result::Result<T, error::Error>;
