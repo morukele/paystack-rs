@@ -1,7 +1,7 @@
 use fake::faker::internet::en::SafeEmail;
 use fake::Fake;
-use paystack::{Channel, Currency, PartialDebitTransactionBuilder, Status, TransactionBuilder};
-use rand::Rng;
+use paystack::{Channel, Currency, InitializeTransactionBody, PartialDebitTransactionBody, Status};
+use rand::{Rng};
 
 use crate::helpers::get_paystack_client;
 
@@ -14,17 +14,25 @@ async fn initialize_transaction_valid() {
 
     // Act
     let email: String = SafeEmail().fake();
-    let body = TransactionBuilder::new()
-        .amount(rng.gen_range(100..=100000).to_string())
-        .email(email)
-        .currency(Currency::NGN)
-        .channels(vec![
+    let body = InitializeTransactionBody {
+        amount: rng.gen_range(100..=100000).to_string(),
+        email,
+        currency: Some(Currency::NGN),
+        channels: Some(vec![
             Channel::ApplePay,
             Channel::BankTransfer,
             Channel::Bank,
-        ])
-        .build()
-        .unwrap();
+        ]),
+        bearer: None,
+        callback_url: None,
+        invoice_limit: None,
+        metadata: None,
+        plan: None,
+        reference: None,
+        split_code: None,
+        subaccount: None,
+        transaction_charge: None,
+    };
 
     let res = client
         .initialize_transaction(body)
@@ -46,12 +54,25 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant
 
     // Act
     let email: String = SafeEmail().fake();
-    let body = TransactionBuilder::new()
-        .amount(rng.gen_range(100..=100000).to_string())
-        .email(email)
-        .currency(Currency::USD)
-        .build()
-        .unwrap();
+    let body = InitializeTransactionBody {
+        amount: rng.gen_range(100..=100000).to_string(),
+        email,
+        currency: Some(Currency::USD),
+        channels: Some(vec![
+            Channel::ApplePay,
+            Channel::BankTransfer,
+            Channel::Bank,
+        ]),
+        bearer: None,
+        callback_url: None,
+        invoice_limit: None,
+        metadata: None,
+        plan: None,
+        reference: None,
+        split_code: None,
+        subaccount: None,
+        transaction_charge: None,
+    };
 
     let res = client.initialize_transaction(body).await;
 
@@ -75,12 +96,25 @@ async fn valid_transaction_is_verified() {
 
     // Act
     let email: String = SafeEmail().fake();
-    let body = TransactionBuilder::new()
-        .amount(rng.gen_range(100..=100000).to_string())
-        .email(email)
-        .currency(Currency::NGN)
-        .build()
-        .unwrap();
+    let body = InitializeTransactionBody {
+        amount: rng.gen_range(100..=100000).to_string(),
+        email,
+        currency: Some(Currency::NGN),
+        channels: Some(vec![
+            Channel::ApplePay,
+            Channel::BankTransfer,
+            Channel::Bank,
+        ]),
+        bearer: None,
+        callback_url: None,
+        invoice_limit: None,
+        metadata: None,
+        plan: None,
+        reference: None,
+        split_code: None,
+        subaccount: None,
+        transaction_charge: None,
+    };
 
     let content = client
         .initialize_transaction(body)
@@ -267,19 +301,14 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status(
         .expect("Unable to get transaction list");
 
     let transaction = transaction.data[0].clone();
-    let body = PartialDebitTransactionBuilder::new()
-        .amount("10000")
-        .email(transaction.customer.unwrap().email.unwrap())
-        .authorization_code(
-            transaction
-                .authorization
-                .unwrap()
-                .authorization_code
-                .unwrap(),
-        )
-        .currency(Currency::NGN)
-        .build()
-        .unwrap();
+    let body = PartialDebitTransactionBody {
+        email: transaction.customer.unwrap().email.unwrap(),
+        amount: "10000".to_string(),
+        authorization_code: transaction.authorization.unwrap().authorization_code.unwrap(),
+        currency: Currency::NGN,
+        at_least: None,
+        reference: None,
+    };
 
     let res = client.partial_debit(body).await;
 

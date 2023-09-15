@@ -57,7 +57,7 @@ Initializing an instance of the Paystack client and creating a transaction.
 
     #[tokio::main]
     async fn main() -> Result<(), PaystackError>{
-        dotenv().ok()
+        dotenv().ok();
         let api_key = env::var("PAYSTACK_API_KEY").unwrap();
         let client = PaystackClient::new(api_key);
 

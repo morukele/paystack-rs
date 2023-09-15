@@ -7,7 +7,7 @@ extern crate serde_json;
 
 use reqwest::StatusCode;
 use std::fmt::Debug;
-use crate::{Charge, Currency, ExportTransactionResponse, PartialDebitTransaction, Error, PaystackResult, ResponseWithoutData, Status, Subaccount, Transaction, TransactionResponse, TransactionSplit, TransactionSplitListResponse, TransactionSplitResponse, TransactionStatus, TransactionStatusList, TransactionTimeline, TransactionTotalsResponse, put_request};
+use crate::{ChargeBody, Currency, ExportTransactionResponse, PartialDebitTransactionBody, Error, PaystackResult, ResponseWithoutData, Status, Subaccount, InitializeTransactionBody, TransactionResponse, CreateTransactionSplitBody, TransactionSplitListResponse, TransactionSplitResponse, TransactionStatus, TransactionStatusList, TransactionTimeline, TransactionTotalsResponse, put_request, UpdateTransactionSplitBody};
 use crate::{get_request, post_request};
 
 static BASE_URL: &str = "https://api.paystack.co";
@@ -24,9 +24,9 @@ impl PaystackClient {
     ///
     /// It takes the following parameters:
     ///     - key: Paystack API key.
-    pub fn new(key: &String) -> Self {
+    pub fn new(key: String) -> Self {
         Self {
-            api_key: key.into(),
+            api_key: key,
         }
     }
 
@@ -35,7 +35,7 @@ impl PaystackClient {
     /// It takes a Transaction type as its parameter
     pub async fn initialize_transaction(
         &self,
-        transaction_body: Transaction,
+        transaction_body: InitializeTransactionBody,
     ) -> PaystackResult<TransactionResponse> {
         let url = format!("{}/transaction/initialize", BASE_URL);
 
@@ -134,7 +134,7 @@ impl PaystackClient {
     /// All authorizations marked as reusable can be charged with this endpoint whenever you need to receive payments
     ///
     /// This function takes a Charge Struct as parameter
-    pub async fn charge_authorization(&self, charge: Charge) -> PaystackResult<TransactionStatus> {
+    pub async fn charge_authorization(&self, charge: ChargeBody) -> PaystackResult<TransactionStatus> {
         let url = format!("{}/transaction/charge_authorization", BASE_URL);
 
         match post_request(&self.api_key,&url, charge).await {
@@ -261,7 +261,7 @@ impl PaystackClient {
     /// NB: it must be created with the PartialDebitTransaction Builder.
     pub async fn partial_debit(
         &self,
-        transaction_body: PartialDebitTransaction,
+        transaction_body: PartialDebitTransactionBody,
     ) -> PaystackResult<TransactionStatus> {
         let url = format!("{}/transaction/partial_debit", BASE_URL);
 
@@ -284,7 +284,7 @@ impl PaystackClient {
     /// This method takes a TransactionSplit object as a parameter.
     pub async fn create_transaction_split(
         &self,
-        split_body: TransactionSplit,
+        split_body: CreateTransactionSplitBody,
     ) -> PaystackResult<TransactionSplitResponse> {
         let url = format!("{}/split", BASE_URL);
 
@@ -380,7 +380,7 @@ impl PaystackClient {
     pub async fn update_transaction_split(
         &self,
         split_id: String,
-        body: TransactionSplit,
+        body: UpdateTransactionSplitBody,
     ) -> PaystackResult<TransactionSplitResponse> {
         let url = format!("{}/split/{}", BASE_URL, split_id);
 

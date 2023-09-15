@@ -10,7 +10,7 @@
 //! Please see the type definition to understand how it is constructed
 
 use dotenv::dotenv;
-use paystack::{Channel, Currency, PaystackClient, Status, TransactionBuilder};
+use paystack::{Channel, Currency, InitializeTransactionBody, PaystackClient, Status};
 use std::env;
 
 #[tokio::main]
@@ -18,21 +18,27 @@ async fn main() {
     dotenv().ok();
 
     let api_key = env::var("PAYSTACK_API_KEY").unwrap();
-    let client = PaystackClient::new(&api_key);
+    let client = PaystackClient::new(api_key);
 
-    let body = TransactionBuilder::new()
-        .email("email@example.com")
-        .amount("200000")
-        .currency(Currency::NGN)
-        .channels(vec![
-            Channel::Card,
-            Channel::Bank,
-            Channel::Ussd,
-            Channel::Qr,
+    let body = InitializeTransactionBody {
+        amount: "10000".to_string(),
+        email: "email@example.com".to_string(),
+        currency: Some(Currency::NGN),
+        channels: Some(vec![
+            Channel::ApplePay,
             Channel::BankTransfer,
-        ])
-        .build()
-        .unwrap();
+            Channel::Bank,
+        ]),
+        bearer: None,
+        callback_url: None,
+        invoice_limit: None,
+        metadata: None,
+        plan: None,
+        reference: None,
+        split_code: None,
+        subaccount: None,
+        transaction_charge: None,
+    };
 
     let transaction = client
         .initialize_transaction(body)
