@@ -4,30 +4,33 @@
 //! transaction splits for the Paystack API.
 
 use crate::{BearerType, Currency, SplitType};
+use derive_builder::Builder;
 use serde::Serialize;
 
 /// This struct is used to create a split payment on your integration.
-#[derive(Serialize, Debug, Default)]
+/// The struct is constructed using the `CreateTransactionSplitBodyBuilder`
+#[derive(Serialize, Debug, Default, Builder)]
 pub struct CreateTransactionSplitBody {
     /// Name of the transaction split
-    pub name: String,
+    name: String,
     /// The type of transaction split you want to create
     #[serde(rename = "type")]
-    pub split_type: SplitType,
+    split_type: SplitType,
     /// Any of the supported currency
-    pub currency: Currency,
+    currency: Currency,
     /// A list of object containing subaccount code and number of shares: `[{subaccount: ‘ACT_xxxxxxxxxx’, share: xxx},{...}]`
-    pub subaccounts: Vec<Subaccount>,
+    subaccounts: Vec<Subaccount>,
     /// Any of subaccount
-    pub bearer_type: BearerType,
+    bearer_type: BearerType,
     /// Subaccount code
-    pub bearer_subaccount: String,
+    bearer_subaccount: String,
 }
 
 /// This struct represents the subaccount.
 /// It can be used as the payload for the API end points that require a subaccount as a payload.
 /// It is also possible to extract a single field from this struct to use as well.
-#[derive(Serialize, Debug, Clone)]
+/// The Struct is constructed using the `SubaccountBuilder`
+#[derive(Serialize, Debug, Clone, Builder)]
 pub struct Subaccount {
     /// This is the sub account code
     pub subaccount: String,
@@ -36,14 +39,17 @@ pub struct Subaccount {
 }
 
 /// This struct is used to update a transaction split details on your integration.
-#[derive(Serialize, Debug)]
+/// The struct is constructed using the `UpdateTransactionSplitBodyBuilder`
+#[derive(Serialize, Debug, Builder)]
 pub struct UpdateTransactionSplitBody {
     /// Name of the transaction split
     pub name: String,
     /// True or False
     pub active: bool,
     /// Any of subaccount
+    #[builder(default = "None")]
     pub bearer_type: Option<BearerType>,
     /// Subaccount code of a subaccount in the split group. This should be specified only if the `bearer_type is subaccount
+    #[builder(default = "None")]
     pub bearer_subaccount: Option<Subaccount>,
 }

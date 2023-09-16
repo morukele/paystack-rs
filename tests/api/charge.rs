@@ -1,5 +1,5 @@
 use crate::helpers::get_paystack_client;
-use paystack::{Channel, ChargeBody, Currency};
+use paystack::{Channel, ChargeBodyBuilder, Currency};
 use rand::Rng;
 
 #[tokio::test]
@@ -10,19 +10,15 @@ async fn charge_authorization_succeeds() {
 
     // Act
     // In this test, an already created customer in the integration is used
-    let charge = ChargeBody {
-        email: "melyssa@example.net".to_string(),
-        amount: rng.gen_range(100..=100000).to_string(),
-        authorization_code: "AUTH_9v3686msvt".to_string(),
-        reference: None,
-        currency: Some(Currency::NGN),
-        metadata: None,
-        channel: Some(vec![Channel::Card]),
-        subaccount: None,
-        transaction_charge: Some(100),
-        bearer: None,
-        queue: None,
-    };
+    let charge = ChargeBodyBuilder::default()
+        .email("melyssa@example.net".to_string())
+        .amount(rng.gen_range(100..=100000).to_string())
+        .authorization_code("AUTH_9v3686msvt".to_string())
+        .currency(Some(Currency::NGN))
+        .channel(Some(vec![Channel::Card]))
+        .transaction_charge(Some(100))
+        .build()
+        .unwrap();
 
     let charge_response = client
         .charge_authorization(charge)

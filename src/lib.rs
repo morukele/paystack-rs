@@ -22,7 +22,7 @@
 //! ```rust
 //!     use std::env;
 //!     use dotenv::dotenv;
-//!     use paystack::{PaystackClient, InitializeTransactionBody, Error, Currency, Channel};
+//!     use paystack::{PaystackClient, InitializeTransactionBodyBuilder, Error, Currency, Channel};
 //!
 //!     #[tokio::main]
 //!     async fn main() -> Result<(), Error>{
@@ -30,27 +30,19 @@
 //!         let api_key = env::var("PAYSTACK_API_KEY").unwrap();
 //!         let client = PaystackClient::new(api_key);
 //!
-//!         let body = InitializeTransactionBody {
-//!             amount: "20000".to_string(),
-//!             email: "email@example.com".to_string(),
-//!             currency: Some(Currency::NGN),
-//!             channels: Some(vec![
-//!                 Channel::ApplePay,
-//!                 Channel::BankTransfer,
-//!                 Channel::Bank,
-//!             ]),
-//!             bearer: None,
-//!             callback_url: None,
-//!             invoice_limit: None,
-//!             metadata: None,
-//!             plan: None,
-//!             reference: None,
-//!             split_code: None,
-//!             subaccount: None,
-//!             transaction_charge: None,
-//!         };
+//!         let body = InitializeTransactionBodyBuilder::default()
+//!              .amount("10000".to_string())
+//!              .email("email@example.com".to_string())
+//!              .currency(Some(Currency::NGN))
+//!              .channels(Some(vec![
+//!                  Channel::ApplePay,
+//!                  Channel::Bank,
+//!                  Channel::BankTransfer
+//!              ]))
+//!              .build()
+//!              .unwrap();
 //!
-//!         let transaction = client
+//!        let transaction = client
 //!             .initialize_transaction(body)
 //!             .await
 //!             .expect("Unable to create transaction");

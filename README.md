@@ -51,31 +51,42 @@ You can also download the source code and use in your code base directly if you 
 Initializing an instance of the Paystack client and creating a transaction.
 
 ```rust
-    use std::env;
-    use dotenv::dotenv;
-    use paystack::{Channel, Currency, PaystackClient, TransactionBuilder, PaystackError};
+    use std::env; 
+    use dotenv::dotenv; 
+    use paystack::{PaystackClient, InitializeTransactionBody, Error, Currency, Channel};
 
-    #[tokio::main]
-    async fn main() -> Result<(), PaystackError>{
-        dotenv().ok();
-        let api_key = env::var("PAYSTACK_API_KEY").unwrap();
-        let client = PaystackClient::new(api_key);
+     #[tokio::main]
+     async fn main() -> Result<(), Error>{
+         dotenv().ok();
+         let api_key = env::var("PAYSTACK_API_KEY").unwrap();
+         let client = PaystackClient::new(api_key);
+         
+         let body = InitializeTransactionBody { 
+             amount: "20000".to_string(), 
+             email: "email@example.com".to_string(), 
+             currency: Some(Currency::NGN), 
+             channels: Some(vec![
+                 Channel::ApplePay,
+                 Channel::BankTransfer,
+                 Channel::Bank,
+             ]),
+             bearer: None,
+             callback_url: None,
+             invoice_limit: None,
+             metadata: None,
+             plan: None,
+             reference: None, 
+             split_code: None, 
+             subaccount: None, 
+             transaction_charge: None,
+         };
 
-        let body = TransactionBuilder::new()
-            .email("email@example.com")
-            .amount("200000")
-            .currency(Currency::NGN)
-            .channels(vec![Channel::Qr, Channel::Ussd, Channel::BankTransfer])
-            .build()
-            .unwrap();
-
-        let transaction = client
-            .initialize_transaction(body)
-            .await
-            .expect("Unable to create transaction");
-
-        Ok(())
-    }
+         let transaction = client
+             .initialize_transaction(body)
+             .await
+             .expect("Unable to create transaction");
+     Ok(())
+     }
 ```
 
 ## Contributing
