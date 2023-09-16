@@ -1,7 +1,6 @@
 //! Transactions
 //! =============
-//! This file contains all the structs and definitions needed to
-//! create a transaction using the paystack API.
+//! TThe Transactions API allows you create and manage payments on your integration.
 
 use crate::{Channel, Currency};
 use serde::Serialize;

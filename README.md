@@ -7,7 +7,7 @@
 
 Convenient **Async** rust bindings and types for the [Paystack](https://paystack.com) HTTP API aiming to support the entire API surface. Not the case? Please open an issue. I update the definitions on a weekly basis.
 
-The client aims to make recieving payments for African business or business with African clients building with Rust as hassle-free as possible.
+The client aims to make receiving payments for African business or business with African clients building with Rust as hassle-free as possible.
 
 The client currently covers the following section of the API, and the sections to be implemented in order are left unchecked:
 
@@ -53,33 +53,25 @@ Initializing an instance of the Paystack client and creating a transaction.
 ```rust
     use std::env; 
     use dotenv::dotenv; 
-    use paystack::{PaystackClient, InitializeTransactionBody, Error, Currency, Channel};
+    use paystack::{PaystackClient, InitializeTransactionBodyBuilder, Error, Currency, Channel};
 
      #[tokio::main]
      async fn main() -> Result<(), Error>{
          dotenv().ok();
          let api_key = env::var("PAYSTACK_API_KEY").unwrap();
          let client = PaystackClient::new(api_key);
-         
-         let body = InitializeTransactionBody { 
-             amount: "20000".to_string(), 
-             email: "email@example.com".to_string(), 
-             currency: Some(Currency::NGN), 
-             channels: Some(vec![
-                 Channel::ApplePay,
-                 Channel::BankTransfer,
-                 Channel::Bank,
-             ]),
-             bearer: None,
-             callback_url: None,
-             invoice_limit: None,
-             metadata: None,
-             plan: None,
-             reference: None, 
-             split_code: None, 
-             subaccount: None, 
-             transaction_charge: None,
-         };
+
+         let body = InitializeTransactionBodyBuilder::default()
+                       .amount("10000".to_string())
+                       .email("email@example.com".to_string())
+                       .currency(Some(Currency::NGN))
+                       .channels(Some(vec![
+                           Channel::ApplePay,
+                           Channel::Bank,
+                           Channel::BankTransfer
+                       ]))
+                       .build()
+                       .unwrap();
 
          let transaction = client
              .initialize_transaction(body)

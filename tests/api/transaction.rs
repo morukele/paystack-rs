@@ -1,7 +1,9 @@
 use fake::faker::internet::en::SafeEmail;
 use fake::Fake;
-use paystack::{Channel, Currency, InitializeTransactionBodyBuilder, PartialDebitTransactionBodyBuilder, Status};
-use rand::{Rng};
+use paystack::{
+    Channel, Currency, InitializeTransactionBodyBuilder, PartialDebitTransactionBodyBuilder, Status,
+};
+use rand::Rng;
 
 use crate::helpers::get_paystack_client;
 
@@ -25,7 +27,7 @@ async fn initialize_transaction_valid() {
         ]))
         .build()
         .unwrap();
-    println!("{:#?}", &body);
+    // println!("{:#?}", &body);
     let res = client
         .initialize_transaction(body)
         .await
@@ -280,7 +282,13 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status(
     let body = PartialDebitTransactionBodyBuilder::default()
         .email(transaction.customer.unwrap().email.unwrap())
         .amount("10000".to_string())
-        .authorization_code(transaction.authorization.unwrap().authorization_code.unwrap())
+        .authorization_code(
+            transaction
+                .authorization
+                .unwrap()
+                .authorization_code
+                .unwrap(),
+        )
         .currency(Currency::NGN)
         .build()
         .unwrap();

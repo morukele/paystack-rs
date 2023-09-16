@@ -1,7 +1,7 @@
 //! Transaction Split
 //! =================
-//! This file contains the structs and definitions need to create
-//! transaction splits for the Paystack API.
+//! The Transaction Splits API enables merchants split the settlement for a transaction
+//! across their payout account, and one or more subaccounts.
 
 use crate::{BearerType, Currency, SplitType};
 use derive_builder::Builder;

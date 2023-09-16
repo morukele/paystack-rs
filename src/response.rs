@@ -309,14 +309,16 @@ pub struct SubaccountData {
 /// Represents a subaccount in the percentage split data.
 #[derive(Debug, Deserialize, Serialize)]
 pub struct SubaccountResponse {
-    /// The ID of the subaccount.
-    pub id: u32,
+    /// Integration Id of subaccount.
+    pub integration: Option<u32>,
+    /// Subaccount domain.
+    pub domain: Option<String>,
     /// The code of the subaccount.
     pub subaccount_code: String,
     /// The name of the business associated with the subaccount.
     pub business_name: String,
     /// The description of the business associated with the subaccount.
-    pub description: String,
+    pub description: Option<String>,
     /// The name of the primary contact for the business, if available.
     pub primary_contact_name: Option<String>,
     /// The email of the primary contact for the business, if available.
@@ -327,10 +329,26 @@ pub struct SubaccountResponse {
     pub metadata: Option<String>,
     /// The percentage charge for transactions associated with the subaccount.
     pub percentage_charge: u32,
+    /// Verification status of subaccount.
+    pub is_verified: Option<bool>,
     /// The name of the settlement bank for the subaccount.
     pub settlement_bank: String,
     /// The account number of the subaccount.
     pub account_number: String,
+    /// Settlement schedule of subaccount.
+    pub settlement_schedule: Option<String>,
+    /// Status of subaccount.
+    pub active: Option<bool>,
+    /// Migrate subaccount or not.
+    pub migrate: Option<bool>,
+    /// The ID of the subaccount.
+    pub id: u32,
+    /// Creation time of subaccount.
+    #[serde(rename = "createdAt")]
+    pub created_at: Option<String>,
+    /// Last update time of subaccount.
+    #[serde(rename = "updatedAt")]
+    pub updated_at: Option<String>,
 }
 
 /// Represents the JSON response containing percentage split information.
@@ -351,4 +369,15 @@ pub struct ResponseWithoutData {
     pub status: bool,
     /// The message associated with the JSON response.
     pub message: String,
+}
+
+/// Represents the JSON response for subaccount creation.
+#[derive(Debug, Deserialize, Serialize)]
+pub struct CreateSubAccountResponse {
+    /// The status of the JSON response.
+    pub status: bool,
+    /// The message associated with the JSON response
+    pub message: String,
+    /// Subaccount response data
+    pub data: SubaccountResponse,
 }

@@ -1,6 +1,6 @@
 #![deny(missing_docs)]
 
-//! Convenient rust bindings and types for the Paystakc HTTP API aiming to support the entire API surface.
+//! Convenient rust bindings and types for the Paystack HTTP API aiming to support the entire API surface.
 //! Not the case? Please open an issue. I update the definitions on a weekly basis.
 //!
 //! # Documentation

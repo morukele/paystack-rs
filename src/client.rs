@@ -7,7 +7,7 @@ extern crate serde_json;
 
 use reqwest::StatusCode;
 use std::fmt::Debug;
-use crate::{ChargeBody, Currency, ExportTransactionResponse, PartialDebitTransactionBody, Error, PaystackResult, ResponseWithoutData, Status, Subaccount, InitializeTransactionBody, TransactionResponse, CreateTransactionSplitBody, TransactionSplitListResponse, TransactionSplitResponse, TransactionStatus, TransactionStatusList, TransactionTimeline, TransactionTotalsResponse, put_request, UpdateTransactionSplitBody};
+use crate::{ChargeBody, Currency, ExportTransactionResponse, PartialDebitTransactionBody, Error, PaystackResult, ResponseWithoutData, Status, Subaccount, InitializeTransactionBody, TransactionResponse, CreateTransactionSplitBody, TransactionSplitListResponse, TransactionSplitResponse, TransactionStatus, TransactionStatusList, TransactionTimeline, TransactionTotalsResponse, put_request, UpdateTransactionSplitBody, CreateSubaccountBody, CreateSubAccountResponse};
 use crate::{get_request, post_request};
 
 static BASE_URL: &str = "https://api.paystack.co";
@@ -447,6 +447,31 @@ impl PaystackClient {
                 }
             },
             Err(err) => Err(Error::FailedRequest(err.to_string())),
+        }
+    }
+
+
+    /// Creates a new subaccount.
+    ///
+    /// Takes in the following parameters
+    ///     - body: subaccount to create.
+    pub async fn create_subaccount(
+        &self,
+        body: CreateSubaccountBody
+    ) -> PaystackResult<CreateSubAccountResponse> {
+        let url = format!("{}/subaccount", BASE_URL);
+
+        match post_request(&self.api_key, &url, body).await {
+            Ok(response) => match response.status() {
+                StatusCode::OK => match response.json::<CreateSubAccountResponse>().await {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(Error::Subaccount(err.to_string()))
+                },
+                _ => {
+                  Err(Error::RequestNotSuccessful(response.status().to_string(), response.text().await?))
+                }
+            },
+            Err(err) => Err(Error::FailedRequest(err.to_string()))
         }
     }
 }
