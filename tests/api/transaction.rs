@@ -1,6 +1,6 @@
 use fake::faker::internet::en::SafeEmail;
 use fake::Fake;
-use paystack::{Channel, Currency, InitializeTransactionBody, PartialDebitTransactionBody, Status};
+use paystack::{Channel, Currency, InitializeTransactionBodyBuilder, PartialDebitTransactionBodyBuilder, Status};
 use rand::{Rng};
 
 use crate::helpers::get_paystack_client;
@@ -14,26 +14,18 @@ async fn initialize_transaction_valid() {
 
     // Act
     let email: String = SafeEmail().fake();
-    let body = InitializeTransactionBody {
-        amount: rng.gen_range(100..=100000).to_string(),
-        email,
-        currency: Some(Currency::NGN),
-        channels: Some(vec![
+    let body = InitializeTransactionBodyBuilder::default()
+        .amount(rng.gen_range(100..=100000).to_string())
+        .email(email)
+        .currency(Some(Currency::NGN))
+        .channels(Some(vec![
             Channel::ApplePay,
             Channel::BankTransfer,
             Channel::Bank,
-        ]),
-        bearer: None,
-        callback_url: None,
-        invoice_limit: None,
-        metadata: None,
-        plan: None,
-        reference: None,
-        split_code: None,
-        subaccount: None,
-        transaction_charge: None,
-    };
-
+        ]))
+        .build()
+        .unwrap();
+    println!("{:#?}", &body);
     let res = client
         .initialize_transaction(body)
         .await
@@ -54,25 +46,17 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant
 
     // Act
     let email: String = SafeEmail().fake();
-    let body = InitializeTransactionBody {
-        amount: rng.gen_range(100..=100000).to_string(),
-        email,
-        currency: Some(Currency::USD),
-        channels: Some(vec![
+    let body = InitializeTransactionBodyBuilder::default()
+        .amount(rng.gen_range(100..=100000).to_string())
+        .email(email)
+        .currency(Some(Currency::USD))
+        .channels(Some(vec![
             Channel::ApplePay,
             Channel::BankTransfer,
             Channel::Bank,
-        ]),
-        bearer: None,
-        callback_url: None,
-        invoice_limit: None,
-        metadata: None,
-        plan: None,
-        reference: None,
-        split_code: None,
-        subaccount: None,
-        transaction_charge: None,
-    };
+        ]))
+        .build()
+        .unwrap();
 
     let res = client.initialize_transaction(body).await;
 
@@ -96,25 +80,17 @@ async fn valid_transaction_is_verified() {
 
     // Act
     let email: String = SafeEmail().fake();
-    let body = InitializeTransactionBody {
-        amount: rng.gen_range(100..=100000).to_string(),
-        email,
-        currency: Some(Currency::NGN),
-        channels: Some(vec![
+    let body = InitializeTransactionBodyBuilder::default()
+        .amount(rng.gen_range(100..=100000).to_string())
+        .email(email)
+        .currency(Some(Currency::NGN))
+        .channels(Some(vec![
             Channel::ApplePay,
             Channel::BankTransfer,
             Channel::Bank,
-        ]),
-        bearer: None,
-        callback_url: None,
-        invoice_limit: None,
-        metadata: None,
-        plan: None,
-        reference: None,
-        split_code: None,
-        subaccount: None,
-        transaction_charge: None,
-    };
+        ]))
+        .build()
+        .unwrap();
 
     let content = client
         .initialize_transaction(body)
@@ -301,14 +277,13 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status(
         .expect("Unable to get transaction list");
 
     let transaction = transaction.data[0].clone();
-    let body = PartialDebitTransactionBody {
-        email: transaction.customer.unwrap().email.unwrap(),
-        amount: "10000".to_string(),
-        authorization_code: transaction.authorization.unwrap().authorization_code.unwrap(),
-        currency: Currency::NGN,
-        at_least: None,
-        reference: None,
-    };
+    let body = PartialDebitTransactionBodyBuilder::default()
+        .email(transaction.customer.unwrap().email.unwrap())
+        .amount("10000".to_string())
+        .authorization_code(transaction.authorization.unwrap().authorization_code.unwrap())
+        .currency(Currency::NGN)
+        .build()
+        .unwrap();
 
     let res = client.partial_debit(body).await;
 
