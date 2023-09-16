@@ -1,7 +1,7 @@
 use fake::faker::internet::en::SafeEmail;
 use fake::Fake;
-use paystack::{Channel, Currency, PartialDebitTransactionBuilder, Status, TransactionBuilder};
-use rand::Rng;
+use paystack::{Channel, Currency, InitializeTransactionBodyBuilder, PartialDebitTransactionBodyBuilder, Status};
+use rand::{Rng};
 
 use crate::helpers::get_paystack_client;
 
@@ -14,22 +14,22 @@ async fn initialize_transaction_valid() {
 
     // Act
     let email: String = SafeEmail().fake();
-    let body = TransactionBuilder::new()
+    let body = InitializeTransactionBodyBuilder::default()
         .amount(rng.gen_range(100..=100000).to_string())
         .email(email)
-        .currency(Currency::NGN)
-        .channels(vec![
+        .currency(Some(Currency::NGN))
+        .channels(Some(vec![
             Channel::ApplePay,
             Channel::BankTransfer,
             Channel::Bank,
-        ])
+        ]))
         .build()
         .unwrap();
-
+    println!("{:#?}", &body);
     let res = client
         .initialize_transaction(body)
         .await
-        .expect("Unable to initalize transaction");
+        .expect("Unable to initialize transaction");
 
     // println!("{:#?}", res);
 
@@ -39,17 +39,22 @@ async fn initialize_transaction_valid() {
 }
 
 #[tokio::test]
-async fn initialize_transaction_fails_when_currency_is_not_supported_by_marchent() {
+async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant() {
     // Arrange
     let client = get_paystack_client();
     let mut rng = rand::thread_rng();
 
     // Act
     let email: String = SafeEmail().fake();
-    let body = TransactionBuilder::new()
+    let body = InitializeTransactionBodyBuilder::default()
         .amount(rng.gen_range(100..=100000).to_string())
         .email(email)
-        .currency(Currency::USD)
+        .currency(Some(Currency::USD))
+        .channels(Some(vec![
+            Channel::ApplePay,
+            Channel::BankTransfer,
+            Channel::Bank,
+        ]))
         .build()
         .unwrap();
 
@@ -60,8 +65,8 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_marchent
         Ok(_) => (),
         Err(e) => {
             let res = e.to_string();
-            println!("{:#?}", res);
-            assert!(res.contains("StatusCode: 403 Forbidden"));
+            // dbg!("{:#?}", &res);
+            assert!(res.contains("Status Code: 403 Forbidden"));
             assert!(res.contains("Currency not supported by merchant"))
         }
     }
@@ -75,10 +80,15 @@ async fn valid_transaction_is_verified() {
 
     // Act
     let email: String = SafeEmail().fake();
-    let body = TransactionBuilder::new()
+    let body = InitializeTransactionBodyBuilder::default()
         .amount(rng.gen_range(100..=100000).to_string())
         .email(email)
-        .currency(Currency::NGN)
+        .currency(Some(Currency::NGN))
+        .channels(Some(vec![
+            Channel::ApplePay,
+            Channel::BankTransfer,
+            Channel::Bank,
+        ]))
         .build()
         .unwrap();
 
@@ -141,7 +151,7 @@ async fn fetch_transaction_succeeds() {
     let response = client
         .list_transactions(Some(1), Some(Status::Success))
         .await
-        .expect("unbale to get list of integrated transactions");
+        .expect("unable to get list of integrated transactions");
 
     let fetched_transaction = client
         .fetch_transactions(response.data[0].id.unwrap())
@@ -256,7 +266,7 @@ async fn export_transaction_succeeds_with_default_parameters() {
 }
 
 #[tokio::test]
-async fn partial_debit_transaction_passes_or_fails_depending_on_marchent_status() {
+async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status() {
     // Arrange
     let client = get_paystack_client();
 
@@ -264,19 +274,13 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_marchent_status(
     let transaction = client
         .list_transactions(Some(1), Some(Status::Success))
         .await
-        .expect("Ubale to get transaction list");
+        .expect("Unable to get transaction list");
 
     let transaction = transaction.data[0].clone();
-    let body = PartialDebitTransactionBuilder::new()
-        .amount("10000")
+    let body = PartialDebitTransactionBodyBuilder::default()
         .email(transaction.customer.unwrap().email.unwrap())
-        .authorization_code(
-            transaction
-                .authorization
-                .unwrap()
-                .authorization_code
-                .unwrap(),
-        )
+        .amount("10000".to_string())
+        .authorization_code(transaction.authorization.unwrap().authorization_code.unwrap())
         .currency(Currency::NGN)
         .build()
         .unwrap();
@@ -292,7 +296,7 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_marchent_status(
         }
         Err(error) => {
             let error = error.to_string();
-            assert!(error.contains("StatusCode: 400 Bad Request"));
+            assert!(error.contains("Status Code: 400 Bad Request"));
             assert!(error.contains("merchant is not enabled for Partial Debit"));
         }
     }

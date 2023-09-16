@@ -17,27 +17,32 @@
 //!
 //! ## Usage
 //!
-//! Initalizing an instance of the Paystack client and creating a transaction.
+//! Initializing an instance of the Paystack client and creating a transaction.
 //!
 //! ```rust
 //!     use std::env;
 //!     use dotenv::dotenv;
-//!     use paystack::{PaystackClient, TransactionBuilder, PaystackError, Currency};
+//!     use paystack::{PaystackClient, InitializeTransactionBodyBuilder, Error, Currency, Channel};
 //!
 //!     #[tokio::main]
-//!     async fn main() -> Result<(), PaystackError>{
+//!     async fn main() -> Result<(), Error>{
 //!         dotenv().ok();
 //!         let api_key = env::var("PAYSTACK_API_KEY").unwrap();
-//!         let client = PaystackClient::new(&api_key);
+//!         let client = PaystackClient::new(api_key);
 //!
-//!         let body = TransactionBuilder::new()
-//!             .email("email@example.com")
-//!             .amount("200000")
-//!             .currency(Currency::NGN)
-//!             .build()
-//!             .unwrap();
+//!         let body = InitializeTransactionBodyBuilder::default()
+//!              .amount("10000".to_string())
+//!              .email("email@example.com".to_string())
+//!              .currency(Some(Currency::NGN))
+//!              .channels(Some(vec![
+//!                  Channel::ApplePay,
+//!                  Channel::Bank,
+//!                  Channel::BankTransfer
+//!              ]))
+//!              .build()
+//!              .unwrap();
 //!
-//!         let transaction = client
+//!        let transaction = client
 //!             .initialize_transaction(body)
 //!             .await
 //!             .expect("Unable to create transaction");
@@ -59,12 +64,14 @@ mod client;
 mod error;
 mod resources;
 mod response;
+mod utils;
 
 // public re-exports
 pub use client::*;
 pub use error::*;
 pub use resources::*;
 pub use response::*;
+pub use utils::*;
 
 /// Custom result type for the Paystack API
-pub type PaystackResult<T> = std::result::Result<T, error::PaystackError>;
+pub type PaystackResult<T> = std::result::Result<T, error::Error>;

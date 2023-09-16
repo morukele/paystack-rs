@@ -3,194 +3,73 @@
 //! This file contains all the structs and definitions needed to
 //! create a transaction using the paystack API.
 
-use crate::{error::PaystackError, Channel, Currency, PaystackResult};
+use crate::{Channel, Currency};
 use serde::Serialize;
+use derive_builder::Builder;
 
 /// This struct is used to create a transaction body for creating a transaction using the Paystack API.
-///
-/// IMPORTANT: This class can only be created using the TransactionBuilder.
-///
-/// The struct has the following fields:
-///     - amount: Amount should be in the smallest unit of the currency e.g. kobo if in NGN and cents if in USD
-///     - email: Customer's email address
-///     - currency (Optional): Currency in which amount should be charged (NGN, GHS, ZAR or USD). Defaults to your integration currency.
-#[derive(Serialize, Debug, Default)]
-pub struct Transaction {
+/// This struct should be created using the `InitializeTransactionBodyBuilder`
+/// The Builder derivation allows for the automatic implementation of the builder pattern.
+#[derive(Serialize, Debug, Default, Builder)]
+pub struct InitializeTransactionBody {
+    /// Amount should be in the smallest unit of the currency e.g. kobo if in NGN and cents if in USD
     amount: String,
+    /// Customer's email address
     email: String,
+    /// Currency in which amount should be charged (NGN, GHS, ZAR or USD). Defaults to your integration currency.
+    #[builder(default = "None")]
     currency: Option<Currency>,
+    /// Unique transaction reference. Only -, ., = and alphanumeric characters allowed.
+    #[builder(default = "None")]
+    reference: Option<String>,
+    /// Fully qualified url, e.g. https://example.com/ . Use this to override the callback url provided on the dashboard for this transaction
+    #[builder(default = "None")]
+    callback_url: Option<String>,
+    /// If transaction is to create a subscription to a predefined plan, provide plan code here. This would invalidate the value provided in `amount`
+    #[builder(default = "None")]
+    plan: Option<String>,
+    /// Number of times to charge customer during subscription to plan
+    #[builder(default = "None")]
+    invoice_limit: Option<u32>,
+    /// Stringified JSON object of custom data. Kindly check the `Metadata` struct for more information.
+    #[builder(default = "None")]
+    metadata: Option<String>,
+    /// An array of payment channels to control what channels you want to make available to the user to make a payment with.
+    /// Available channels include: `["card", "bank", "ussd", "qr", "mobile_money", "bank_transfer", "eft"]`
+    #[builder(default = "None")]
     channels: Option<Vec<Channel>>,
-}
-
-/// Builder for the Transaction object
-#[derive(Default, Clone)]
-pub struct TransactionBuilder {
-    amount: Option<String>,
-    email: Option<String>,
-    currency: Option<Currency>,
-    channels: Option<Vec<Channel>>,
-}
-
-impl TransactionBuilder {
-    /// Create a new instance of the Transaction builder with default properties
-    pub fn new() -> Self {
-        TransactionBuilder::default()
-    }
-
-    /// Specify email for the Transaction
-    pub fn email(mut self, email: impl Into<String>) -> Self {
-        self.email = Some(email.into());
-        self
-    }
-
-    /// Specify the Transaction amount
-    pub fn amount(mut self, amount: impl Into<String>) -> Self {
-        self.amount = Some(amount.into());
-        self
-    }
-
-    /// Specify the Transaction currency
-    pub fn currency(mut self, currency: Currency) -> Self {
-        self.currency = Some(currency);
-        self
-    }
-
-    /// Specify the Tranaction channels
-    pub fn channels(mut self, channels: Vec<Channel>) -> Self {
-        self.channels = Some(channels);
-        self
-    }
-
-    /// Build the Transaction object
-    pub fn build(self) -> PaystackResult<Transaction> {
-        let Some(email) = self.email else {
-            return Err(
-                PaystackError::Transaction("email is required for transaction".to_string())
-            )
-        };
-
-        let Some(amount) = self.amount else {
-            return Err(
-                PaystackError::Transaction("amount is required for transaction".to_string())
-            )
-        };
-
-        Ok(Transaction {
-            email,
-            amount,
-            currency: self.currency,
-            channels: self.channels,
-        })
-    }
+    /// The split code of the transaction split. e.g. `SPL_98WF13Eb3w`
+    #[builder(default = "None")]
+    split_code: Option<String>,
+    /// The code for the subaccount that owns the payment. e.g. `ACCT_8f4s1eq7ml6rlzj`
+    #[builder(default = "None")]
+    subaccount: Option<String>,
+    /// An amount used to override the split configuration for a single split payment.
+    /// If set, the amount specified goes to the main account regardless of the split configuration.
+    #[builder(default = "None")]
+    transaction_charge: Option<u32>,
+    /// Who bears Paystack charges? `account` or `subaccount` (defaults to account).
+    #[builder(default = "None")]
+    bearer: Option<String>
 }
 
 /// This struct is used to create a partial debit transaction body for creating a partial debit using the Paystack API.
-///
-/// IMPORTANT: This class can only be created using the PartialDebitTransactionBuilder.
-///
-/// The struct has the following fields:
-///     - authorization_code: Authorization Code for the transaction
-///     - amount: Amount should be in the smallest unit of the currency e.g. kobo if in NGN and cents if in USD
-///     - email: Customer's email address
-///     - currency : Currency in which amount should be charged (NGN, GHS, ZAR or USD). Defaults to your integration currency.
-///     - reference (Optional): Unique transaction reference.
-///     - at_least: Minimum amount to charge
-#[derive(Debug, Clone, Serialize, Default)]
-pub struct PartialDebitTransaction {
+/// This struct should be created using the `PartialDebitTransactionBodyBuilder`
+/// The derive Builder allows for the automatic creation of the BuilderPattern
+#[derive(Debug, Clone, Serialize, Default, Builder)]
+pub struct PartialDebitTransactionBody {
+    /// Authorization Code
     authorization_code: String,
-    amount: String,
-    email: String,
+    /// Specify the currency you want to debit. Allowed values are NGN or GHS.
     currency: Currency,
+    /// Amount should be in the subunit of the supported currency
+    amount: String,
+    /// Customer's email address (attached to the authorization code)
+    email: String,
+    /// Unique transaction reference. Only `-`, `.`, `=` and alphanumeric characters allowed.
+    #[builder(default = "None")]
     reference: Option<String>,
+    /// Minimum amount to charge
+    #[builder(default = "None")]
     at_least: Option<String>,
-}
-
-/// Builder for the Transaction object
-#[derive(Default, Clone)]
-pub struct PartialDebitTransactionBuilder {
-    authorization_code: Option<String>,
-    amount: Option<String>,
-    email: Option<String>,
-    currency: Option<Currency>,
-    reference: Option<String>,
-    at_least: Option<String>,
-}
-
-impl PartialDebitTransactionBuilder {
-    /// Create new instance of the Partial Debit Transaction builder with default properties.
-    pub fn new() -> Self {
-        PartialDebitTransactionBuilder::default()
-    }
-
-    /// Specify the authorization code.
-    pub fn authorization_code(mut self, authorization_code: impl Into<String>) -> Self {
-        self.authorization_code = Some(authorization_code.into());
-        self
-    }
-
-    /// Specify the transaction amount.
-    pub fn amount(mut self, amount: impl Into<String>) -> Self {
-        self.amount = Some(amount.into());
-        self
-    }
-
-    /// Specify email for the Transaction.
-    pub fn email(mut self, email: impl Into<String>) -> Self {
-        self.email = Some(email.into());
-        self
-    }
-
-    /// Specify transaction currency.
-    pub fn currency(mut self, currency: Currency) -> Self {
-        self.currency = Some(currency);
-        self
-    }
-
-    /// Specify the transaction reference.
-    pub fn reference(mut self, reference: impl Into<String>) -> Self {
-        self.reference = Some(reference.into());
-        self
-    }
-
-    /// Specify the minimum amount to charge for the transaction.
-    pub fn at_least(mut self, at_least: impl Into<String>) -> Self {
-        self.at_least = Some(at_least.into());
-        self
-    }
-
-    /// Build the PartialDebitTransaction object
-    pub fn build(self) -> PaystackResult<PartialDebitTransaction> {
-        let Some(authorization_code) = self.authorization_code else {
-            return Err(
-                PaystackError::Transaction("authorization code is required for partial debit transaction".to_string())
-            )
-        };
-
-        let Some(email) = self.email else {
-            return Err(
-                PaystackError::Transaction("email is required for transaction".to_string())
-            )
-        };
-
-        let Some(currency) = self.currency else {
-            return Err(
-                PaystackError::Transaction("currency is required for transaction".to_string())
-            )
-        };
-
-        let Some(amount) = self.amount else {
-            return Err(
-                PaystackError::Transaction("amount is required for transaction".to_string())
-            )
-        };
-
-        Ok(PartialDebitTransaction {
-            authorization_code,
-            email,
-            amount,
-            currency,
-            reference: self.reference,
-            at_least: self.at_least,
-        })
-    }
 }

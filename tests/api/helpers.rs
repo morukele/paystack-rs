@@ -10,5 +10,5 @@ fn get_api_key() -> String {
 }
 
 pub fn get_paystack_client() -> PaystackClient {
-    PaystackClient::new(&get_api_key())
+    PaystackClient::new(get_api_key())
 }

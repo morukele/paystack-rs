@@ -6,11 +6,11 @@
 //! This example shows how to initiate a transaction
 //! for a particular price and a particular customer.
 //! The transaction generates a URL that the user can use to pay.
-//! This reqires building a transaction body.
+//! This requires building a transaction body.
 //! Please see the type definition to understand how it is constructed
 
 use dotenv::dotenv;
-use paystack::{Channel, Currency, PaystackClient, Status, TransactionBuilder};
+use paystack::{Channel, Currency, InitializeTransactionBodyBuilder, PaystackClient, Status};
 use std::env;
 
 #[tokio::main]
@@ -18,19 +18,17 @@ async fn main() {
     dotenv().ok();
 
     let api_key = env::var("PAYSTACK_API_KEY").unwrap();
-    let client = PaystackClient::new(&api_key);
+    let client = PaystackClient::new(api_key);
 
-    let body = TransactionBuilder::new()
-        .email("email@example.com")
-        .amount("200000")
-        .currency(Currency::NGN)
-        .channels(vec![
-            Channel::Card,
+    let body = InitializeTransactionBodyBuilder::default()
+        .amount("10000".to_string())
+        .email("email@example.com".to_string())
+        .currency(Some(Currency::NGN))
+        .channels(Some(vec![
+            Channel::ApplePay,
             Channel::Bank,
-            Channel::Ussd,
-            Channel::Qr,
-            Channel::BankTransfer,
-        ])
+            Channel::BankTransfer
+        ]))
         .build()
         .unwrap();
 
@@ -55,13 +53,13 @@ async fn main() {
 
     println!("Status: {}", transaction_status.data.status.unwrap());
     println!(
-        "Amount of: {}; Currency: {}. NB: amount is in lowest denomination of specified curreny",
+        "Amount of: {}; Currency: {}. NB: amount is in lowest denomination of specified currency",
         transaction_status.data.amount.unwrap(),
         transaction_status.data.currency.unwrap()
     );
     println!("Channel: {}", transaction_status.data.channel.unwrap());
 
-    // List of transactiosn
+    // List of transactions
     let transactions = client
         .list_transactions(Some(5), Some(Status::Success))
         .await
