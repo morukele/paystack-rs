@@ -25,8 +25,8 @@ async fn create_subaccount_passes_with_valid_data() {
         .unwrap();
 
     // println!("{:#?}", body);
-    let res = client.
-        create_subaccount(body)
+    let res = client
+        .create_subaccount(body)
         .await
         .expect("Unable to Create a subaccount");
 
@@ -34,4 +34,35 @@ async fn create_subaccount_passes_with_valid_data() {
     assert!(res.status);
     assert_eq!(res.data.settlement_bank, "Kuda Bank");
     assert_eq!(res.data.account_number, account_number)
+}
+
+#[tokio::test]
+async fn create_subaccount_fails_with_invalid_data() {
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    let body = CreateSubaccountBodyBuilder::default()
+        .business_name("".to_string())
+        .settlement_bank("".to_string())
+        .account_number("".to_string())
+        .description("".to_string())
+        .percentage_charge(0.0)
+        .build()
+        .unwrap();
+
+    let res = client
+        .create_subaccount(body)
+        .await;
+
+    // Assert
+    match res {
+        Ok(_) => (),
+        Err(e) => {
+            let res = e.to_string();
+            // dbg!("{:#?}", &res);
+            assert!(res.contains("Status Code: 400 Bad Request"));
+            assert!(res.contains("Account number is required"))
+        }
+    }
 }
