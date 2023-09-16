@@ -463,7 +463,7 @@ impl PaystackClient {
 
         match post_request(&self.api_key, &url, body).await {
             Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<CreateSubAccountResponse>().await {
+                StatusCode::CREATED => match response.json::<CreateSubAccountResponse>().await {
                     Ok(content) => Ok(content),
                     Err(err) => Err(Error::Subaccount(err.to_string()))
                 },

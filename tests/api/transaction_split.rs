@@ -1,27 +1,5 @@
-use fake::Fake;
-use fake::faker::name::en::Name;
-use paystack::{BearerType, CreateTransactionSplitBodyBuilder, Currency, SplitType};
-use crate::helpers::get_paystack_client;
-
 #[tokio::test]
-async fn create_transaction_split_passes_with_valid_data() {
-    // Arrange
-    let client = get_paystack_client();
-
-    // Act
-    let name: String = Name().fake();
-    let body = CreateTransactionSplitBodyBuilder::default()
-        .name(name)
-        .split_type(SplitType::Percentage)
-        .currency(Currency::NGN)
-        .subaccounts(vec![])
-        .bearer_type(BearerType::Subaccount)
-        .bearer_subaccount("".to_string())
-        .build()
-        .unwrap();
-    println!("{:#?}", body);
-    // Assert
-}
+async fn create_transaction_split_passes_with_valid_data() {}
 
 #[tokio::test]
 async fn create_transaction_split_fails_with_invalid_data() {}

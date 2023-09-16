@@ -328,7 +328,7 @@ pub struct SubaccountResponse {
     /// Additional metadata associated with the subaccount, if available.
     pub metadata: Option<String>,
     /// The percentage charge for transactions associated with the subaccount.
-    pub percentage_charge: u32,
+    pub percentage_charge: f32,
     /// Verification status of subaccount.
     pub is_verified: Option<bool>,
     /// The name of the settlement bank for the subaccount.
