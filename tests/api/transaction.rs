@@ -102,6 +102,7 @@ async fn valid_transaction_is_verified() {
         .expect("unable to initiate transaction");
 
     let response = client
+        .transaction
         .verify_transaction(&content.data.reference)
         .await
         .expect("unable to verify transaction");
@@ -119,6 +120,7 @@ async fn list_specified_number_of_transactions_in_the_integration() {
 
     // Act
     let response = client
+        .transaction
         .list_transactions(Some(5), Some(Status::Abandoned))
         .await
         .expect("unable to get list of integrated transactions");
@@ -136,6 +138,7 @@ async fn list_transactions_passes_with_default_values() {
 
     // Act
     let response = client
+        .transaction
         .list_transactions(None, None)
         .await
         .expect("unable to get list of integration transactions");
@@ -153,11 +156,13 @@ async fn fetch_transaction_succeeds() {
 
     // Act
     let response = client
+        .transaction
         .list_transactions(Some(1), Some(Status::Success))
         .await
         .expect("unable to get list of integrated transactions");
 
     let fetched_transaction = client
+        .transaction
         .fetch_transactions(response.data[0].id.unwrap())
         .await
         .expect("unable to fetch transaction");
@@ -177,11 +182,13 @@ async fn view_transaction_timeline_passes_with_id() {
 
     // Act
     let response = client
+        .transaction
         .list_transactions(Some(1), Some(Status::Success))
         .await
         .expect("unable to get list of integrated transactions");
 
     let transaction_timeline = client
+        .transaction
         .view_transaction_timeline(response.data[0].id, None)
         .await
         .expect("unable to get transaction timeline");
@@ -198,6 +205,7 @@ async fn view_transaction_timeline_passes_with_reference() {
 
     // Act
     let response = client
+        .transaction
         .list_transactions(Some(1), Some(Status::Success))
         .await
         .expect("unable to get list of integrated transactions");
@@ -205,6 +213,7 @@ async fn view_transaction_timeline_passes_with_reference() {
     // println!("{:#?}", response);
 
     let transaction_timeline = client
+        .transaction
         .view_transaction_timeline(None, response.data[0].reference.clone())
         .await
         .expect("unable to get transaction timeline");
@@ -220,7 +229,10 @@ async fn view_transaction_timeline_fails_without_id_or_reference() {
     let client = get_paystack_client();
 
     // Act
-    let res = client.view_transaction_timeline(None, None).await;
+    let res = client
+        .transaction
+        .view_transaction_timeline(None, None)
+        .await;
 
     // Assert
     match res {
@@ -241,6 +253,7 @@ async fn get_transaction_total_is_successful() {
 
     // Act
     let res = client
+        .transaction
         .total_transactions()
         .await
         .expect("unable to get transaction total");
@@ -259,6 +272,7 @@ async fn export_transaction_succeeds_with_default_parameters() {
 
     // Act
     let res = client
+        .transaction
         .export_transaction(None, None, None)
         .await
         .expect("unable to export transactions");
@@ -276,6 +290,7 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status(
 
     // Act
     let transaction = client
+        .transaction
         .list_transactions(Some(1), Some(Status::Success))
         .await
         .expect("Unable to get transaction list");
@@ -295,7 +310,7 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status(
         .build()
         .unwrap();
 
-    let res = client.partial_debit(body).await;
+    let res = client.transaction.partial_debit(body).await;
 
     // Assert
     match res {
