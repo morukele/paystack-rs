@@ -8,8 +8,8 @@ use reqwest::StatusCode;
 use serde::Serialize;
 
 use crate::{
-    get_request, post_request, CreateSubaccountResponse, Error, FetchSubaccountResponse,
-    ListSubaccountsResponse, PaystackResult,
+    get_request, post_request, put_request, CreateSubaccountResponse, Error,
+    FetchSubaccountResponse, ListSubaccountsResponse, PaystackResult,
 };
 
 /// This struct is used to create the body for creating a subaccount on your integration.
@@ -134,6 +134,33 @@ impl Subaccount {
         match get_request(&self.api_key, &url, None).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<FetchSubaccountResponse>().await {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(Error::Subaccount(err.to_string())),
+                },
+                _ => Err(Error::RequestNotSuccessful(
+                    response.status().to_string(),
+                    response.text().await?,
+                )),
+            },
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
+        }
+    }
+
+    /// Update a subaccount details on your integration.
+    ///
+    /// Takes the following parameters:
+    ///     - id_or_code: Subaccount's ID or code.
+    ///     - body: Subaccount modification payload
+    pub async fn update_subaccount(
+        &self,
+        id_or_code: String,
+        body: CreateSubaccountBody,
+    ) -> PaystackResult<CreateSubaccountResponse> {
+        let url = format!("{}/subaccount/{}", BASE_URL, id_or_code);
+
+        match put_request(&self.api_key, &url, body).await {
+            Ok(response) => match response.status() {
+                StatusCode::OK => match response.json::<CreateSubaccountResponse>().await {
                     Ok(content) => Ok(content),
                     Err(err) => Err(Error::Subaccount(err.to_string())),
                 },

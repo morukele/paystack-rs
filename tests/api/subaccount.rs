@@ -120,3 +120,134 @@ async fn fetch_subaccount_with_id_returns_a_valid_payload() {
     assert_eq!(res.message, "Subaccount retrieved");
     assert_eq!(res.data.account_number, subaccount.data.account_number);
 }
+
+#[tokio::test]
+async fn fetch_subaccount_with_subaccount_code_returns_a_valid_payload() {
+    // Arrange
+    let client = get_paystack_client();
+    let business_name: String = CompanyName().fake();
+    let description: String = Sentence(5..10).fake();
+    let (account_number, bank_code) = get_bank_account_number_and_code();
+
+    // Act
+    let body = CreateSubaccountBodyBuilder::default()
+        .business_name(business_name)
+        .settlement_bank(bank_code.clone())
+        .account_number(account_number.clone())
+        .percentage_charge(18.2)
+        .description(description)
+        .build()
+        .unwrap();
+
+    // println!("{:#?}", body);
+    let subaccount = client
+        .subaccount
+        .create_subaccount(body)
+        .await
+        .expect("Unable to Create a subaccount");
+
+    let res = client
+        .subaccount
+        .fetch_subaccount(subaccount.data.subaccount_code)
+        .await
+        .expect("Unable to fetch subaccount");
+
+    // Assert
+    assert!(res.status);
+    assert_eq!(res.message, "Subaccount retrieved");
+    assert_eq!(res.data.account_number, subaccount.data.account_number);
+}
+
+#[tokio::test]
+async fn modify_subaccount_with_subaccount_id_returns_a_valid_payload() {
+    // Arrange
+    let client = get_paystack_client();
+    let business_name: String = CompanyName().fake();
+    let description: String = Sentence(5..10).fake();
+    let (account_number, bank_code) = get_bank_account_number_and_code();
+
+    // Act
+    let body = CreateSubaccountBodyBuilder::default()
+        .business_name(business_name)
+        .settlement_bank(bank_code.clone())
+        .account_number(account_number.clone())
+        .percentage_charge(18.2)
+        .description(description)
+        .build()
+        .unwrap();
+
+    // println!("{:#?}", body);
+    let subaccount = client
+        .subaccount
+        .create_subaccount(body)
+        .await
+        .expect("Unable to Create a subaccount");
+
+    let new_body = CreateSubaccountBodyBuilder::default()
+        .business_name("New Business Name".to_string())
+        .settlement_bank(bank_code.clone())
+        .account_number(account_number.clone())
+        .percentage_charge(18.2)
+        .description("This should be modified".to_string())
+        .build()
+        .unwrap();
+
+    let res = client
+        .subaccount
+        .update_subaccount(subaccount.data.subaccount_code, new_body)
+        .await
+        .expect("Unable to fetch subaccount");
+
+    // Assert
+    assert!(res.status);
+    assert_eq!(res.message, "Subaccount updated");
+    assert_eq!(res.data.description.unwrap(), "This should be modified");
+    assert_eq!(res.data.business_name, "New Business Name")
+}
+
+#[tokio::test]
+async fn modify_subaccount_with_subaccount_code_returns_a_valid_payload() {
+    // Arrange
+    let client = get_paystack_client();
+    let business_name: String = CompanyName().fake();
+    let description: String = Sentence(5..10).fake();
+    let (account_number, bank_code) = get_bank_account_number_and_code();
+
+    // Act
+    let body = CreateSubaccountBodyBuilder::default()
+        .business_name(business_name)
+        .settlement_bank(bank_code.clone())
+        .account_number(account_number.clone())
+        .percentage_charge(18.2)
+        .description(description)
+        .build()
+        .unwrap();
+
+    // println!("{:#?}", body);
+    let subaccount = client
+        .subaccount
+        .create_subaccount(body)
+        .await
+        .expect("Unable to Create a subaccount");
+
+    let new_body = CreateSubaccountBodyBuilder::default()
+        .business_name("New Business Name".to_string())
+        .settlement_bank(bank_code.clone())
+        .account_number(account_number.clone())
+        .percentage_charge(18.2)
+        .description("This should be modified".to_string())
+        .build()
+        .unwrap();
+
+    let res = client
+        .subaccount
+        .update_subaccount(subaccount.data.id.to_string(), new_body)
+        .await
+        .expect("Unable to fetch subaccount");
+
+    // Assert
+    assert!(res.status);
+    assert_eq!(res.message, "Subaccount updated");
+    assert_eq!(res.data.description.unwrap(), "This should be modified");
+    assert_eq!(res.data.business_name, "New Business Name")
+}
