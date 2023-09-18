@@ -29,6 +29,7 @@ async fn initialize_transaction_valid() {
         .unwrap();
     // println!("{:#?}", &body);
     let res = client
+        .transaction
         .initialize_transaction(body)
         .await
         .expect("Unable to initialize transaction");
@@ -60,7 +61,7 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant
         .build()
         .unwrap();
 
-    let res = client.initialize_transaction(body).await;
+    let res = client.transaction.initialize_transaction(body).await;
 
     // Assert
     match res {
@@ -95,6 +96,7 @@ async fn valid_transaction_is_verified() {
         .unwrap();
 
     let content = client
+        .transaction
         .initialize_transaction(body)
         .await
         .expect("unable to initiate transaction");

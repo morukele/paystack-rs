@@ -2,15 +2,15 @@
 //! ============
 //! This file contains utility sections that are used in different sections of the client
 
-use std::fmt::Debug;
-use reqwest::{Client, Response, Error};
+use reqwest::{Client, Error, Response};
 use serde::Serialize;
+use std::fmt::Debug;
 
 /// A function for sending GET request to a specified url
 /// with optional query parameters using reqwest client.
 pub async fn get_request(
-    api_key: &String,
-    url: &String,
+    api_key: &str,
+    url: &str,
     query: Option<Vec<(&str, String)>>,
 ) -> Result<Response, Error> {
     let client = Client::new();
@@ -30,9 +30,9 @@ pub async fn get_request(
 
 /// A function for sending POST requests to a specified url
 /// using the reqwest client.
-pub async fn post_request<T>(api_key: &String, url: &String, body: T) -> Result<Response, Error>
-    where
-        T: Debug + Serialize,
+pub async fn post_request<T>(api_key: &str, url: &str, body: T) -> Result<Response, Error>
+where
+    T: Debug + Serialize,
 {
     let client = Client::new();
     let response = client
@@ -51,9 +51,9 @@ pub async fn post_request<T>(api_key: &String, url: &String, body: T) -> Result<
 
 /// A function for sending PUT requests to a specified url
 /// using the reqwest client.
-pub async fn put_request<T>(api_key: &String, url: &String, body: T) -> Result<Response, Error>
-    where
-        T: Debug + Serialize,
+pub async fn put_request<T>(api_key: &str, url: &str, body: T) -> Result<Response, Error>
+where
+    T: Debug + Serialize,
 {
     let client = Client::new();
     let response = client
@@ -72,9 +72,9 @@ pub async fn put_request<T>(api_key: &String, url: &String, body: T) -> Result<R
 
 /// A function for sending DELETE requests to a specified url
 /// using the reqwest client.
-pub async fn delete_request<T>(api_key: &String, url: &String, body: T) -> Result<Response, Error>
-    where
-        T: Debug + Serialize,
+pub async fn delete_request<T>(api_key: &str, url: &str, body: T) -> Result<Response, Error>
+where
+    T: Debug + Serialize,
 {
     let client = Client::new();
     let response = client

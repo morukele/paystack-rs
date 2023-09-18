@@ -5,14 +5,11 @@
 extern crate reqwest;
 extern crate serde_json;
 
-use crate::{get_request, post_request};
+use crate::{get_request, post_request, Transaction};
 use crate::{
-    put_request, ChargeBody, CreateSubAccountResponse, CreateSubaccountBody,
-    CreateTransactionSplitBody, Currency, Error, ExportTransactionResponse,
-    InitializeTransactionBody, PartialDebitTransactionBody, PaystackResult, ResponseWithoutData,
-    Status, Subaccount, TransactionResponse, TransactionSplitListResponse,
-    TransactionSplitResponse, TransactionStatus, TransactionStatusList, TransactionTimeline,
-    TransactionTotalsResponse, UpdateTransactionSplitBody,
+    put_request, CreateSubAccountResponse, CreateSubaccountBody, CreateTransactionSplitBody, Error,
+    PaystackResult, ResponseWithoutData, Subaccount, TransactionSplitListResponse,
+    TransactionSplitResponse, UpdateTransactionSplitBody,
 };
 use reqwest::StatusCode;
 use std::fmt::Debug;
@@ -24,6 +21,8 @@ static BASE_URL: &str = "https://api.paystack.co";
 #[derive(Clone, Debug)]
 pub struct PaystackClient {
     api_key: String,
+    /// Transaction API object
+    pub transaction: Transaction,
 }
 
 impl PaystackClient {
@@ -32,265 +31,11 @@ impl PaystackClient {
     /// It takes the following parameters:
     ///     - key: Paystack API key.
     pub fn new(key: String) -> Self {
-        Self { api_key: key }
-    }
-
-    /// This method initializes a new transaction using the Paystack API.
-    ///
-    /// It takes a Transaction type as its parameter
-    pub async fn initialize_transaction(
-        &self,
-        transaction_body: InitializeTransactionBody,
-    ) -> PaystackResult<TransactionResponse> {
-        let url = format!("{}/transaction/initialize", BASE_URL);
-
-        match post_request(&self.api_key, &url, transaction_body).await {
-            Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<TransactionResponse>().await {
-                    Ok(content) => Ok(content),
-                    Err(err) => Err(Error::Transaction(err.to_string())),
-                },
-                _ => Err(Error::RequestNotSuccessful(
-                    response.status().to_string(),
-                    response.text().await?,
-                )),
+        Self {
+            api_key: key.to_string(),
+            transaction: Transaction {
+                api_key: key.to_string(),
             },
-            Err(err) => Err(Error::FailedRequest(err.to_string())),
-        }
-    }
-
-    /// This method confirms the status of a transaction.
-    ///
-    /// It takes the following parameters:
-    ///     - reference: The transaction reference used to initiate the transaction
-    pub async fn verify_transaction(
-        &self,
-        reference: &String,
-    ) -> PaystackResult<TransactionStatus> {
-        let url = format!("{}/transaction/verify/{}", BASE_URL, reference);
-
-        match get_request(&self.api_key, &url, None).await {
-            Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<TransactionStatus>().await {
-                    Ok(content) => Ok(content),
-                    Err(err) => Err(Error::Transaction(err.to_string())),
-                },
-                _ => Err(Error::RequestNotSuccessful(
-                    response.status().to_string(),
-                    response.text().await?,
-                )),
-            },
-            Err(err) => Err(Error::FailedRequest(err.to_string())),
-        }
-    }
-
-    /// This method returns a Vec of transactions carried out on your integrations.
-    ///
-    /// The method takes the following parameters:
-    ///     - perPage (Optional): Number of transactions to return. If None is passed as the parameter, the last 10 transactions are returned.
-    ///     - status (Optional): Filter transactions by status, defaults to Success if no status is passed.
-    ///
-    pub async fn list_transactions(
-        &self,
-        number_of_transactions: Option<u32>,
-        status: Option<Status>,
-    ) -> PaystackResult<TransactionStatusList> {
-        let url = format!("{}/transaction", BASE_URL);
-        let query = vec![
-            ("perPage", number_of_transactions.unwrap_or(10).to_string()),
-            ("status", status.unwrap_or(Status::Success).to_string()),
-        ];
-
-        match get_request(&self.api_key, &url, Some(query)).await {
-            Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<TransactionStatusList>().await {
-                    Ok(content) => Ok(content),
-                    Err(err) => Err(Error::Transaction(err.to_string())),
-                },
-                _ => Err(Error::RequestNotSuccessful(
-                    response.status().to_string(),
-                    response.text().await?,
-                )),
-            },
-            Err(err) => Err(Error::FailedRequest(err.to_string())),
-        }
-    }
-
-    /// Get details of a transaction carried out on your integration
-    ///
-    /// This methods take the Id of the desired transaction as a parameter
-    pub async fn fetch_transactions(
-        &self,
-        transaction_id: u32,
-    ) -> PaystackResult<TransactionStatus> {
-        let url = format!("{}/transaction/{}", BASE_URL, transaction_id);
-
-        match get_request(&self.api_key, &url, None).await {
-            Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<TransactionStatus>().await {
-                    Ok(content) => Ok(content),
-                    Err(err) => Err(Error::Transaction(err.to_string())),
-                },
-                _ => Err(Error::RequestNotSuccessful(
-                    response.status().to_string(),
-                    response.text().await?,
-                )),
-            },
-            Err(err) => Err(Error::FailedRequest(err.to_string())),
-        }
-    }
-
-    /// All authorizations marked as reusable can be charged with this endpoint whenever you need to receive payments
-    ///
-    /// This function takes a Charge Struct as parameter
-    pub async fn charge_authorization(
-        &self,
-        charge: ChargeBody,
-    ) -> PaystackResult<TransactionStatus> {
-        let url = format!("{}/transaction/charge_authorization", BASE_URL);
-
-        match post_request(&self.api_key, &url, charge).await {
-            Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<TransactionStatus>().await {
-                    Ok(content) => Ok(content),
-                    Err(err) => Err(Error::Charge(err.to_string())),
-                },
-                _ => Err(Error::RequestNotSuccessful(
-                    response.status().to_string(),
-                    response.text().await?,
-                )),
-            },
-            Err(err) => Err(Error::FailedRequest(err.to_string())),
-        }
-    }
-
-    /// View the timeline of a transaction
-    ///
-    /// This method takes in the Transaction id or reference as a parameter
-    pub async fn view_transaction_timeline(
-        &self,
-        id: Option<u32>,
-        reference: Option<String>,
-    ) -> PaystackResult<TransactionTimeline> {
-        // This is a hacky implementation to ensure that the transaction reference or id is not empty.
-        // If they are empty, a url without them as parameter is created.
-        let url: PaystackResult<String> = match (id, reference) {
-            (Some(id), None) => Ok(format!("{}/transaction/timeline/{}", BASE_URL, id)),
-            (None, Some(reference)) => {
-                Ok(format!("{}/transaction/timeline/{}", BASE_URL, &reference))
-            }
-            _ => {
-                return Err(Error::Transaction(
-                    "Transaction Id or Reference is need to view transaction timeline".to_string(),
-                ))
-            }
-        };
-
-        let url = url.unwrap(); // Send the error back up the function
-
-        match get_request(&self.api_key, &url, None).await {
-            Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<TransactionTimeline>().await {
-                    Ok(content) => Ok(content),
-                    Err(err) => Err(Error::Transaction(err.to_string())),
-                },
-                _ => Err(Error::RequestNotSuccessful(
-                    response.status().to_string(),
-                    response.text().await?,
-                )),
-            },
-            Err(err) => Err(Error::FailedRequest(err.to_string())),
-        }
-    }
-
-    /// Total amount received on your account.
-    ///
-    /// This route normally takes a perPage or page query,
-    /// However in this case it is ignored.
-    /// If you need it in your work please open an issue
-    /// and it will be implemented.
-    pub async fn total_transactions(&self) -> PaystackResult<TransactionTotalsResponse> {
-        let url = format!("{}/transaction/totals", BASE_URL);
-
-        match get_request(&self.api_key, &url, None).await {
-            Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<TransactionTotalsResponse>().await {
-                    Ok(content) => Ok(content),
-                    Err(err) => Err(Error::Transaction(err.to_string())),
-                },
-                _ => Err(Error::RequestNotSuccessful(
-                    response.status().to_string(),
-                    response.text().await?,
-                )),
-            },
-            Err(err) => Err(Error::FailedRequest(err.to_string())),
-        }
-    }
-
-    /// Export a list of transactions carried out on your integration
-    ///
-    /// This method takes the following parameters
-    /// - Status (Optional): The status of the transactions to export. Defaults to all
-    /// - Currency (Optional): The currency of the transactions to export. Defaults to NGN
-    /// - Settled (Optional): To state of the transactions to export. Defaults to False.
-    pub async fn export_transaction(
-        &self,
-        status: Option<Status>,
-        currency: Option<Currency>,
-        settled: Option<bool>,
-    ) -> PaystackResult<ExportTransactionResponse> {
-        let url = format!("{}/transaction/export", BASE_URL);
-
-        // Specify a default option for settled transactions.
-        let settled = match settled {
-            Some(settled) => settled.to_string(),
-            None => String::from(""),
-        };
-
-        let query = vec![
-            ("status", status.unwrap_or(Status::Success).to_string()),
-            ("currency", currency.unwrap_or(Currency::EMPTY).to_string()),
-            ("settled", settled),
-        ];
-
-        match get_request(&self.api_key, &url, Some(query)).await {
-            Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<ExportTransactionResponse>().await {
-                    Ok(content) => Ok(content),
-                    Err(err) => Err(Error::Transaction(err.to_string())),
-                },
-                _ => Err(Error::RequestNotSuccessful(
-                    response.status().to_string(),
-                    response.text().await?,
-                )),
-            },
-            Err(err) => Err(Error::FailedRequest(err.to_string())),
-        }
-    }
-
-    /// Retrieve part of a payment from a customer.
-    ///
-    /// It takes a PartialDebitTransaction type as a parameter.
-    ///
-    /// NB: it must be created with the PartialDebitTransaction Builder.
-    pub async fn partial_debit(
-        &self,
-        transaction_body: PartialDebitTransactionBody,
-    ) -> PaystackResult<TransactionStatus> {
-        let url = format!("{}/transaction/partial_debit", BASE_URL);
-
-        match post_request(&self.api_key, &url, transaction_body).await {
-            Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<TransactionStatus>().await {
-                    Ok(content) => Ok(content),
-                    Err(err) => Err(Error::Transaction(err.to_string())),
-                },
-                _ => Err(Error::RequestNotSuccessful(
-                    response.status().to_string(),
-                    response.text().await?,
-                )),
-            },
-            Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
     }
 
