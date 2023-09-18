@@ -84,7 +84,9 @@ pub struct Transaction {
     /// Paystack API Key
     pub api_key: String,
 }
+
 static BASE_URL: &str = "https://api.paystack.co";
+
 impl Transaction {
     /// This method initializes a new transaction using the Paystack API.
     ///

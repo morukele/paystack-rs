@@ -26,6 +26,7 @@ async fn create_subaccount_passes_with_valid_data() {
 
     // println!("{:#?}", body);
     let res = client
+        .subaccount
         .create_subaccount(body)
         .await
         .expect("Unable to Create a subaccount");
@@ -51,7 +52,7 @@ async fn create_subaccount_fails_with_invalid_data() {
         .build()
         .unwrap();
 
-    let res = client.create_subaccount(body).await;
+    let res = client.subaccount.create_subaccount(body).await;
 
     // Assert
     match res {

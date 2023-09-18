@@ -3,8 +3,11 @@
 //! The Subaccounts API allows you create and manage subaccounts on your integration.
 //! Subaccounts can be used to split payment between two accounts (your main account and a sub account).
 
-use serde::Serialize;
 use derive_builder::Builder;
+use reqwest::StatusCode;
+use serde::Serialize;
+
+use crate::{post_request, CreateSubAccountResponse, Error, PaystackResult};
 
 /// This struct is used to create the body for creating a subaccount on your integration.
 #[derive(Serialize, Debug, Builder)]
@@ -34,5 +37,41 @@ pub struct CreateSubaccountBody {
     /// added to your transaction when displayed on the dashboard.
     /// Sample: {"custom_fields":[{"display_name":"Cart ID","variable_name": "cart_id","value": "8393"}]}
     #[builder(default = "None")]
-    metadata: Option<String>
+    metadata: Option<String>,
+}
+
+/// A struct to hold all functions in the subaccount API route
+#[derive(Debug, Clone)]
+pub struct Subaccount {
+    /// Paystack API key
+    pub api_key: String,
+}
+
+static BASE_URL: &str = "https://api.paystack.co";
+
+impl Subaccount {
+    /// Creates a new subaccount.
+    ///
+    /// Takes in the following parameters
+    ///     - body: subaccount to create.
+    pub async fn create_subaccount(
+        &self,
+        body: CreateSubaccountBody,
+    ) -> PaystackResult<CreateSubAccountResponse> {
+        let url = format!("{}/subaccount", BASE_URL);
+
+        match post_request(&self.api_key, &url, body).await {
+            Ok(response) => match response.status() {
+                StatusCode::CREATED => match response.json::<CreateSubAccountResponse>().await {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(Error::Subaccount(err.to_string())),
+                },
+                _ => Err(Error::RequestNotSuccessful(
+                    response.status().to_string(),
+                    response.text().await?,
+                )),
+            },
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
+        }
+    }
 }
