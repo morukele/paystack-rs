@@ -2,7 +2,6 @@
 //! ========
 //! This file contains the structs and definitions of the errors in this crate.
 
-
 /// Custom Error for the Paystack API
 #[derive(thiserror::Error, Debug)]
 #[non_exhaustive]

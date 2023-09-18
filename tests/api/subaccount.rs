@@ -1,8 +1,8 @@
-use fake::Fake;
-use fake::faker::company::en::CompanyName;
-use fake::faker::lorem::en::{Sentence};
-use paystack::{CreateSubaccountBodyBuilder};
 use crate::helpers::{get_bank_account_number_and_code, get_paystack_client};
+use fake::faker::company::en::CompanyName;
+use fake::faker::lorem::en::Sentence;
+use fake::Fake;
+use paystack::CreateSubaccountBodyBuilder;
 
 #[tokio::test]
 async fn create_subaccount_passes_with_valid_data() {
@@ -51,9 +51,7 @@ async fn create_subaccount_fails_with_invalid_data() {
         .build()
         .unwrap();
 
-    let res = client
-        .create_subaccount(body)
-        .await;
+    let res = client.create_subaccount(body).await;
 
     // Assert
     match res {

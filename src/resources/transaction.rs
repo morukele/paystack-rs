@@ -3,8 +3,8 @@
 //! TThe Transactions API allows you create and manage payments on your integration.
 
 use crate::{Channel, Currency};
-use serde::Serialize;
 use derive_builder::Builder;
+use serde::Serialize;
 
 /// This struct is used to create a transaction body for creating a transaction using the Paystack API.
 /// This struct should be created using the `InitializeTransactionBodyBuilder`
@@ -49,7 +49,7 @@ pub struct InitializeTransactionBody {
     transaction_charge: Option<u32>,
     /// Who bears Paystack charges? `account` or `subaccount` (defaults to account).
     #[builder(default = "None")]
-    bearer: Option<String>
+    bearer: Option<String>,
 }
 
 /// This struct is used to create a partial debit transaction body for creating a partial debit using the Paystack API.

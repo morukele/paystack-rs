@@ -27,7 +27,7 @@ async fn main() {
         .channels(Some(vec![
             Channel::ApplePay,
             Channel::Bank,
-            Channel::BankTransfer
+            Channel::BankTransfer,
         ]))
         .build()
         .unwrap();
