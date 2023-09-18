@@ -51,36 +51,36 @@ You can also download the source code and use in your code base directly if you 
 Initializing an instance of the Paystack client and creating a transaction.
 
 ```rust
-    use std::env; 
-    use dotenv::dotenv; 
-    use paystack::{PaystackClient, InitializeTransactionBodyBuilder, Error, Currency, Channel};
+use std::env; 
+use dotenv::dotenv; 
+use paystack::{PaystackClient, InitializeTransactionBodyBuilder, Error, Currency, Channel};
 
-     #[tokio::main]
-     async fn main() -> Result<(), Error>{
-         dotenv().ok();
-         let api_key = env::var("PAYSTACK_API_KEY").unwrap();
-         let client = PaystackClient::new(api_key);
+#[tokio::main]
+async fn main() -> Result<(), Error>{
+    dotenv().ok();
+    let api_key = env::var("PAYSTACK_API_KEY").unwrap();
+    let client = PaystackClient::new(api_key);
 
-         let body = InitializeTransactionBodyBuilder::default()
-                       .amount("10000".to_string())
-                       .email("email@example.com".to_string())
-                       .currency(Some(Currency::NGN))
-                       .channels(Some(vec![
-                           Channel::ApplePay,
-                           Channel::Bank,
-                           Channel::BankTransfer
-                       ]))
-                       .build()
-                       .unwrap();
+    let body = InitializeTransactionBodyBuilder::default()
+                .amount("10000".to_string())
+                .email("email@example.com".to_string())
+                .currency(Some(Currency::NGN))
+                .channels(Some(vec![
+                    Channel::ApplePay,
+                    Channel::Bank,
+                    Channel::BankTransfer
+                ]))
+                .build()
+                .unwrap();
 
-         let transaction = client
-             .transaction
-             .initialize_transaction(body)
-             .await
-             .expect("Unable to create transaction");
+    let transaction = client
+        .transaction
+        .initialize_transaction(body)
+        .await
+        .expect("Unable to create transaction");
          
-         Ok(())
-     }
+    Ok(())
+}
 ```
 
 ## Contributing
