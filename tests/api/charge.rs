@@ -21,6 +21,7 @@ async fn charge_authorization_succeeds() {
         .unwrap();
 
     let charge_response = client
+        .transaction
         .charge_authorization(charge)
         .await
         .expect("unable to authorize charge");

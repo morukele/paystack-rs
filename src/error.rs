@@ -2,7 +2,6 @@
 //! ========
 //! This file contains the structs and definitions of the errors in this crate.
 
-
 /// Custom Error for the Paystack API
 #[derive(thiserror::Error, Debug)]
 #[non_exhaustive]
@@ -26,6 +25,10 @@ pub enum Error {
     /// Error associated with Transaction Split
     #[error("Transaction Split Error: {0}")]
     TransactionSplit(String),
+
+    /// Error associated with Subaccount
+    #[error("Subaccount Error: {0}")]
+    Subaccount(String),
 
     /// Error for unsuccessful request to the Paystack API
     #[error("Request failed - Status Code: {0} Body: {1}")]

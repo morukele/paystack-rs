@@ -27,12 +27,13 @@ async fn main() {
         .channels(Some(vec![
             Channel::ApplePay,
             Channel::Bank,
-            Channel::BankTransfer
+            Channel::BankTransfer,
         ]))
         .build()
         .unwrap();
 
     let transaction = client
+        .transaction
         .initialize_transaction(body)
         .await
         .expect("Unable to create transaction");
@@ -47,6 +48,7 @@ async fn main() {
     // Verify transaction
     // Transaction reference can be a string or pulled out from the transaction response
     let transaction_status = client
+        .transaction
         .verify_transaction(&transaction.data.reference.to_string())
         .await
         .expect("Unable to get transaction status");
@@ -61,6 +63,7 @@ async fn main() {
 
     // List of transactions
     let transactions = client
+        .transaction
         .list_transactions(Some(5), Some(Status::Success))
         .await
         .expect("Unable to get all the transactions");
