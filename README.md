@@ -74,6 +74,7 @@ Initializing an instance of the Paystack client and creating a transaction.
                        .unwrap();
 
          let transaction = client
+             .transaction
              .initialize_transaction(body)
              .await
              .expect("Unable to create transaction");

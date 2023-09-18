@@ -7,7 +7,10 @@ use derive_builder::Builder;
 use reqwest::StatusCode;
 use serde::Serialize;
 
-use crate::{post_request, CreateSubAccountResponse, Error, PaystackResult};
+use crate::{
+    get_request, post_request, CreateSubaccountResponse, Error, FetchSubaccountResponse,
+    ListSubaccountsResponse, PaystackResult,
+};
 
 /// This struct is used to create the body for creating a subaccount on your integration.
 #[derive(Serialize, Debug, Builder)]
@@ -44,25 +47,93 @@ pub struct CreateSubaccountBody {
 #[derive(Debug, Clone)]
 pub struct Subaccount {
     /// Paystack API key
-    pub api_key: String,
+    api_key: String,
 }
 
 static BASE_URL: &str = "https://api.paystack.co";
 
 impl Subaccount {
-    /// Creates a new subaccount.
+    /// Constructor for the subaccount object
+    pub fn new(key: String) -> Self {
+        Subaccount { api_key: key }
+    }
+
+    /// Create a subaccount on your integration
     ///
     /// Takes in the following parameters
     ///     - body: subaccount to create.
     pub async fn create_subaccount(
         &self,
         body: CreateSubaccountBody,
-    ) -> PaystackResult<CreateSubAccountResponse> {
+    ) -> PaystackResult<CreateSubaccountResponse> {
         let url = format!("{}/subaccount", BASE_URL);
 
         match post_request(&self.api_key, &url, body).await {
             Ok(response) => match response.status() {
-                StatusCode::CREATED => match response.json::<CreateSubAccountResponse>().await {
+                StatusCode::CREATED => match response.json::<CreateSubaccountResponse>().await {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(Error::Subaccount(err.to_string())),
+                },
+                _ => Err(Error::RequestNotSuccessful(
+                    response.status().to_string(),
+                    response.text().await?,
+                )),
+            },
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
+        }
+    }
+
+    /// List subaccounts available on your integration
+    ///
+    /// Take in the following parameters
+    ///     - perPage: Specify how many records you want to retrieve per page. If not specify we use a default value of 50.
+    ///     - page: Specify exactly what page you want to retrieve. If not specify we use a default value of 1.
+    ///     - from: A timestamp from which to start listing subaccounts e.g. `2016-09-24T00:00:05.000Z`, `2016-09-21`
+    ///     - to: A timestamp at which to stop listing subaccounts e.g. `2016-09-24T00:00:05.000Z`, `2016-09-21`
+    pub async fn list_subaccounts(
+        &self,
+        per_page: Option<u32>,
+        page: Option<u32>,
+        from: Option<String>,
+        to: Option<String>,
+    ) -> PaystackResult<ListSubaccountsResponse> {
+        let url = format!("{}/subaccount", BASE_URL);
+
+        let query = vec![
+            ("perPage", per_page.unwrap_or(50).to_string()),
+            ("page", page.unwrap_or(1).to_string()),
+            ("from", from.unwrap_or_default()),
+            ("to", to.unwrap_or_default()),
+        ];
+
+        match get_request(&self.api_key, &url, Some(query)).await {
+            Ok(response) => match response.status() {
+                StatusCode::OK => match response.json::<ListSubaccountsResponse>().await {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(Error::Subaccount(err.to_string())),
+                },
+                _ => Err(Error::RequestNotSuccessful(
+                    response.status().to_string(),
+                    response.text().await?,
+                )),
+            },
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
+        }
+    }
+
+    /// Get details of a subaccount on your integration.
+    ///
+    /// Takes the following parameters:
+    ///     - id_or_code: The subaccount `ID` or `code` you want to fetch
+    pub async fn fetch_subaccount(
+        &self,
+        id_or_code: String,
+    ) -> PaystackResult<FetchSubaccountResponse> {
+        let url = format!("{}/subaccount/{}", BASE_URL, id_or_code);
+
+        match get_request(&self.api_key, &url, None).await {
+            Ok(response) => match response.status() {
+                StatusCode::OK => match response.json::<FetchSubaccountResponse>().await {
                     Ok(content) => Ok(content),
                     Err(err) => Err(Error::Subaccount(err.to_string())),
                 },

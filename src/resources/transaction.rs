@@ -82,13 +82,18 @@ pub struct PartialDebitTransactionBody {
 #[derive(Debug, Clone)]
 pub struct Transaction {
     /// Paystack API Key
-    pub api_key: String,
+    api_key: String,
 }
 
 static BASE_URL: &str = "https://api.paystack.co";
 
 impl Transaction {
-    /// This method initializes a new transaction using the Paystack API.
+    /// Constructor for the transaction object
+    pub fn new(key: String) -> Self {
+        Transaction { api_key: key }
+    }
+
+    /// Initialize a transaction from your backend.
     ///
     /// It takes a Transaction type as its parameter
     pub async fn initialize_transaction(
@@ -112,7 +117,7 @@ impl Transaction {
         }
     }
 
-    /// This method confirms the status of a transaction.
+    /// Confirm the status of a transaction.
     ///
     /// It takes the following parameters:
     ///     - reference: The transaction reference used to initiate the transaction
@@ -137,7 +142,7 @@ impl Transaction {
         }
     }
 
-    /// This method returns a Vec of transactions carried out on your integrations.
+    /// List transactions carried out on your integration.
     ///
     /// The method takes the following parameters:
     ///     - perPage (Optional): Number of transactions to return. If None is passed as the parameter, the last 10 transactions are returned.
@@ -169,7 +174,7 @@ impl Transaction {
         }
     }
 
-    /// Get details of a transaction carried out on your integration
+    /// Get details of a transaction carried out on your integration.
     ///
     /// This methods take the Id of the desired transaction as a parameter
     pub async fn fetch_transactions(
@@ -193,7 +198,7 @@ impl Transaction {
         }
     }
 
-    /// All authorizations marked as reusable can be charged with this endpoint whenever you need to receive payments
+    /// All authorizations marked as reusable can be charged with this endpoint whenever you need to receive payments.
     ///
     /// This function takes a Charge Struct as parameter
     pub async fn charge_authorization(
@@ -217,7 +222,7 @@ impl Transaction {
         }
     }
 
-    /// View the timeline of a transaction
+    /// View the timeline of a transaction.
     ///
     /// This method takes in the Transaction id or reference as a parameter
     pub async fn view_transaction_timeline(
@@ -280,7 +285,7 @@ impl Transaction {
         }
     }
 
-    /// Export a list of transactions carried out on your integration
+    /// Export a list of transactions carried out on your integration.
     ///
     /// This method takes the following parameters
     /// - Status (Optional): The status of the transactions to export. Defaults to all

@@ -43,6 +43,7 @@
 //!              .unwrap();
 //!
 //!        let transaction = client
+//!             .transaction
 //!             .initialize_transaction(body)
 //!             .await
 //!             .expect("Unable to create transaction");

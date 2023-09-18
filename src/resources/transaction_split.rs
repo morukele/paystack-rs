@@ -62,12 +62,17 @@ pub struct UpdateTransactionSplitBody {
 #[derive(Debug, Clone)]
 pub struct TransactionSplit {
     /// Paystack API key
-    pub api_key: String,
+    api_key: String,
 }
 
 static BASE_URL: &str = "https://api.paystack.co";
 
 impl TransactionSplit {
+    /// Constructor for the Transaction Split object
+    pub fn new(key: String) -> Self {
+        TransactionSplit { api_key: key }
+    }
+
     /// Create a split payment on your integration.
     ///
     /// This method takes a TransactionSplit object as a parameter.

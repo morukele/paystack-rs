@@ -40,7 +40,7 @@ pub struct TransactionStatus {
 }
 
 /// This struct represents a list of transaction status.
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct TransactionStatusList {
     /// This lets you know if your request was successful or not.
     pub status: bool,
@@ -49,10 +49,12 @@ pub struct TransactionStatusList {
     /// This contains the results of your request.
     /// In this case, it is a vector of objects.
     pub data: Vec<TransactionStatusData>,
+    /// The meta key is used to provide context for the contents of the data key.
+    pub meta: MetaData,
 }
 
 /// This struct represents the transaction timeline.
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct TransactionTimeline {
     /// This lets you know if your request was successful or not.
     pub status: bool,
@@ -63,7 +65,7 @@ pub struct TransactionTimeline {
 }
 
 /// This struct represents the transaction timeline data.
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct TransactionTimelineData {
     /// Time spent in carrying out the transaction in ms.
     pub time_spent: Option<u32>,
@@ -86,7 +88,7 @@ pub struct TransactionTimelineData {
 }
 
 /// This struct represents the transaction history data
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct TransactionHistory {
     /// Transaction action.
     #[serde(rename = "type")]
@@ -98,7 +100,7 @@ pub struct TransactionHistory {
 }
 
 /// This struct represents the data of the transaction status response.
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct TransactionStatusData {
     /// Id of the Transaction
     pub id: Option<u32>,
@@ -133,7 +135,7 @@ pub struct TransactionStatusData {
 }
 
 /// This struct represents the authorization data of the transaction status response
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Authorization {
     /// Authorization code generated for the Transaction.
     pub authorization_code: Option<String>,
@@ -187,7 +189,7 @@ pub struct Customer {
 }
 
 /// Represents the response of the total amount received on your account
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct TransactionTotalsResponse {
     /// This lets you know if your request was successful or not.
     pub status: bool,
@@ -198,7 +200,7 @@ pub struct TransactionTotalsResponse {
 }
 
 /// Transaction total data.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct TransactionTotalData {
     /// Total number of transactions in the integration.
     pub total_transactions: Option<u32>,
@@ -215,7 +217,7 @@ pub struct TransactionTotalData {
 }
 
 /// Transaction volume by currency.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct VolumeByCurrency {
     /// Currency code.
     pub currency: String,
@@ -242,7 +244,7 @@ pub struct ExportTransactionData {
 }
 
 /// Represents the response of the partial debit transaction.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct PartialDebitTransactionResponse {
     /// This lets you know if your request was successful or not.
     pub status: bool,
@@ -301,14 +303,27 @@ pub struct SplitData {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct SubaccountData {
     /// Sub account data
-    pub subaccount: SubaccountResponse,
+    pub subaccount: SubaccountsResponseData,
     /// Share of split assigned to this sub
     pub share: u32,
 }
 
-/// Represents a subaccount in the percentage split data.
+/// Response from List Subaccount route
 #[derive(Debug, Deserialize, Serialize)]
-pub struct SubaccountResponse {
+pub struct ListSubaccountsResponse {
+    /// This lets you know if your request was successful or not.
+    pub status: bool,
+    /// This is a summary of the response and its status.
+    pub message: String,
+    /// This contain the results of your request.
+    pub data: Vec<SubaccountsResponseData>,
+    /// The meta key is used to provide context for the contents of the data key.
+    pub meta: MetaData,
+}
+
+/// Data of the list Subaccount response
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SubaccountsResponseData {
     /// Integration Id of subaccount.
     pub integration: Option<u32>,
     /// Subaccount domain.
@@ -337,10 +352,6 @@ pub struct SubaccountResponse {
     pub account_number: String,
     /// Settlement schedule of subaccount.
     pub settlement_schedule: Option<String>,
-    /// Status of subaccount.
-    pub active: Option<bool>,
-    /// Migrate subaccount or not.
-    pub migrate: Option<bool>,
     /// The ID of the subaccount.
     pub id: u32,
     /// Creation time of subaccount.
@@ -349,6 +360,23 @@ pub struct SubaccountResponse {
     /// Last update time of subaccount.
     #[serde(rename = "updatedAt")]
     pub updated_at: Option<String>,
+}
+
+/// MetaData of list response
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct MetaData {
+    /// This is the total number of transactions that were performed by the customer.
+    pub total: u32,
+    /// This is the number of records skipped before the first record in the array returned.
+    pub skipped: u32,
+    /// This is the maximum number of records that will be returned per request.
+    #[serde(rename = "perPage")]
+    pub per_page: String,
+    /// This is the current `page` being returned.
+    pub page: u32,
+    /// This is how many pages in total are available for retrieval considering the maximum records per page specified.
+    #[serde(rename = "pageCount")]
+    pub page_count: u32,
 }
 
 /// Represents the JSON response containing percentage split information.
@@ -373,11 +401,22 @@ pub struct ResponseWithoutData {
 
 /// Represents the JSON response for subaccount creation.
 #[derive(Debug, Deserialize, Serialize)]
-pub struct CreateSubAccountResponse {
+pub struct CreateSubaccountResponse {
     /// The status of the JSON response.
     pub status: bool,
     /// The message associated with the JSON response
     pub message: String,
     /// Subaccount response data
-    pub data: SubaccountResponse,
+    pub data: SubaccountsResponseData,
+}
+
+/// Represents the JSON response for fetch subaccount.
+#[derive(Debug, Deserialize, Serialize)]
+pub struct FetchSubaccountResponse {
+    /// The status of the JSON response.
+    pub status: bool,
+    /// The message associated with the JSON response.
+    pub message: String,
+    /// Fetch Subaccount response data.
+    pub data: SubaccountsResponseData,
 }
