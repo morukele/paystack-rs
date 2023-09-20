@@ -60,16 +60,16 @@ pub struct UpdateTransactionSplitBody {
 
 /// A struct to hold all the functions of the transaction split API route
 #[derive(Debug, Clone)]
-pub struct TransactionSplit {
+pub struct TransactionSplit<'a> {
     /// Paystack API key
-    api_key: String,
+    api_key: &'a str,
 }
 
 static BASE_URL: &str = "https://api.paystack.co";
 
-impl TransactionSplit {
+impl<'a> TransactionSplit<'a> {
     /// Constructor for the Transaction Split object
-    pub fn new(key: String) -> Self {
+    pub fn new(key: &'a str) -> TransactionSplit<'a> {
         TransactionSplit { api_key: key }
     }
 
@@ -82,7 +82,7 @@ impl TransactionSplit {
     ) -> PaystackResult<TransactionSplitResponse> {
         let url = format!("{}/split", BASE_URL);
 
-        match post_request(&self.api_key, &url, split_body).await {
+        match post_request(self.api_key, &url, split_body).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<TransactionSplitResponse>().await {
                     Ok(content) => Ok(content),
@@ -104,7 +104,7 @@ impl TransactionSplit {
     ///     - `split_active`: (Optional) status of the split to retrieve.
     pub async fn list_transaction_splits(
         &self,
-        split_name: Option<String>,
+        split_name: Option<&str>,
         split_active: Option<bool>,
     ) -> PaystackResult<TransactionSplitListResponse> {
         let url = format!("{}/split", BASE_URL);
@@ -112,15 +112,15 @@ impl TransactionSplit {
         // Specify a default option for active splits
         let split_active = match split_active {
             Some(active) => active.to_string(),
-            None => String::from(""),
+            None => "".to_string(),
         };
 
         let query = vec![
-            ("name", split_name.unwrap_or("".to_string())),
-            ("active", split_active),
+            ("name", split_name.unwrap_or("")),
+            ("active", &split_active),
         ];
 
-        match get_request(&self.api_key, &url, Some(query)).await {
+        match get_request(self.api_key, &url, Some(query)).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<TransactionSplitListResponse>().await {
                     Ok(content) => Ok(content),
@@ -141,11 +141,11 @@ impl TransactionSplit {
     ///     - `split_id`:  Id of the transaction split.
     pub async fn fetch_transaction_split(
         &self,
-        split_id: String,
+        split_id: &str,
     ) -> PaystackResult<TransactionSplitResponse> {
         let url = format!("{}/split{}", BASE_URL, split_id);
 
-        match get_request(&self.api_key, &url, None).await {
+        match get_request(self.api_key, &url, None).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<TransactionSplitResponse>().await {
                     Ok(content) => Ok(content),
@@ -170,12 +170,12 @@ impl TransactionSplit {
     ///     - `bearer_subaccount`: (Optional) updated bearer subaccount for the split
     pub async fn update_transaction_split(
         &self,
-        split_id: String,
+        split_id: &str,
         body: UpdateTransactionSplitBody,
     ) -> PaystackResult<TransactionSplitResponse> {
         let url = format!("{}/split/{}", BASE_URL, split_id);
 
-        match put_request(&self.api_key, &url, body).await {
+        match put_request(self.api_key, &url, body).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<TransactionSplitResponse>().await {
                     Ok(content) => Ok(content),
@@ -197,12 +197,12 @@ impl TransactionSplit {
     ///     - `body`: Subaccount to add to the transaction split.
     pub async fn add_or_update_subaccount_split(
         &self,
-        split_id: String,
+        split_id: &str,
         body: SubaccountBody,
     ) -> PaystackResult<TransactionSplitResponse> {
         let url = format!("{}/split/{}/subaccount/add", BASE_URL, split_id);
 
-        match post_request(&self.api_key, &url, body).await {
+        match post_request(self.api_key, &url, body).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<TransactionSplitResponse>().await {
                     Ok(content) => Ok(content),
@@ -224,12 +224,12 @@ impl TransactionSplit {
     ///     - subaccount: subaccount code to remove
     pub async fn remove_subaccount_from_transaction_split(
         &self,
-        split_id: &String,
-        subaccount: &String,
+        split_id: &str,
+        subaccount: &str,
     ) -> PaystackResult<ResponseWithoutData> {
         let url = format!("{}/split/{}/subaccount/remove", BASE_URL, split_id);
 
-        match post_request(&self.api_key, &url, subaccount).await {
+        match post_request(self.api_key, &url, subaccount).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<ResponseWithoutData>().await {
                     Ok(content) => Ok(content),

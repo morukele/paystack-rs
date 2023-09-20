@@ -45,16 +45,16 @@ pub struct CreateSubaccountBody {
 
 /// A struct to hold all functions in the subaccount API route
 #[derive(Debug, Clone)]
-pub struct Subaccount {
+pub struct Subaccount<'a> {
     /// Paystack API key
-    api_key: String,
+    api_key: &'a str,
 }
 
 static BASE_URL: &str = "https://api.paystack.co";
 
-impl Subaccount {
+impl<'a> Subaccount<'a> {
     /// Constructor for the subaccount object
-    pub fn new(key: String) -> Self {
+    pub fn new(key: &'a str) -> Subaccount<'a> {
         Subaccount { api_key: key }
     }
 
@@ -68,7 +68,7 @@ impl Subaccount {
     ) -> PaystackResult<CreateSubaccountResponse> {
         let url = format!("{}/subaccount", BASE_URL);
 
-        match post_request(&self.api_key, &url, body).await {
+        match post_request(self.api_key, &url, body).await {
             Ok(response) => match response.status() {
                 StatusCode::CREATED => match response.json::<CreateSubaccountResponse>().await {
                     Ok(content) => Ok(content),
@@ -94,19 +94,22 @@ impl Subaccount {
         &self,
         per_page: Option<u32>,
         page: Option<u32>,
-        from: Option<String>,
-        to: Option<String>,
+        from: Option<&str>,
+        to: Option<&str>,
     ) -> PaystackResult<ListSubaccountsResponse> {
         let url = format!("{}/subaccount", BASE_URL);
 
+        let per_page = per_page.unwrap_or(50).to_string();
+        let page = page.unwrap_or(1).to_string();
+
         let query = vec![
-            ("perPage", per_page.unwrap_or(50).to_string()),
-            ("page", page.unwrap_or(1).to_string()),
+            ("perPage", per_page.as_str()),
+            ("page", page.as_str()),
             ("from", from.unwrap_or_default()),
             ("to", to.unwrap_or_default()),
         ];
 
-        match get_request(&self.api_key, &url, Some(query)).await {
+        match get_request(self.api_key, &url, Some(query)).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<ListSubaccountsResponse>().await {
                     Ok(content) => Ok(content),
@@ -127,11 +130,11 @@ impl Subaccount {
     ///     - id_or_code: The subaccount `ID` or `code` you want to fetch
     pub async fn fetch_subaccount(
         &self,
-        id_or_code: String,
+        id_or_code: &str,
     ) -> PaystackResult<FetchSubaccountResponse> {
         let url = format!("{}/subaccount/{}", BASE_URL, id_or_code);
 
-        match get_request(&self.api_key, &url, None).await {
+        match get_request(self.api_key, &url, None).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<FetchSubaccountResponse>().await {
                     Ok(content) => Ok(content),
@@ -153,12 +156,12 @@ impl Subaccount {
     ///     - body: Subaccount modification payload
     pub async fn update_subaccount(
         &self,
-        id_or_code: String,
+        id_or_code: &str,
         body: CreateSubaccountBody,
     ) -> PaystackResult<CreateSubaccountResponse> {
         let url = format!("{}/subaccount/{}", BASE_URL, id_or_code);
 
-        match put_request(&self.api_key, &url, body).await {
+        match put_request(self.api_key, &url, body).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<CreateSubaccountResponse>().await {
                     Ok(content) => Ok(content),

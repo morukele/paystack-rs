@@ -211,10 +211,10 @@ async fn view_transaction_timeline_passes_with_reference() {
         .expect("unable to get list of integrated transactions");
 
     // println!("{:#?}", response);
-
+    let reference = &response.data[0].reference.clone().unwrap();
     let transaction_timeline = client
         .transaction
-        .view_transaction_timeline(None, response.data[0].reference.clone())
+        .view_transaction_timeline(None, Some(reference))
         .await
         .expect("unable to get transaction timeline");
 

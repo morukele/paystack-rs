@@ -111,7 +111,7 @@ async fn fetch_subaccount_with_id_returns_a_valid_payload() {
 
     let res = client
         .subaccount
-        .fetch_subaccount(subaccount.data.id.to_string())
+        .fetch_subaccount(&subaccount.data.id.to_string())
         .await
         .expect("Unable to fetch subaccount");
 
@@ -148,7 +148,7 @@ async fn fetch_subaccount_with_subaccount_code_returns_a_valid_payload() {
 
     let res = client
         .subaccount
-        .fetch_subaccount(subaccount.data.subaccount_code)
+        .fetch_subaccount(&subaccount.data.subaccount_code)
         .await
         .expect("Unable to fetch subaccount");
 
@@ -194,7 +194,7 @@ async fn modify_subaccount_with_subaccount_id_returns_a_valid_payload() {
 
     let res = client
         .subaccount
-        .update_subaccount(subaccount.data.subaccount_code, new_body)
+        .update_subaccount(&subaccount.data.subaccount_code, new_body)
         .await
         .expect("Unable to fetch subaccount");
 
@@ -241,7 +241,7 @@ async fn modify_subaccount_with_subaccount_code_returns_a_valid_payload() {
 
     let res = client
         .subaccount
-        .update_subaccount(subaccount.data.id.to_string(), new_body)
+        .update_subaccount(&subaccount.data.id.to_string(), new_body)
         .await
         .expect("Unable to fetch subaccount");
 

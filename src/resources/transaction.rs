@@ -80,16 +80,16 @@ pub struct PartialDebitTransactionBody {
 
 /// A Struct to hold all the functions of the transaction API route
 #[derive(Debug, Clone)]
-pub struct Transaction {
+pub struct Transaction<'a> {
     /// Paystack API Key
-    api_key: String,
+    api_key: &'a str,
 }
 
 static BASE_URL: &str = "https://api.paystack.co";
 
-impl Transaction {
+impl<'a> Transaction<'a> {
     /// Constructor for the transaction object
-    pub fn new(key: String) -> Self {
+    pub fn new(key: &'a str) -> Transaction<'a> {
         Transaction { api_key: key }
     }
 
@@ -102,7 +102,7 @@ impl Transaction {
     ) -> PaystackResult<TransactionResponse> {
         let url = format!("{}/transaction/initialize", BASE_URL);
 
-        match post_request(&self.api_key, &url, transaction_body).await {
+        match post_request(self.api_key, &url, transaction_body).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<TransactionResponse>().await {
                     Ok(content) => Ok(content),
@@ -121,13 +121,10 @@ impl Transaction {
     ///
     /// It takes the following parameters:
     ///     - reference: The transaction reference used to initiate the transaction
-    pub async fn verify_transaction(
-        &self,
-        reference: &String,
-    ) -> PaystackResult<TransactionStatus> {
+    pub async fn verify_transaction(&self, reference: &str) -> PaystackResult<TransactionStatus> {
         let url = format!("{}/transaction/verify/{}", BASE_URL, reference);
 
-        match get_request(&self.api_key, &url, None).await {
+        match get_request(self.api_key, &url, None).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<TransactionStatus>().await {
                     Ok(content) => Ok(content),
@@ -154,12 +151,12 @@ impl Transaction {
         status: Option<Status>,
     ) -> PaystackResult<TransactionStatusList> {
         let url = format!("{}/transaction", BASE_URL);
-        let query = vec![
-            ("perPage", number_of_transactions.unwrap_or(10).to_string()),
-            ("status", status.unwrap_or(Status::Success).to_string()),
-        ];
 
-        match get_request(&self.api_key, &url, Some(query)).await {
+        let per_page = number_of_transactions.unwrap_or(10).to_string();
+        let status = status.unwrap_or(Status::Success).to_string();
+        let query = vec![("perPage", per_page.as_str()), ("status", status.as_str())];
+
+        match get_request(self.api_key, &url, Some(query)).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<TransactionStatusList>().await {
                     Ok(content) => Ok(content),
@@ -183,7 +180,7 @@ impl Transaction {
     ) -> PaystackResult<TransactionStatus> {
         let url = format!("{}/transaction/{}", BASE_URL, transaction_id);
 
-        match get_request(&self.api_key, &url, None).await {
+        match get_request(self.api_key, &url, None).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<TransactionStatus>().await {
                     Ok(content) => Ok(content),
@@ -207,7 +204,7 @@ impl Transaction {
     ) -> PaystackResult<TransactionStatus> {
         let url = format!("{}/transaction/charge_authorization", BASE_URL);
 
-        match post_request(&self.api_key, &url, charge).await {
+        match post_request(self.api_key, &url, charge).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<TransactionStatus>().await {
                     Ok(content) => Ok(content),
@@ -228,7 +225,7 @@ impl Transaction {
     pub async fn view_transaction_timeline(
         &self,
         id: Option<u32>,
-        reference: Option<String>,
+        reference: Option<&str>,
     ) -> PaystackResult<TransactionTimeline> {
         // This is a hacky implementation to ensure that the transaction reference or id is not empty.
         // If they are empty, a url without them as parameter is created.
@@ -246,7 +243,7 @@ impl Transaction {
 
         let url = url.unwrap(); // Send the error back up the function
 
-        match get_request(&self.api_key, &url, None).await {
+        match get_request(self.api_key, &url, None).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<TransactionTimeline>().await {
                     Ok(content) => Ok(content),
@@ -270,7 +267,7 @@ impl Transaction {
     pub async fn total_transactions(&self) -> PaystackResult<TransactionTotalsResponse> {
         let url = format!("{}/transaction/totals", BASE_URL);
 
-        match get_request(&self.api_key, &url, None).await {
+        match get_request(self.api_key, &url, None).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<TransactionTotalsResponse>().await {
                     Ok(content) => Ok(content),
@@ -305,13 +302,16 @@ impl Transaction {
             None => String::from(""),
         };
 
+        let status = status.unwrap_or(Status::Success).to_string();
+        let currency = currency.unwrap_or(Currency::EMPTY).to_string();
+
         let query = vec![
-            ("status", status.unwrap_or(Status::Success).to_string()),
-            ("currency", currency.unwrap_or(Currency::EMPTY).to_string()),
-            ("settled", settled),
+            ("status", status.as_str()),
+            ("currency", currency.as_str()),
+            ("settled", settled.as_str()),
         ];
 
-        match get_request(&self.api_key, &url, Some(query)).await {
+        match get_request(self.api_key, &url, Some(query)).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<ExportTransactionResponse>().await {
                     Ok(content) => Ok(content),
@@ -337,7 +337,7 @@ impl Transaction {
     ) -> PaystackResult<TransactionStatus> {
         let url = format!("{}/transaction/partial_debit", BASE_URL);
 
-        match post_request(&self.api_key, &url, transaction_body).await {
+        match post_request(self.api_key, &url, transaction_body).await {
             Ok(response) => match response.status() {
                 StatusCode::OK => match response.json::<TransactionStatus>().await {
                     Ok(content) => Ok(content),

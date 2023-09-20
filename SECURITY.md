@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-The API client is still in Beta mode. 
+The API client is still in Beta mode.
 The following versions are supported with full security updates.
 
 | Version | Supported          |
@@ -13,6 +13,7 @@ The following versions are supported with full security updates.
 ## Reporting a Vulnerability
 
 If you find a security vulnerability, please open an issue with the following details:
+
 - Nature of the vulnerability
 - Severity level (could be based on your opinion)
 - How to replicate it

@@ -11,7 +11,7 @@ use std::fmt::Debug;
 pub async fn get_request(
     api_key: &str,
     url: &str,
-    query: Option<Vec<(&str, String)>>,
+    query: Option<Vec<(&str, &str)>>,
 ) -> Result<Response, Error> {
     let client = Client::new();
     let response = client
