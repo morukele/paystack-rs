@@ -62,15 +62,17 @@
 //! Licensed under MIT license ([LICENSE-MIT](/LICENSE-MIT)).
 
 mod client;
+mod endpoints;
 mod error;
-mod resources;
+mod models;
 mod response;
 mod utils;
 
 // public re-exports
 pub use client::*;
+pub use endpoints::*;
 pub use error::*;
-pub use resources::*;
+pub use models::*;
 pub use response::*;
 pub use utils::*;
 
