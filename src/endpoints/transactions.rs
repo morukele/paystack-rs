@@ -5,8 +5,8 @@
 use crate::{
     get_request, post_request, ChargeBody, Currency, Error, ExportTransactionResponse,
     InitializeTransactionBody, PartialDebitTransactionBody, PaystackResult, Status,
-    TransactionResponse, TransactionStatus, TransactionStatusList, TransactionTimeline,
-    TransactionTotalsResponse,
+    TransactionResponse, TransactionStatusListResponse, TransactionStatusResponse,
+    TransactionTimelineResponse, TransactionTotalsResponse,
 };
 use reqwest::StatusCode;
 
@@ -53,12 +53,15 @@ impl<'a> TransactionEndpoints<'a> {
     ///
     /// It takes the following parameters:
     ///     - reference: The transaction reference used to initiate the transaction
-    pub async fn verify_transaction(&self, reference: &str) -> PaystackResult<TransactionStatus> {
+    pub async fn verify_transaction(
+        &self,
+        reference: &str,
+    ) -> PaystackResult<TransactionStatusResponse> {
         let url = format!("{}/transaction/verify/{}", BASE_URL, reference);
 
         match get_request(self.api_key, &url, None).await {
             Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<TransactionStatus>().await {
+                StatusCode::OK => match response.json::<TransactionStatusResponse>().await {
                     Ok(content) => Ok(content),
                     Err(err) => Err(Error::Transaction(err.to_string())),
                 },
@@ -81,7 +84,7 @@ impl<'a> TransactionEndpoints<'a> {
         &self,
         number_of_transactions: Option<u32>,
         status: Option<Status>,
-    ) -> PaystackResult<TransactionStatusList> {
+    ) -> PaystackResult<TransactionStatusListResponse> {
         let url = format!("{}/transaction", BASE_URL);
 
         let per_page = number_of_transactions.unwrap_or(10).to_string();
@@ -90,7 +93,7 @@ impl<'a> TransactionEndpoints<'a> {
 
         match get_request(self.api_key, &url, Some(query)).await {
             Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<TransactionStatusList>().await {
+                StatusCode::OK => match response.json::<TransactionStatusListResponse>().await {
                     Ok(content) => Ok(content),
                     Err(err) => Err(Error::Transaction(err.to_string())),
                 },
@@ -109,12 +112,12 @@ impl<'a> TransactionEndpoints<'a> {
     pub async fn fetch_transactions(
         &self,
         transaction_id: u32,
-    ) -> PaystackResult<TransactionStatus> {
+    ) -> PaystackResult<TransactionStatusResponse> {
         let url = format!("{}/transaction/{}", BASE_URL, transaction_id);
 
         match get_request(self.api_key, &url, None).await {
             Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<TransactionStatus>().await {
+                StatusCode::OK => match response.json::<TransactionStatusResponse>().await {
                     Ok(content) => Ok(content),
                     Err(err) => Err(Error::Transaction(err.to_string())),
                 },
@@ -133,12 +136,12 @@ impl<'a> TransactionEndpoints<'a> {
     pub async fn charge_authorization(
         &self,
         charge: ChargeBody,
-    ) -> PaystackResult<TransactionStatus> {
+    ) -> PaystackResult<TransactionStatusResponse> {
         let url = format!("{}/transaction/charge_authorization", BASE_URL);
 
         match post_request(self.api_key, &url, charge).await {
             Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<TransactionStatus>().await {
+                StatusCode::OK => match response.json::<TransactionStatusResponse>().await {
                     Ok(content) => Ok(content),
                     Err(err) => Err(Error::Charge(err.to_string())),
                 },
@@ -158,7 +161,7 @@ impl<'a> TransactionEndpoints<'a> {
         &self,
         id: Option<u32>,
         reference: Option<&str>,
-    ) -> PaystackResult<TransactionTimeline> {
+    ) -> PaystackResult<TransactionTimelineResponse> {
         // This is a hacky implementation to ensure that the transaction reference or id is not empty.
         // If they are empty, a url without them as parameter is created.
         let url: PaystackResult<String> = match (id, reference) {
@@ -177,7 +180,7 @@ impl<'a> TransactionEndpoints<'a> {
 
         match get_request(self.api_key, &url, None).await {
             Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<TransactionTimeline>().await {
+                StatusCode::OK => match response.json::<TransactionTimelineResponse>().await {
                     Ok(content) => Ok(content),
                     Err(err) => Err(Error::Transaction(err.to_string())),
                 },
@@ -265,13 +268,13 @@ impl<'a> TransactionEndpoints<'a> {
     /// NB: it must be created with the PartialDebitTransaction Builder.
     pub async fn partial_debit(
         &self,
-        transaction_body: PartialDebitTransactionBody,
-    ) -> PaystackResult<TransactionStatus> {
+        transaction_body: PartialDebitTransactionBody<'a>,
+    ) -> PaystackResult<TransactionStatusResponse> {
         let url = format!("{}/transaction/partial_debit", BASE_URL);
 
         match post_request(self.api_key, &url, transaction_body).await {
             Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<TransactionStatus>().await {
+                StatusCode::OK => match response.json::<TransactionStatusResponse>().await {
                     Ok(content) => Ok(content),
                     Err(err) => Err(Error::Transaction(err.to_string())),
                 },

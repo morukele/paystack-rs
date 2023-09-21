@@ -51,3 +51,12 @@ pub struct Authorization {
     /// Name of the account associated with the authorization.
     pub account_name: Option<String>,
 }
+
+/// Represents the JSON response of the Paystack API when there is no data property
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ResponseWithoutData {
+    /// The status of the JSON response.
+    pub status: bool,
+    /// The message associated with the JSON response.
+    pub message: String,
+}

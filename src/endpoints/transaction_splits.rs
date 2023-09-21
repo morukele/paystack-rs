@@ -4,73 +4,25 @@
 //! across their payout account, and one or more subaccounts.
 
 use crate::{
-    get_request, post_request, put_request, BearerType, Currency, Error, PaystackResult,
-    ResponseWithoutData, SplitType, TransactionSplitListResponse, TransactionSplitResponse,
+    get_request, post_request, put_request, CreateTransactionSplitBody, Error, PaystackResult,
+    ResponseWithoutData, SubaccountBody, TransactionSplitListResponse, TransactionSplitResponse,
+    UpdateTransactionSplitBody,
 };
-use derive_builder::Builder;
 use reqwest::StatusCode;
-use serde::Serialize;
-
-/// This struct is used to create a split payment on your integration.
-/// The struct is constructed using the `CreateTransactionSplitBodyBuilder`
-#[derive(Serialize, Debug, Default, Builder)]
-pub struct CreateTransactionSplitBody {
-    /// Name of the transaction split
-    name: String,
-    /// The type of transaction split you want to create
-    #[serde(rename = "type")]
-    split_type: SplitType,
-    /// Any of the supported currency
-    currency: Currency,
-    /// A list of object containing subaccount code and number of shares: `[{subaccount: ‘ACT_xxxxxxxxxx’, share: xxx},{...}]`
-    subaccounts: Vec<SubaccountBody>,
-    /// Any of subaccount
-    bearer_type: BearerType,
-    /// Subaccount code
-    bearer_subaccount: String,
-}
-
-/// This struct represents the subaccount.
-/// It can be used as the payload for the API end points that require a subaccount as a payload.
-/// It is also possible to extract a single field from this struct to use as well.
-/// The Struct is constructed using the `SubaccountBuilder`
-#[derive(Serialize, Debug, Clone, Builder)]
-pub struct SubaccountBody {
-    /// This is the sub account code
-    pub subaccount: String,
-    /// This is the transaction share for the subaccount
-    pub share: u32,
-}
-
-/// This struct is used to update a transaction split details on your integration.
-/// The struct is constructed using the `UpdateTransactionSplitBodyBuilder`
-#[derive(Serialize, Debug, Builder)]
-pub struct UpdateTransactionSplitBody {
-    /// Name of the transaction split
-    pub name: String,
-    /// True or False
-    pub active: bool,
-    /// Any of subaccount
-    #[builder(default = "None")]
-    pub bearer_type: Option<BearerType>,
-    /// Subaccount code of a subaccount in the split group. This should be specified only if the `bearer_type is subaccount
-    #[builder(default = "None")]
-    pub bearer_subaccount: Option<SubaccountBody>,
-}
 
 /// A struct to hold all the functions of the transaction split API route
 #[derive(Debug, Clone)]
-pub struct TransactionSplit<'a> {
+pub struct TransactionSplitEndpoints<'a> {
     /// Paystack API key
     api_key: &'a str,
 }
 
 static BASE_URL: &str = "https://api.paystack.co";
 
-impl<'a> TransactionSplit<'a> {
+impl<'a> TransactionSplitEndpoints<'a> {
     /// Constructor for the Transaction Split object
-    pub fn new(key: &'a str) -> TransactionSplit<'a> {
-        TransactionSplit { api_key: key }
+    pub fn new(key: &'a str) -> TransactionSplitEndpoints<'a> {
+        TransactionSplitEndpoints { api_key: key }
     }
 
     /// Create a split payment on your integration.
@@ -78,7 +30,7 @@ impl<'a> TransactionSplit<'a> {
     /// This method takes a TransactionSplit object as a parameter.
     pub async fn create_transaction_split(
         &self,
-        split_body: CreateTransactionSplitBody,
+        split_body: CreateTransactionSplitBody<'a>,
     ) -> PaystackResult<TransactionSplitResponse> {
         let url = format!("{}/split", BASE_URL);
 
@@ -171,7 +123,7 @@ impl<'a> TransactionSplit<'a> {
     pub async fn update_transaction_split(
         &self,
         split_id: &str,
-        body: UpdateTransactionSplitBody,
+        body: UpdateTransactionSplitBody<'a>,
     ) -> PaystackResult<TransactionSplitResponse> {
         let url = format!("{}/split/{}", BASE_URL, split_id);
 

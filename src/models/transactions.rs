@@ -55,21 +55,21 @@ pub struct InitializeTransactionBody<'a> {
 /// This struct should be created using the `PartialDebitTransactionBodyBuilder`
 /// The derive Builder allows for the automatic creation of the BuilderPattern
 #[derive(Debug, Clone, Serialize, Default, Builder)]
-pub struct PartialDebitTransactionBody {
+pub struct PartialDebitTransactionBody<'a> {
     /// Authorization Code
-    authorization_code: String,
+    authorization_code: &'a str,
     /// Specify the currency you want to debit. Allowed values are NGN or GHS.
     currency: Currency,
     /// Amount should be in the subunit of the supported currency
-    amount: String,
+    amount: &'a str,
     /// Customer's email address (attached to the authorization code)
-    email: String,
+    email: &'a str,
     /// Unique transaction reference. Only `-`, `.`, `=` and alphanumeric characters allowed.
     #[builder(default = "None")]
-    reference: Option<String>,
+    reference: Option<&'a str>,
     /// Minimum amount to charge
     #[builder(default = "None")]
-    at_least: Option<String>,
+    at_least: Option<&'a str>,
 }
 
 /// This struct represents the response of the Paystack transaction initialization.
@@ -96,7 +96,7 @@ pub struct TransactionResponseData {
 
 /// This struct represents the transaction status response.
 #[derive(Deserialize, Debug, Clone)]
-pub struct TransactionStatus {
+pub struct TransactionStatusResponse {
     /// This lets you know if your request was successful or not.
     pub status: bool,
     /// This is a summary of the response and its status.
@@ -265,7 +265,7 @@ pub struct TransactionSplitListResponse {
 
 /// This struct represents a list of transaction status.
 #[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct TransactionStatusList {
+pub struct TransactionStatusListResponse {
     /// This lets you know if your request was successful or not.
     pub status: bool,
     /// This is a summary of the response and its status.
@@ -279,7 +279,7 @@ pub struct TransactionStatusList {
 
 /// This struct represents the transaction timeline.
 #[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct TransactionTimeline {
+pub struct TransactionTimelineResponse {
     /// This lets you know if your request was successful or not.
     pub status: bool,
     /// This is a summary of the response and its status.
@@ -308,12 +308,12 @@ pub struct TransactionTimelineData {
     /// Transaction channel.
     pub channel: Option<String>,
     /// Transaction history.
-    pub history: Option<Vec<TransactionHistory>>,
+    pub history: Option<Vec<TransactionHistoryResponse>>,
 }
 
 /// This struct represents the transaction history data
 #[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct TransactionHistory {
+pub struct TransactionHistoryResponse {
     /// Transaction action.
     #[serde(rename = "type")]
     pub action_type: String,

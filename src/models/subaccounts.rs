@@ -2,9 +2,52 @@
 //! ==============
 //! This file contains the models for working with the subaccounts endpoint.
 
+use crate::MetaData;
+use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
-use crate::MetaData;
+/// This struct is used to create the body for creating a subaccount on your integration.
+#[derive(Serialize, Debug, Builder)]
+pub struct CreateSubaccountBody<'a> {
+    /// Name of business for subaccount
+    business_name: &'a str,
+    /// Bank Code for the bank.
+    /// You can get the list of Bank Codes by calling the List Banks endpoint.
+    settlement_bank: &'a str,
+    /// Bank Account Number
+    account_number: &'a str,
+    /// The default percentage charged when receiving on behalf of this subaccount
+    percentage_charge: f32,
+    /// A description for this subaccount
+    description: &'a str,
+    /// A contact email for the subaccount
+    #[builder(default = "None")]
+    primary_contact_email: Option<&'a str>,
+    /// A name for the contact person for this subaccount
+    #[builder(default = "None")]
+    primary_contact_name: Option<&'a str>,
+    /// A phone number to call for this subaccount
+    #[builder(default = "None")]
+    primary_contact_phone: Option<&'a str>,
+    /// Stringified JSON object.
+    /// Add a custom_fields attribute which has an array of objects if you would like the fields to be
+    /// added to your transaction when displayed on the dashboard.
+    /// Sample: {"custom_fields":[{"display_name":"Cart ID","variable_name": "cart_id","value": "8393"}]}
+    #[builder(default = "None")]
+    metadata: Option<&'a str>,
+}
+
+/// This struct represents the subaccount.
+/// It can be used as the payload for the API end points that require a subaccount as a payload.
+/// It is also possible to extract a single field from this struct to use as well.
+/// The Struct is constructed using the `SubaccountBuilder`
+#[derive(Serialize, Debug, Clone, Builder)]
+pub struct SubaccountBody {
+    /// This is the sub account code
+    pub subaccount: String,
+    /// This is the transaction share for the subaccount
+    pub share: u32,
+}
 
 /// Represents the data of th Subaccounts
 #[derive(Debug, Deserialize, Serialize)]
@@ -67,15 +110,6 @@ pub struct SubaccountsResponseData {
     /// Last update time of subaccount.
     #[serde(rename = "updatedAt")]
     pub updated_at: Option<String>,
-}
-
-/// Represents the JSON response of the Paystack API when there is no data property
-#[derive(Debug, Deserialize, Serialize)]
-pub struct ResponseWithoutData {
-    /// The status of the JSON response.
-    pub status: bool,
-    /// The message associated with the JSON response.
-    pub message: String,
 }
 
 /// Represents the JSON response for subaccount creation.

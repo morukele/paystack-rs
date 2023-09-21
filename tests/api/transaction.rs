@@ -299,16 +299,16 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status(
         .expect("Unable to get transaction list");
 
     let transaction = transaction.data[0].clone();
+    let email = transaction.customer.unwrap().email.unwrap();
+    let authorization_code = transaction
+        .authorization
+        .unwrap()
+        .authorization_code
+        .unwrap();
     let body = PartialDebitTransactionBodyBuilder::default()
-        .email(transaction.customer.unwrap().email.unwrap())
-        .amount("10000".to_string())
-        .authorization_code(
-            transaction
-                .authorization
-                .unwrap()
-                .authorization_code
-                .unwrap(),
-        )
+        .email(&email)
+        .amount("10000")
+        .authorization_code(&authorization_code)
         .currency(Currency::NGN)
         .build()
         .unwrap();

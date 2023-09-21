@@ -6,6 +6,7 @@ pub mod generic;
 pub mod split;
 pub mod status;
 pub mod subaccounts;
+pub mod transaction_split;
 pub mod transactions;
 
 // public re-export
@@ -17,4 +18,5 @@ pub use generic::*;
 pub use split::*;
 pub use status::*;
 pub use subaccounts::*;
+pub use transaction_split::*;
 pub use transactions::*;
