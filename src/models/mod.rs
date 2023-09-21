@@ -1,5 +1,6 @@
 pub mod bearer;
 pub mod channel;
+pub mod charge;
 pub mod currency;
 pub mod customers;
 pub mod generic;
@@ -12,6 +13,7 @@ pub mod transactions;
 // public re-export
 pub use bearer::*;
 pub use channel::*;
+pub use charge::*;
 pub use currency::*;
 pub use customers::*;
 pub use generic::*;

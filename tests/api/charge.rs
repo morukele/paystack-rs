@@ -10,10 +10,11 @@ async fn charge_authorization_succeeds() {
 
     // Act
     // In this test, an already created customer in the integration is used
+    let amount = rng.gen_range(100..=100000).to_string();
     let charge = ChargeBodyBuilder::default()
-        .email("melyssa@example.net".to_string())
-        .amount(rng.gen_range(100..=100000).to_string())
-        .authorization_code("AUTH_9v3686msvt".to_string())
+        .email("melyssa@example.net")
+        .amount(&amount)
+        .authorization_code("AUTH_9v3686msvt")
         .currency(Some(Currency::NGN))
         .channel(Some(vec![Channel::Card]))
         .transaction_charge(Some(100))

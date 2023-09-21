@@ -135,7 +135,7 @@ impl<'a> TransactionEndpoints<'a> {
     /// This function takes a Charge Struct as parameter
     pub async fn charge_authorization(
         &self,
-        charge: ChargeBody,
+        charge: ChargeBody<'a>,
     ) -> PaystackResult<TransactionStatusResponse> {
         let url = format!("{}/transaction/charge_authorization", BASE_URL);
 
