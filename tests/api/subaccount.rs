@@ -16,11 +16,11 @@ async fn create_subaccount_passes_with_valid_data() {
     let (account_number, bank_code) = get_bank_account_number_and_code();
 
     let body = CreateSubaccountBodyBuilder::default()
-        .business_name(business_name)
-        .settlement_bank(bank_code.clone())
-        .account_number(account_number.clone())
+        .business_name(&business_name)
+        .settlement_bank(&bank_code)
+        .account_number(&account_number)
         .percentage_charge(18.2)
-        .description(description)
+        .description(&description)
         .build()
         .unwrap();
 
@@ -44,10 +44,10 @@ async fn create_subaccount_fails_with_invalid_data() {
 
     // Act
     let body = CreateSubaccountBodyBuilder::default()
-        .business_name("".to_string())
-        .settlement_bank("".to_string())
-        .account_number("".to_string())
-        .description("".to_string())
+        .business_name("")
+        .settlement_bank("")
+        .account_number("")
+        .description("")
         .percentage_charge(0.0)
         .build()
         .unwrap();
@@ -94,11 +94,11 @@ async fn fetch_subaccount_with_id_returns_a_valid_payload() {
 
     // Act
     let body = CreateSubaccountBodyBuilder::default()
-        .business_name(business_name)
-        .settlement_bank(bank_code.clone())
-        .account_number(account_number.clone())
+        .business_name(&business_name)
+        .settlement_bank(&bank_code)
+        .account_number(&account_number)
         .percentage_charge(18.2)
-        .description(description)
+        .description(&description)
         .build()
         .unwrap();
 
@@ -131,11 +131,11 @@ async fn fetch_subaccount_with_subaccount_code_returns_a_valid_payload() {
 
     // Act
     let body = CreateSubaccountBodyBuilder::default()
-        .business_name(business_name)
-        .settlement_bank(bank_code.clone())
-        .account_number(account_number.clone())
+        .business_name(&business_name)
+        .settlement_bank(&bank_code)
+        .account_number(&account_number)
         .percentage_charge(18.2)
-        .description(description)
+        .description(&description)
         .build()
         .unwrap();
 
@@ -168,11 +168,11 @@ async fn modify_subaccount_with_subaccount_id_returns_a_valid_payload() {
 
     // Act
     let body = CreateSubaccountBodyBuilder::default()
-        .business_name(business_name)
-        .settlement_bank(bank_code.clone())
-        .account_number(account_number.clone())
+        .business_name(&business_name)
+        .settlement_bank(&bank_code)
+        .account_number(&account_number)
         .percentage_charge(18.2)
-        .description(description)
+        .description(&description)
         .build()
         .unwrap();
 
@@ -184,11 +184,11 @@ async fn modify_subaccount_with_subaccount_id_returns_a_valid_payload() {
         .expect("Unable to Create a subaccount");
 
     let new_body = CreateSubaccountBodyBuilder::default()
-        .business_name("New Business Name".to_string())
-        .settlement_bank(bank_code.clone())
-        .account_number(account_number.clone())
+        .business_name("New Business Name")
+        .settlement_bank(&bank_code)
+        .account_number(&account_number)
         .percentage_charge(18.2)
-        .description("This should be modified".to_string())
+        .description("This should be modified")
         .build()
         .unwrap();
 
@@ -215,11 +215,11 @@ async fn modify_subaccount_with_subaccount_code_returns_a_valid_payload() {
 
     // Act
     let body = CreateSubaccountBodyBuilder::default()
-        .business_name(business_name)
-        .settlement_bank(bank_code.clone())
-        .account_number(account_number.clone())
+        .business_name(&business_name)
+        .settlement_bank(&bank_code)
+        .account_number(&account_number)
         .percentage_charge(18.2)
-        .description(description)
+        .description(&description)
         .build()
         .unwrap();
 
@@ -231,11 +231,11 @@ async fn modify_subaccount_with_subaccount_code_returns_a_valid_payload() {
         .expect("Unable to Create a subaccount");
 
     let new_body = CreateSubaccountBodyBuilder::default()
-        .business_name("New Business Name".to_string())
-        .settlement_bank(bank_code.clone())
-        .account_number(account_number.clone())
+        .business_name("New Business Name")
+        .settlement_bank(&bank_code)
+        .account_number(&account_number)
         .percentage_charge(18.2)
-        .description("This should be modified".to_string())
+        .description("This should be modified")
         .build()
         .unwrap();
 

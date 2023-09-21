@@ -21,8 +21,8 @@ async fn main() {
     let client = PaystackClient::new(&api_key);
 
     let body = InitializeTransactionBodyBuilder::default()
-        .amount("10000".to_string())
-        .email("email@example.com".to_string())
+        .amount("10000")
+        .email("email@example.com")
         .currency(Some(Currency::NGN))
         .channels(Some(vec![
             Channel::ApplePay,
