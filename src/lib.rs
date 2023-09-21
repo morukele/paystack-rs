@@ -65,7 +65,6 @@ mod client;
 mod endpoints;
 mod error;
 mod models;
-mod response;
 mod utils;
 
 // public re-exports
@@ -73,7 +72,6 @@ pub use client::*;
 pub use endpoints::*;
 pub use error::*;
 pub use models::*;
-pub use response::*;
 pub use utils::*;
 
 /// Custom result type for the Paystack API
