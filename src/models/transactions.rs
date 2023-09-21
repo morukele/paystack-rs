@@ -9,46 +9,46 @@ use serde::{Deserialize, Serialize};
 /// This struct should be created using the `InitializeTransactionBodyBuilder`
 /// The Builder derivation allows for the automatic implementation of the builder pattern.
 #[derive(Serialize, Debug, Default, Builder)]
-pub struct InitializeTransactionBody {
+pub struct InitializeTransactionBody<'a> {
     /// Amount should be in the smallest unit of the currency e.g. kobo if in NGN and cents if in USD
-    amount: String,
+    amount: &'a str,
     /// Customer's email address
-    email: String,
+    email: &'a str,
     /// Currency in which amount should be charged (NGN, GHS, ZAR or USD). Defaults to your integration currency.
     #[builder(default = "None")]
     currency: Option<Currency>,
     /// Unique transaction reference. Only -, ., = and alphanumeric characters allowed.
     #[builder(default = "None")]
-    reference: Option<String>,
+    reference: Option<&'a str>,
     /// Fully qualified url, e.g. https://example.com/ . Use this to override the callback url provided on the dashboard for this transaction
     #[builder(default = "None")]
-    callback_url: Option<String>,
+    callback_url: Option<&'a str>,
     /// If transaction is to create a subscription to a predefined plan, provide plan code here. This would invalidate the value provided in `amount`
     #[builder(default = "None")]
-    plan: Option<String>,
+    plan: Option<&'a str>,
     /// Number of times to charge customer during subscription to plan
     #[builder(default = "None")]
     invoice_limit: Option<u32>,
     /// Stringified JSON object of custom data. Kindly check the `Metadata` struct for more information.
     #[builder(default = "None")]
-    metadata: Option<String>,
+    metadata: Option<&'a str>,
     /// An array of payment channels to control what channels you want to make available to the user to make a payment with.
     /// Available channels include: `["card", "bank", "ussd", "qr", "mobile_money", "bank_transfer", "eft"]`
     #[builder(default = "None")]
     channels: Option<Vec<Channel>>,
     /// The split code of the transaction split. e.g. `SPL_98WF13Eb3w`
     #[builder(default = "None")]
-    split_code: Option<String>,
+    split_code: Option<&'a str>,
     /// The code for the subaccount that owns the payment. e.g. `ACCT_8f4s1eq7ml6rlzj`
     #[builder(default = "None")]
-    subaccount: Option<String>,
+    subaccount: Option<&'a str>,
     /// An amount used to override the split configuration for a single split payment.
     /// If set, the amount specified goes to the main account regardless of the split configuration.
     #[builder(default = "None")]
     transaction_charge: Option<u32>,
     /// Who bears Paystack charges? `account` or `subaccount` (defaults to account).
     #[builder(default = "None")]
-    bearer: Option<String>,
+    bearer: Option<&'a str>,
 }
 
 /// This struct is used to create a partial debit transaction body for creating a partial debit using the Paystack API.

@@ -16,9 +16,10 @@ async fn initialize_transaction_valid() {
 
     // Act
     let email: String = SafeEmail().fake();
+    let amount: String = rng.gen_range(100..=100000).to_string();
     let body = InitializeTransactionBodyBuilder::default()
-        .amount(rng.gen_range(100..=100000).to_string())
-        .email(email)
+        .amount(&amount)
+        .email(&email)
         .currency(Some(Currency::NGN))
         .channels(Some(vec![
             Channel::ApplePay,
@@ -49,9 +50,10 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant
 
     // Act
     let email: String = SafeEmail().fake();
+    let amount: String = rng.gen_range(100..=100000).to_string();
     let body = InitializeTransactionBodyBuilder::default()
-        .amount(rng.gen_range(100..=100000).to_string())
-        .email(email)
+        .amount(&amount)
+        .email(&email)
         .currency(Some(Currency::USD))
         .channels(Some(vec![
             Channel::ApplePay,
@@ -83,9 +85,10 @@ async fn valid_transaction_is_verified() {
 
     // Act
     let email: String = SafeEmail().fake();
+    let amount: String = rng.gen_range(100..=100000).to_string();
     let body = InitializeTransactionBodyBuilder::default()
-        .amount(rng.gen_range(100..=100000).to_string())
-        .email(email)
+        .amount(&amount)
+        .email(&email)
         .currency(Some(Currency::NGN))
         .channels(Some(vec![
             Channel::ApplePay,

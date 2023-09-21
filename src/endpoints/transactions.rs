@@ -30,7 +30,7 @@ impl<'a> TransactionEndpoints<'a> {
     /// It takes a Transaction type as its parameter
     pub async fn initialize_transaction(
         &self,
-        transaction_body: InitializeTransactionBody,
+        transaction_body: InitializeTransactionBody<'a>,
     ) -> PaystackResult<TransactionResponse> {
         let url = format!("{}/transaction/initialize", BASE_URL);
 
