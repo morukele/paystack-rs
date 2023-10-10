@@ -1,5 +1,11 @@
 #[tokio::test]
-async fn create_transaction_split_passes_with_valid_data() {}
+async fn create_transaction_split_passes_with_valid_data() {
+    // Arrange
+
+    // Act
+
+    // Assert
+}
 
 #[tokio::test]
 async fn create_transaction_split_fails_with_invalid_data() {}

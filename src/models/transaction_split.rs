@@ -21,21 +21,21 @@ pub struct CreateTransactionSplitBody<'a> {
     /// Any of subaccount
     bearer_type: BearerType,
     /// Subaccount code
-    bearer_subaccount: String,
+    bearer_subaccount: &'a str,
 }
 
 /// This struct is used to update a transaction split details on your integration.
 /// The struct is constructed using the `UpdateTransactionSplitBodyBuilder`
-#[derive(Serialize, Debug, Builder)]
+#[derive(Serialize, Debug, Builder, Default)]
 pub struct UpdateTransactionSplitBody<'a> {
     /// Name of the transaction split
-    pub name: &'a str,
+    name: &'a str,
     /// True or False
-    pub active: bool,
+    active: bool,
     /// Any of subaccount
     #[builder(default = "None")]
-    pub bearer_type: Option<BearerType>,
+    bearer_type: Option<BearerType>,
     /// Subaccount code of a subaccount in the split group. This should be specified only if the `bearer_type is subaccount
     #[builder(default = "None")]
-    pub bearer_subaccount: Option<SubaccountBody>,
+    bearer_subaccount: Option<SubaccountBody>,
 }
