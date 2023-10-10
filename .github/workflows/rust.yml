@@ -11,6 +11,7 @@ env:
   PAYSTACK_API_KEY: ${{secrets.PAYSTACK_API_KEY}}
   BANK_ACCOUNT: ${{secrets.BANK_ACCOUNT}}
   BANK_CODE: ${{secrets.BANK_CODE}}
+  BANK_NAME: ${{secrets.BANK_NAME}}
 
 jobs:
   build:
