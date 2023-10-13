@@ -5,11 +5,12 @@ use crate::helpers::get_bank_account_number_and_code;
 
 #[tokio::test]
 async fn create_transaction_split_passes_with_valid_data() {
+    // Arrange
     let txn_split_name = FirstName().fake();
-    let (account_number, bank_code) = get_bank_account_number_and_code();
-    let subaccount = paystack::SubaccountBody {
-        subaccount: bank_code.clone(),
-        share: 20,
+    let (_, bank_code, _) = get_bank_account_number_and_code();
+    let subacct = paystack::SubaccountBody {
+        subaccount_code: bank_code.clone(),
+        share: 20.0,
     };
 
     let txn = CreateTransactionSplitBodyBuilder::default()
@@ -17,8 +18,11 @@ async fn create_transaction_split_passes_with_valid_data() {
         .split_type(paystack::SplitType::Flat)
         .currency(paystack::Currency::NGN)
         .bearer_type(paystack::BearerType::All)
-        .bearer_subaccount(bank_code)
-        .subaccounts(vec![subaccount]);
+        .bearer_subaccount(&bank_code)
+        .subaccounts(vec![subacct]);
+
+    // Act
+    // Assert
 }
 
 #[tokio::test]
