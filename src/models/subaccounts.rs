@@ -44,7 +44,7 @@ pub struct CreateSubaccountBody<'a> {
 #[derive(Serialize, Debug, Clone, Builder)]
 pub struct SubaccountBody {
     /// This is the sub account code
-    pub subaccount_code: String,
+    pub subaccount: String,
     /// This is the transaction share for the subaccount
     pub share: f32,
 }
@@ -93,7 +93,7 @@ pub struct SubaccountsResponseData {
     /// Additional metadata associated with the subaccount, if available.
     pub metadata: Option<String>,
     /// The percentage charge for transactions associated with the subaccount.
-    pub percentage_charge: f32,
+    pub percentage_charge: Option<f32>,
     /// Verification status of subaccount.
     pub is_verified: Option<bool>,
     /// The name of the settlement bank for the subaccount.
