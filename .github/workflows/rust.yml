@@ -2,7 +2,7 @@ name: Rust
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "test/transaction_split" ]
   pull_request:
     branches: [ "main", "master" ]
 
@@ -20,6 +20,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: "Say Hello Mona it's Monday"
+      run: echo "$PAYSTACK_API_KEY $BANK_ACCOUNT $BANK_CODE $BANK_NAME"
     - name: Build
       run: cargo build --verbose
     - name: Run tests
