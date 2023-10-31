@@ -14,7 +14,7 @@ async fn create_transaction_split_passes_with_valid_data() {
     let client = get_paystack_client();
 
     let txn_split_name: String = FirstName().fake();
-    let (account_number, bank_code, bank_name) = get_bank_account_number_and_code();
+    let (account_number, bank_code, _bank_name) = get_bank_account_number_and_code();
 
     // Create first subaccount
     let first_business_name: String = CompanyName().fake();

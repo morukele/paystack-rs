@@ -1,6 +1,6 @@
 # paystack-rs
 
-![CI](https://github.com/morukele/paystack-rs/actions/workflows/rust.yml/badge.svg)
+[![Rust](https://github.com/morukele/paystack-rs/actions/workflows/rust.yml/badge.svg?branch=main)](https://github.com/morukele/paystack-rs/actions/workflows/rust.yml)
 [![paystack-rs on crates.io](https://img.shields.io/crates/v/paystack-rs.svg)](https://crates.io/crates/paystack-rs)
 [![paystack-rs  on docs.rs](https://docs.rs/paystack-rs/badge.svg)](https://docs.rs/paystack-rs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

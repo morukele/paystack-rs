@@ -90,7 +90,7 @@ async fn fetch_subaccount_with_id_returns_a_valid_payload() {
     let client = get_paystack_client();
     let business_name: String = CompanyName().fake();
     let description: String = Sentence(5..10).fake();
-    let (account_number, bank_code, bank_name) = get_bank_account_number_and_code();
+    let (account_number, bank_code, _bank_name) = get_bank_account_number_and_code();
 
     // Act
     let body = CreateSubaccountBodyBuilder::default()
@@ -127,7 +127,7 @@ async fn fetch_subaccount_with_subaccount_code_returns_a_valid_payload() {
     let client = get_paystack_client();
     let business_name: String = CompanyName().fake();
     let description: String = Sentence(5..10).fake();
-    let (account_number, bank_code, bank_name) = get_bank_account_number_and_code();
+    let (account_number, bank_code, _bank_name) = get_bank_account_number_and_code();
 
     // Act
     let body = CreateSubaccountBodyBuilder::default()
@@ -164,7 +164,7 @@ async fn modify_subaccount_with_subaccount_id_returns_a_valid_payload() {
     let client = get_paystack_client();
     let business_name: String = CompanyName().fake();
     let description: String = Sentence(5..10).fake();
-    let (account_number, bank_code, bank_name) = get_bank_account_number_and_code();
+    let (account_number, bank_code, _bank_name) = get_bank_account_number_and_code();
 
     // Act
     let body = CreateSubaccountBodyBuilder::default()
@@ -211,7 +211,7 @@ async fn modify_subaccount_with_subaccount_code_returns_a_valid_payload() {
     let client = get_paystack_client();
     let business_name: String = CompanyName().fake();
     let description: String = Sentence(5..10).fake();
-    let (account_number, bank_code, bank_name) = get_bank_account_number_and_code();
+    let (account_number, bank_code, _bank_name) = get_bank_account_number_and_code();
 
     // Act
     let body = CreateSubaccountBodyBuilder::default()
