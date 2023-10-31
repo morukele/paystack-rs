@@ -14,7 +14,7 @@ async fn create_transaction_split_passes_with_valid_data() {
     let client = get_paystack_client();
 
     let txn_split_name: String = FirstName().fake();
-    let (account_number, bank_code, bank_name) = get_bank_account_number_and_code();
+    let (account_number, bank_code, _) = get_bank_account_number_and_code();
 
     // Create first subaccount
     let first_business_name: String = CompanyName().fake();
@@ -50,14 +50,14 @@ async fn create_transaction_split_passes_with_valid_data() {
 
     let second_subaccount = client
         .subaccount
-        .create_subaccount(body)
+        .create_subaccount(body.clone())
         .await
         .expect("Unable to create a subaccount");
 
     // Create subaccount bodies
     let first_subaccount_body = SubaccountBodyBuilder::default()
         .share(90.0)
-        .subaccount(first_subaccount.data.subaccount_code)
+        .subaccount(first_subaccount.data.subaccount_code.clone())
         // .subaccount_code("ACCT_xv2cusld7thdw7r".to_string())
         .build()
         .unwrap();
@@ -69,6 +69,7 @@ async fn create_transaction_split_passes_with_valid_data() {
         .unwrap();
 
     // Create transaction split body
+    let subaccount_code: String = first_subaccount.data.subaccount_code;
     let split_body = CreateTransactionSplitBodyBuilder::default()
         .name(&txn_split_name)
         .split_type(paystack::SplitType::Percentage)
@@ -79,11 +80,42 @@ async fn create_transaction_split_passes_with_valid_data() {
             first_subaccount_body.clone(),
             second_subaccount_body.clone(),
         ])
-        .bearer_subaccount(&first_subaccount_body.subaccount)
+        .bearer_subaccount(&subaccount_code)
         .build()
         .unwrap();
 
-    println!("{:#?}", split_body);
+
+    // Act
+    let _res = client
+        .transaction_split
+        .create_transaction_split(split_body)
+        .await
+        .expect("Failed to create transaction split");
+
+
+    let subaccount = client
+        .subaccount
+        .create_subaccount(body)
+        .await
+        .expect("Unable to Create a subaccount");
+
+    let subaccount_body = SubaccountBodyBuilder::default()
+        .share(90.0)
+        .subaccount(subaccount.data.subaccount_code.clone())
+        .build()
+        .unwrap();
+
+    let split_body = CreateTransactionSplitBodyBuilder::default()
+        .name(&txn_split_name)
+        .split_type(paystack::SplitType::Percentage)
+        .currency(paystack::Currency::NGN)
+        .bearer_type(paystack::BearerType::Subaccount)
+        // .bearer_subaccount("ACCT_xv2cusld7thdw7r")
+        .subaccounts(vec![subaccount_body.clone()])
+        .bearer_subaccount(&subaccount_body.subaccount)
+        .build()
+        .unwrap();
+
 
     // Act
     let res = client
@@ -92,9 +124,7 @@ async fn create_transaction_split_passes_with_valid_data() {
         .await
         .expect("Failed to create transaction split");
 
-    // dbg!(res);
-
-    // Assert
+        // Assert
     assert!(res.status);
     assert_eq!(res.message, "Split created");
     assert_eq!(res.data.currency, Currency::NGN.to_string());

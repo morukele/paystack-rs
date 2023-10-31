@@ -7,7 +7,7 @@ use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
 /// This struct is used to create the body for creating a subaccount on your integration.
-#[derive(Serialize, Debug, Builder, Default)]
+#[derive(Serialize, Debug, Builder, Default, Clone)]
 pub struct CreateSubaccountBody<'a> {
     /// Name of business for subaccount
     business_name: &'a str,

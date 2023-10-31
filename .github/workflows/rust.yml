@@ -2,16 +2,12 @@ name: Rust
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "test/transaction_split" ]
   pull_request:
     branches: [ "main", "master" ]
 
 env:
   CARGO_TERM_COLOR: always
-  PAYSTACK_API_KEY: ${{secrets.PAYSTACK_API_KEY}}
-  BANK_ACCOUNT: ${{secrets.BANK_ACCOUNT}}
-  BANK_CODE: ${{secrets.BANK_CODE}}
-  BANK_NAME: ${{secrets.BANK_NAME}}
 
 jobs:
   build:
@@ -20,6 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: "Say Hello Mona it's Monday"
+      run: echo "$PAYSTACK_API_KEY $BANK_ACCOUNT $BANK_CODE $BANK_NAME"
     - name: Build
       run: cargo build --verbose
     - name: Run tests
