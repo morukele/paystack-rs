@@ -31,7 +31,7 @@ impl<'a> SubaccountEndpoints<'a> {
     ///     - body: subaccount to create.
     pub async fn create_subaccount(
         &self,
-        body: CreateSubaccountBody<'a>,
+        body: CreateSubaccountBody,
     ) -> PaystackResult<CreateSubaccountResponse> {
         let url = format!("{}/subaccount", BASE_URL);
 
@@ -124,7 +124,7 @@ impl<'a> SubaccountEndpoints<'a> {
     pub async fn update_subaccount(
         &self,
         id_or_code: &str,
-        body: CreateSubaccountBody<'a>,
+        body: CreateSubaccountBody,
     ) -> PaystackResult<CreateSubaccountResponse> {
         let url = format!("{}/subaccount/{}", BASE_URL, id_or_code);
 

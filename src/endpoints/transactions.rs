@@ -30,7 +30,7 @@ impl<'a> TransactionEndpoints<'a> {
     /// It takes a Transaction type as its parameter
     pub async fn initialize_transaction(
         &self,
-        transaction_body: InitializeTransactionBody<'a>,
+        transaction_body: InitializeTransactionBody,
     ) -> PaystackResult<TransactionResponse> {
         let url = format!("{}/transaction/initialize", BASE_URL);
 
@@ -135,7 +135,7 @@ impl<'a> TransactionEndpoints<'a> {
     /// This function takes a Charge Struct as parameter
     pub async fn charge_authorization(
         &self,
-        charge: ChargeBody<'a>,
+        charge: ChargeBody,
     ) -> PaystackResult<TransactionStatusResponse> {
         let url = format!("{}/transaction/charge_authorization", BASE_URL);
 
@@ -268,7 +268,7 @@ impl<'a> TransactionEndpoints<'a> {
     /// NB: it must be created with the PartialDebitTransaction Builder.
     pub async fn partial_debit(
         &self,
-        transaction_body: PartialDebitTransactionBody<'a>,
+        transaction_body: PartialDebitTransactionBody,
     ) -> PaystackResult<TransactionStatusResponse> {
         let url = format!("{}/transaction/partial_debit", BASE_URL);
 

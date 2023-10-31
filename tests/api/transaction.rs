@@ -18,8 +18,8 @@ async fn initialize_transaction_valid() {
     let email: String = SafeEmail().fake();
     let amount: String = rng.gen_range(100..=100000).to_string();
     let body = InitializeTransactionBodyBuilder::default()
-        .amount(&amount)
-        .email(&email)
+        .amount(amount)
+        .email(email)
         .currency(Some(Currency::NGN))
         .channels(Some(vec![
             Channel::ApplePay,
@@ -52,8 +52,8 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant
     let email: String = SafeEmail().fake();
     let amount: String = rng.gen_range(100..=100000).to_string();
     let body = InitializeTransactionBodyBuilder::default()
-        .amount(&amount)
-        .email(&email)
+        .amount(amount)
+        .email(email)
         .currency(Some(Currency::USD))
         .channels(Some(vec![
             Channel::ApplePay,
@@ -87,8 +87,8 @@ async fn valid_transaction_is_verified() {
     let email: String = SafeEmail().fake();
     let amount: String = rng.gen_range(100..=100000).to_string();
     let body = InitializeTransactionBodyBuilder::default()
-        .amount(&amount)
-        .email(&email)
+        .amount(amount)
+        .email(email)
         .currency(Some(Currency::NGN))
         .channels(Some(vec![
             Channel::ApplePay,
@@ -306,9 +306,9 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status(
         .authorization_code
         .unwrap();
     let body = PartialDebitTransactionBodyBuilder::default()
-        .email(&email)
-        .amount("10000")
-        .authorization_code(&authorization_code)
+        .email(email)
+        .amount("10000".to_string())
+        .authorization_code(authorization_code)
         .currency(Currency::NGN)
         .build()
         .unwrap();
