@@ -30,7 +30,7 @@ impl<'a> TransactionSplitEndpoints<'a> {
     /// This method takes a TransactionSplit object as a parameter.
     pub async fn create_transaction_split(
         &self,
-        split_body: CreateTransactionSplitBody<'a>,
+        split_body: CreateTransactionSplitBody,
     ) -> PaystackResult<TransactionSplitResponse> {
         let url = format!("{}/split", BASE_URL);
 
@@ -123,7 +123,7 @@ impl<'a> TransactionSplitEndpoints<'a> {
     pub async fn update_transaction_split(
         &self,
         split_id: &str,
-        body: UpdateTransactionSplitBody<'a>,
+        body: UpdateTransactionSplitBody,
     ) -> PaystackResult<TransactionSplitResponse> {
         let url = format!("{}/split/{}", BASE_URL, split_id);
 

@@ -35,7 +35,7 @@ use std::fmt;
 /// ```
 ///
 /// The example demonstrates the usage of the `Currency` enum from the Paystack crate,
-/// creating instances of each variant and printing their debug representation.
+/// creating instances of each variant and printing a debug representation.
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub enum Currency {
     /// Nigerian Naira

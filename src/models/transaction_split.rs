@@ -8,9 +8,9 @@ use serde::Serialize;
 /// This struct is used to create a split payment on your integration.
 /// The struct is constructed using the `CreateTransactionSplitBodyBuilder`
 #[derive(Serialize, Debug, Default, Builder)]
-pub struct CreateTransactionSplitBody<'a> {
+pub struct CreateTransactionSplitBody {
     /// Name of the transaction split
-    name: &'a str,
+    name: String,
     /// The type of transaction split you want to create
     #[serde(rename = "type")]
     split_type: SplitType,
@@ -21,15 +21,15 @@ pub struct CreateTransactionSplitBody<'a> {
     /// Any of subaccount
     bearer_type: BearerType,
     /// Subaccount code
-    bearer_subaccount: &'a str,
+    bearer_subaccount: String,
 }
 
 /// This struct is used to update a transaction split details on your integration.
 /// The struct is constructed using the `UpdateTransactionSplitBodyBuilder`
 #[derive(Serialize, Debug, Builder, Default)]
-pub struct UpdateTransactionSplitBody<'a> {
+pub struct UpdateTransactionSplitBody {
     /// Name of the transaction split
-    name: &'a str,
+    name: String,
     /// True or False
     active: bool,
     /// Any of subaccount

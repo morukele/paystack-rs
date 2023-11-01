@@ -21,11 +21,11 @@ async fn create_transaction_split_passes_with_valid_data() {
     let first_description: String = Sentence(5..10).fake();
 
     let body = CreateSubaccountBodyBuilder::default()
-        .business_name(&first_business_name)
-        .settlement_bank(&bank_code)
-        .account_number(&account_number)
+        .business_name(first_business_name)
+        .settlement_bank(bank_code.clone())
+        .account_number(account_number.clone())
         .percentage_charge(18.2)
-        .description(&first_description)
+        .description(first_description)
         .build()
         .unwrap();
 
@@ -40,11 +40,11 @@ async fn create_transaction_split_passes_with_valid_data() {
     let second_description: String = Sentence(5..10).fake();
 
     let body = CreateSubaccountBodyBuilder::default()
-        .business_name(&second_business_name)
-        .settlement_bank(&bank_code)
-        .account_number(&account_number)
+        .business_name(second_business_name)
+        .settlement_bank(bank_code.clone())
+        .account_number(account_number.clone())
         .percentage_charge(10.0)
-        .description(&second_description)
+        .description(second_description)
         .build()
         .unwrap();
 
@@ -70,7 +70,7 @@ async fn create_transaction_split_passes_with_valid_data() {
 
     // Create transaction split body
     let split_body = CreateTransactionSplitBodyBuilder::default()
-        .name(&txn_split_name)
+        .name(txn_split_name)
         .split_type(paystack::SplitType::Percentage)
         .currency(paystack::Currency::NGN)
         .bearer_type(paystack::BearerType::Subaccount)
@@ -79,7 +79,7 @@ async fn create_transaction_split_passes_with_valid_data() {
             first_subaccount_body.clone(),
             second_subaccount_body.clone(),
         ])
-        .bearer_subaccount(&first_subaccount_body.subaccount)
+        .bearer_subaccount(first_subaccount_body.subaccount)
         .build()
         .unwrap();
 
