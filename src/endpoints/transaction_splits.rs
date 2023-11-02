@@ -4,9 +4,9 @@
 //! across their payout account, and one or more subaccounts.
 
 use crate::{
-    get_request, post_request, put_request, CreateTransactionSplitBody, Error, PaystackResult,
-    ResponseWithoutData, SubaccountBody, TransactionSplitListResponse, TransactionSplitResponse,
-    UpdateTransactionSplitBody,
+    get_request, post_request, put_request, CreateTransactionSplitBody, DeleteSubAccountBody,
+    Error, PaystackResult, ResponseWithoutData, SubaccountBody, TransactionSplitListResponse,
+    TransactionSplitResponse, UpdateTransactionSplitBody,
 };
 use reqwest::StatusCode;
 
@@ -95,7 +95,7 @@ impl<'a> TransactionSplitEndpoints<'a> {
         &self,
         split_id: &str,
     ) -> PaystackResult<TransactionSplitResponse> {
-        let url = format!("{}/split{}", BASE_URL, split_id);
+        let url = format!("{}/split/{}", BASE_URL, split_id);
 
         match get_request(self.api_key, &url, None).await {
             Ok(response) => match response.status() {
@@ -177,7 +177,7 @@ impl<'a> TransactionSplitEndpoints<'a> {
     pub async fn remove_subaccount_from_transaction_split(
         &self,
         split_id: &str,
-        subaccount: &str,
+        subaccount: DeleteSubAccountBody,
     ) -> PaystackResult<ResponseWithoutData> {
         let url = format!("{}/split/{}/subaccount/remove", BASE_URL, split_id);
 

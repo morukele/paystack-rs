@@ -133,3 +133,10 @@ pub struct FetchSubaccountResponse {
     /// Fetch Subaccount response data.
     pub data: SubaccountsResponseData,
 }
+
+/// This struct is used to create the body for deleting a subaccount on your integration.
+#[derive(Debug, Deserialize, Serialize)]
+pub struct DeleteSubAccountBody {
+    /// This is the sub account code
+    pub subaccount: String,
+}
