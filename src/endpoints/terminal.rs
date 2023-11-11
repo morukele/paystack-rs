@@ -172,8 +172,33 @@ impl<'a> TerminalEndpoints<'a> {
         }
     }
 
+    /// Unlink your debug device from your integration
     ///
-    pub async fn decommission_terminal() {}
+    /// - serial_number: Device Serial Number.
+    pub async fn decommission_terminal(
+        &self,
+        serial_number: &str,
+    ) -> PaystackResult<TerminalResponseWithNoData> {
+        let url = format!("{}/decommission_device", BASE_URL);
+
+        let decommission_body = Body {
+            serial_number: serial_number.to_string(),
+        };
+
+        match post_request(self.api_key, &url, decommission_body).await {
+            Ok(response) => match response.status() {
+                StatusCode::Ok => match response.json::<TerminalResponseWithNoData>().await {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(Error::Terminal(err.to_string())),
+                },
+                _ => Err(Error::RequestNotSuccessful(
+                    response.status().to_string(),
+                    response.text().await?,
+                )),
+            },
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
+        }
+    }
 }
 
 /// creating body here because it is redundant to create a dedicated type for this.
