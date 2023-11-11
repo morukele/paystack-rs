@@ -17,7 +17,7 @@ pub struct TransactionSplitEndpoints<'a> {
     api_key: &'a str,
 }
 
-static BASE_URL: &str = "https://api.paystack.co";
+static BASE_URL: &str = "https://api.paystack.co/split";
 
 impl<'a> TransactionSplitEndpoints<'a> {
     /// Constructor for the Transaction Split object
@@ -32,7 +32,7 @@ impl<'a> TransactionSplitEndpoints<'a> {
         &self,
         split_body: CreateTransactionSplitBody,
     ) -> PaystackResult<TransactionSplitResponse> {
-        let url = format!("{}/split", BASE_URL);
+        let url = format!("{}", BASE_URL);
 
         match post_request(self.api_key, &url, split_body).await {
             Ok(response) => match response.status() {
@@ -59,7 +59,7 @@ impl<'a> TransactionSplitEndpoints<'a> {
         split_name: Option<&str>,
         split_active: Option<bool>,
     ) -> PaystackResult<TransactionSplitListResponse> {
-        let url = format!("{}/split", BASE_URL);
+        let url = format!("{}", BASE_URL);
 
         // Specify a default option for active splits
         let split_active = match split_active {
@@ -95,7 +95,7 @@ impl<'a> TransactionSplitEndpoints<'a> {
         &self,
         split_id: &str,
     ) -> PaystackResult<TransactionSplitResponse> {
-        let url = format!("{}/split/{}", BASE_URL, split_id);
+        let url = format!("{}/{}", BASE_URL, split_id);
 
         match get_request(self.api_key, &url, None).await {
             Ok(response) => match response.status() {
@@ -125,7 +125,7 @@ impl<'a> TransactionSplitEndpoints<'a> {
         split_id: &str,
         body: UpdateTransactionSplitBody,
     ) -> PaystackResult<TransactionSplitResponse> {
-        let url = format!("{}/split/{}", BASE_URL, split_id);
+        let url = format!("{}/{}", BASE_URL, split_id);
 
         match put_request(self.api_key, &url, body).await {
             Ok(response) => match response.status() {
@@ -152,7 +152,7 @@ impl<'a> TransactionSplitEndpoints<'a> {
         split_id: &str,
         body: SubaccountBody,
     ) -> PaystackResult<TransactionSplitResponse> {
-        let url = format!("{}/split/{}/subaccount/add", BASE_URL, split_id);
+        let url = format!("{}/{}/subaccount/add", BASE_URL, split_id);
 
         match post_request(self.api_key, &url, body).await {
             Ok(response) => match response.status() {
@@ -179,7 +179,7 @@ impl<'a> TransactionSplitEndpoints<'a> {
         split_id: &str,
         subaccount: DeleteSubAccountBody,
     ) -> PaystackResult<ResponseWithoutData> {
-        let url = format!("{}/split/{}/subaccount/remove", BASE_URL, split_id);
+        let url = format!("{}/{}/subaccount/remove", BASE_URL, split_id);
 
         match post_request(self.api_key, &url, subaccount).await {
             Ok(response) => match response.status() {

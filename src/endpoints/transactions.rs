@@ -17,7 +17,7 @@ pub struct TransactionEndpoints<'a> {
     api_key: &'a str,
 }
 
-static BASE_URL: &str = "https://api.paystack.co";
+static BASE_URL: &str = "https://api.paystack.co/transaction";
 
 impl<'a> TransactionEndpoints<'a> {
     /// Constructor for the transaction object
@@ -32,7 +32,7 @@ impl<'a> TransactionEndpoints<'a> {
         &self,
         transaction_body: InitializeTransactionBody,
     ) -> PaystackResult<TransactionResponse> {
-        let url = format!("{}/transaction/initialize", BASE_URL);
+        let url = format!("{}/initialize", BASE_URL);
 
         match post_request(self.api_key, &url, transaction_body).await {
             Ok(response) => match response.status() {
@@ -57,7 +57,7 @@ impl<'a> TransactionEndpoints<'a> {
         &self,
         reference: &str,
     ) -> PaystackResult<TransactionStatusResponse> {
-        let url = format!("{}/transaction/verify/{}", BASE_URL, reference);
+        let url = format!("{}/verify/{}", BASE_URL, reference);
 
         match get_request(self.api_key, &url, None).await {
             Ok(response) => match response.status() {
@@ -85,7 +85,7 @@ impl<'a> TransactionEndpoints<'a> {
         number_of_transactions: Option<u32>,
         status: Option<Status>,
     ) -> PaystackResult<TransactionStatusListResponse> {
-        let url = format!("{}/transaction", BASE_URL);
+        let url = format!("{}", BASE_URL);
 
         let per_page = number_of_transactions.unwrap_or(10).to_string();
         let status = status.unwrap_or(Status::Success).to_string();
@@ -113,7 +113,7 @@ impl<'a> TransactionEndpoints<'a> {
         &self,
         transaction_id: u32,
     ) -> PaystackResult<TransactionStatusResponse> {
-        let url = format!("{}/transaction/{}", BASE_URL, transaction_id);
+        let url = format!("{}/{}", BASE_URL, transaction_id);
 
         match get_request(self.api_key, &url, None).await {
             Ok(response) => match response.status() {
@@ -137,7 +137,7 @@ impl<'a> TransactionEndpoints<'a> {
         &self,
         charge: ChargeBody,
     ) -> PaystackResult<TransactionStatusResponse> {
-        let url = format!("{}/transaction/charge_authorization", BASE_URL);
+        let url = format!("{}/charge_authorization", BASE_URL);
 
         match post_request(self.api_key, &url, charge).await {
             Ok(response) => match response.status() {
@@ -165,10 +165,8 @@ impl<'a> TransactionEndpoints<'a> {
         // This is a hacky implementation to ensure that the transaction reference or id is not empty.
         // If they are empty, a url without them as parameter is created.
         let url: PaystackResult<String> = match (id, reference) {
-            (Some(id), None) => Ok(format!("{}/transaction/timeline/{}", BASE_URL, id)),
-            (None, Some(reference)) => {
-                Ok(format!("{}/transaction/timeline/{}", BASE_URL, &reference))
-            }
+            (Some(id), None) => Ok(format!("{}/timeline/{}", BASE_URL, id)),
+            (None, Some(reference)) => Ok(format!("{}/timeline/{}", BASE_URL, &reference)),
             _ => {
                 return Err(Error::Transaction(
                     "Transaction Id or Reference is need to view transaction timeline".to_string(),
@@ -200,7 +198,7 @@ impl<'a> TransactionEndpoints<'a> {
     /// If you need it in your work please open an issue
     /// and it will be implemented.
     pub async fn total_transactions(&self) -> PaystackResult<TransactionTotalsResponse> {
-        let url = format!("{}/transaction/totals", BASE_URL);
+        let url = format!("{}/totals", BASE_URL);
 
         match get_request(self.api_key, &url, None).await {
             Ok(response) => match response.status() {
@@ -229,7 +227,7 @@ impl<'a> TransactionEndpoints<'a> {
         currency: Option<Currency>,
         settled: Option<bool>,
     ) -> PaystackResult<ExportTransactionResponse> {
-        let url = format!("{}/transaction/export", BASE_URL);
+        let url = format!("{}/export", BASE_URL);
 
         // Specify a default option for settled transactions.
         let settled = match settled {
@@ -270,7 +268,7 @@ impl<'a> TransactionEndpoints<'a> {
         &self,
         transaction_body: PartialDebitTransactionBody,
     ) -> PaystackResult<TransactionStatusResponse> {
-        let url = format!("{}/transaction/partial_debit", BASE_URL);
+        let url = format!("{}/partial_debit", BASE_URL);
 
         match post_request(self.api_key, &url, transaction_body).await {
             Ok(response) => match response.status() {

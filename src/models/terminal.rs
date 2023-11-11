@@ -30,6 +30,19 @@ pub struct EventData {
     pub reference: Option<String>,
 }
 
+/// The terminal update information to send to the API.
+///
+/// This is initialized with the UpdateTerminalBodyBuilder to keep the crate coherent.
+#[derive(Serialize, Default, Debug, Builder, Clone)]
+pub struct UpdateTerminalBody {
+    /// New name for the terminal
+    #[builder(default = "None")]
+    pub name: Option<String>,
+    /// New address for the terminal
+    #[builder(default = "None")]
+    pub address: Option<String>,
+}
+
 /// This struct represents the response of sending an event to the terminal.
 #[derive(Deserialize, Debug, Clone)]
 pub struct SendEventResponse {
@@ -60,6 +73,7 @@ pub struct FetchEventStatusResponse {
 }
 
 /// This struct represents the data of the event status
+#[derive(Deserialize, Debug, Clone)]
 pub struct FetchEventStatusResponseData {
     /// If the event has been delivered or not.
     pub delivered: bool,
@@ -79,8 +93,9 @@ pub struct FetchTerminalStatusResponse {
 /// This struct represents the data of the event status
 #[derive(Deserialize, Debug, Clone)]
 pub struct FetchTerminalStatusResponseData {
-    /// If the event has been delivered or not.
+    /// If terminal is online or not.
     pub online: bool,
+    /// If the terminal is available or not.
     pub available: bool,
 }
 
@@ -95,6 +110,7 @@ pub struct FetchTerminalResponse {
     pub data: FetchTerminalResponseData,
 }
 
+/// Response Data for Fetch Terminal Route
 #[derive(Deserialize, Debug, Clone)]
 pub struct FetchTerminalResponseData {
     /// Response Id
@@ -115,6 +131,15 @@ pub struct FetchTerminalResponseData {
     pub address: Option<String>,
     /// Terminal status
     pub status: String,
+}
+
+/// Response of updating the terminal data
+#[derive(Deserialize, Clone, Copy)]
+pub struct UpdateTerminalResponse {
+    /// This lets you know if your response was successful or not.
+    pub status: bool,
+    /// This is a summary of the response and its status.
+    pub message: String,
 }
 
 /// Represents the different action the Terminal needs to perform.

@@ -17,7 +17,7 @@ pub struct SubaccountEndpoints<'a> {
     api_key: &'a str,
 }
 
-static BASE_URL: &str = "https://api.paystack.co";
+static BASE_URL: &str = "https://api.paystack.co/subaccount";
 
 impl<'a> SubaccountEndpoints<'a> {
     /// Constructor for the subaccount object
@@ -33,7 +33,7 @@ impl<'a> SubaccountEndpoints<'a> {
         &self,
         body: CreateSubaccountBody,
     ) -> PaystackResult<CreateSubaccountResponse> {
-        let url = format!("{}/subaccount", BASE_URL);
+        let url = format!("{}", BASE_URL);
 
         match post_request(self.api_key, &url, body).await {
             Ok(response) => match response.status() {
@@ -64,7 +64,7 @@ impl<'a> SubaccountEndpoints<'a> {
         from: Option<&str>,
         to: Option<&str>,
     ) -> PaystackResult<ListSubaccountsResponse> {
-        let url = format!("{}/subaccount", BASE_URL);
+        let url = format!("{}", BASE_URL);
 
         let per_page = per_page.unwrap_or(50).to_string();
         let page = page.unwrap_or(1).to_string();
@@ -99,7 +99,7 @@ impl<'a> SubaccountEndpoints<'a> {
         &self,
         id_or_code: &str,
     ) -> PaystackResult<FetchSubaccountResponse> {
-        let url = format!("{}/subaccount/{}", BASE_URL, id_or_code);
+        let url = format!("{}/{}", BASE_URL, id_or_code);
 
         match get_request(self.api_key, &url, None).await {
             Ok(response) => match response.status() {
@@ -126,7 +126,7 @@ impl<'a> SubaccountEndpoints<'a> {
         id_or_code: &str,
         body: CreateSubaccountBody,
     ) -> PaystackResult<CreateSubaccountResponse> {
-        let url = format!("{}/subaccount/{}", BASE_URL, id_or_code);
+        let url = format!("{}/{}", BASE_URL, id_or_code);
 
         match put_request(self.api_key, &url, body).await {
             Ok(response) => match response.status() {
