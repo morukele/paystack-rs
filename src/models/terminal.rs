@@ -134,8 +134,8 @@ pub struct FetchTerminalResponseData {
 }
 
 /// Response of updating the terminal data
-#[derive(Deserialize, Clone, Copy)]
-pub struct UpdateTerminalResponse {
+#[derive(Deserialize, Clone)]
+pub struct TerminalResponseWithNoData {
     /// This lets you know if your response was successful or not.
     pub status: bool,
     /// This is a summary of the response and its status.

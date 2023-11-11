@@ -5,9 +5,10 @@
 use crate::{
     get_request, post_request, put_request, Error, FetchEventStatusResponse, FetchTerminalResponse,
     FetchTerminalStatusResponse, PaystackResult, SendEventBody, SendEventResponse,
-    UpdateTerminalBody, UpdateTerminalResponse,
+    TerminalResponseWithNoData, UpdateTerminalBody,
 };
-use reqwest::{Response, StatusCode};
+use reqwest::StatusCode;
+use serde::Serialize;
 use std::fmt::format;
 
 /// A Struct to hold all the functions of the terminal API route
@@ -125,12 +126,40 @@ impl<'a> TerminalEndpoints<'a> {
         &self,
         terminal_id: &str,
         update_terminal_body: UpdateTerminalBody,
-    ) -> PaystackResult<UpdateTerminalResponse> {
+    ) -> PaystackResult<TerminalResponseWithNoData> {
         let url = format!("{}/{}", BASE_URL, terminal_id);
 
         match put_request(self.api_key, &url, update_terminal_body).await {
             Ok(response) => match response.status() {
-                StatusCode::OK => match response.json::<UpdateTerminalResponse>().await {
+                StatusCode::OK => match response.json::<TerminalResponseWithNoData>().await {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(Error::Terminal(err.to_string())),
+                },
+                _ => Err(Error::RequestNotSuccessful(
+                    response.status().to_string(),
+                    response.text().await?,
+                )),
+            },
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
+        }
+    }
+
+    /// Activate your debug device by linking it to your integration.
+    ///
+    /// - serial_number: Device Serial Number.
+    pub async fn commission_terminal(
+        &self,
+        serial_number: &str,
+    ) -> PaystackResult<TerminalResponseWithNoData> {
+        let url = format!("{}/commission_device", BASE_URL);
+
+        let commission_body = Body {
+            serial_number: serial_number.to_string(),
+        };
+
+        match post_request(self.api_key, &url, commission_body).await {
+            Ok(response) => match response.status() {
+                StatusCode::OK => match response.json::<TerminalResponseWithNoData>().await {
                     Ok(content) => Ok(content),
                     Err(err) => Err(Error::Terminal(err.to_string())),
                 },
@@ -144,8 +173,12 @@ impl<'a> TerminalEndpoints<'a> {
     }
 
     ///
-    pub async fn commission_terminal() {}
-
-    ///
     pub async fn decommission_terminal() {}
+}
+
+/// creating body here because it is redundant to create a dedicated type for this.
+/// This body is used for the commission and decommission route.
+#[derive(Serialize, Clone, Debug)]
+struct Body {
+    serial_number: String,
 }
