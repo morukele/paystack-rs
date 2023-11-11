@@ -65,6 +65,25 @@ pub struct FetchEventStatusResponseData {
     pub delivered: bool,
 }
 
+/// This struct represents the response for checking the status of an event sent to the Terminal
+#[derive(Deserialize, Debug, Clone)]
+pub struct FetchTerminalStatusResponse {
+    /// This lets you know if your response was successful or not.
+    pub status: bool,
+    /// This is a summary of the response and its status.
+    pub message: String,
+    /// This contains the results of your request.
+    pub data: FetchTerminalStatusResponseData,
+}
+
+/// This struct represents the data of the event status
+#[derive(Deserialize, Debug, Clone)]
+pub struct FetchTerminalStatusResponseData {
+    /// If the event has been delivered or not.
+    pub online: bool,
+    pub available: bool,
+}
+
 /// Represents the different action the Terminal needs to perform.
 ///
 /// # Variants
