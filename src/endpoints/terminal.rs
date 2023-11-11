@@ -9,7 +9,6 @@ use crate::{
 };
 use reqwest::StatusCode;
 use serde::Serialize;
-use std::fmt::format;
 
 /// A Struct to hold all the functions of the terminal API route
 #[derive(Debug, Clone)]
@@ -187,7 +186,7 @@ impl<'a> TerminalEndpoints<'a> {
 
         match post_request(self.api_key, &url, decommission_body).await {
             Ok(response) => match response.status() {
-                StatusCode::Ok => match response.json::<TerminalResponseWithNoData>().await {
+                StatusCode::OK => match response.json::<TerminalResponseWithNoData>().await {
                     Ok(content) => Ok(content),
                     Err(err) => Err(Error::Terminal(err.to_string())),
                 },
