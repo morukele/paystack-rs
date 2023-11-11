@@ -3,8 +3,8 @@
 //! The Terminal API allows you to build delightful in-person payment experiences.
 
 use crate::{
-    get_request, post_request, Error, FetchEventStatusResponse, FetchTerminalStatusResponse,
-    PaystackResult, SendEventBody, SendEventResponse,
+    get_request, post_request, Error, FetchEventStatusResponse, FetchTerminalResponse,
+    FetchTerminalStatusResponse, PaystackResult, SendEventBody, SendEventResponse,
 };
 use reqwest::{Response, StatusCode};
 
@@ -97,7 +97,26 @@ impl<'a> TerminalEndpoints<'a> {
         }
     }
 
-    pub async fn fetch_terminal() {}
+    /// Get the details of a Terminal
+    ///
+    ///- terminal_id: The ID of the Terminal the event was sent to.
+    pub async fn fetch_terminal(&self, terminal_id: &str) -> PaystackResult<FetchTerminalResponse> {
+        let url = format!("{}/terminal/{}", BASE_URL, terminal_id);
+
+        match get_request(self.api_key, &url, None).await {
+            Ok(response) => match response.status() {
+                StatusCode::OK => match response.json::<FetchTerminalResponse>().await {
+                    Ok(content) => Ok(content),
+                    Err(err) => Err(Error::Terminal(err.to_string())),
+                },
+                _ => Err(Error::RequestNotSuccessful(
+                    response.status().to_string(),
+                    response.text().await?,
+                )),
+            },
+            Err(err) => Err(Error::FailedRequest(err.to_string())),
+        }
+    }
 
     pub async fn update_terminal() {}
 

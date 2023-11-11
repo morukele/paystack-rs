@@ -84,6 +84,39 @@ pub struct FetchTerminalStatusResponseData {
     pub available: bool,
 }
 
+/// This struct represents the response for fetch terminal.
+#[derive(Deserialize, Debug, Clone)]
+pub struct FetchTerminalResponse {
+    /// This lets you know if your response was successful or not.
+    pub status: bool,
+    /// This is a summary of the response and its status.
+    pub message: String,
+    /// This contains the results of your request.
+    pub data: FetchTerminalResponseData,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct FetchTerminalResponseData {
+    /// Response Id
+    pub id: i32,
+    /// Terminal serial number
+    pub serial_number: String,
+    /// Terminal make
+    pub device_make: Option<String>,
+    /// Terminal Id
+    pub terminal_id: String,
+    /// Id of integration associated with terminal
+    pub integration: i32,
+    /// Domain of integration
+    pub domain: String,
+    /// Name of terminal
+    pub name: String,
+    /// Address associated with terminal
+    pub address: Option<String>,
+    /// Terminal status
+    pub status: String,
+}
+
 /// Represents the different action the Terminal needs to perform.
 ///
 /// # Variants
