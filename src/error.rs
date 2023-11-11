@@ -24,6 +24,9 @@ pub enum Error {
     /// Error associated with Subaccount
     #[error("Subaccount Error: {0}")]
     Subaccount(String),
+    /// Error associated with terminal
+    #[error("Terminal Error: {0}")]
+    Terminal(String),
     /// Error for unsuccessful request to the Paystack API
     #[error("Request failed - Status Code: {0} Body: {1}")]
     RequestNotSuccessful(String, String),
