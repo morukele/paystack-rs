@@ -16,7 +16,9 @@ documentation = "https://docs.rs/paystack-rs"
 keywords = [
 	"payment",
 	"paystack",
-    "api"
+    "api",
+	"finance",
+	"async"
 ]
 readme = "README.md"
 categories = ["api-bindings", "finance"]

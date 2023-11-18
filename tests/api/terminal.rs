@@ -27,6 +27,6 @@ async fn send_terminal_event_passes_with_correct_payload() {
     if let Err(err) = res {
         assert_eq!(err.to_string(), "Request failed - Status Code: 404 Not Found Body: {\"status\":false,\"message\":\"Device does not exist\"}")
     } else {
-        assert!(false);
+        panic!();
     };
 }

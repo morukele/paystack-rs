@@ -113,7 +113,7 @@ async fn create_transaction_split_fails_with_invalid_data() {
     if let Err(err) = res {
         assert_eq!(err.to_string(), "Request failed - Status Code: 400 Bad Request Body: {\"status\":false,\"message\":\"At least one subaccount is required\"}".to_string());
     } else {
-        assert!(false);
+        panic!();
     }
 }
 
@@ -149,7 +149,7 @@ async fn list_transaction_splits_in_the_integration() {
             paystack::SplitType::Percentage.to_string()
         );
     } else {
-        assert!(false);
+        panic!();
     }
 }
 
@@ -220,7 +220,7 @@ async fn update_a_transaction_split_passes_with_valid_data() {
         assert!(!data.data.active.unwrap());
         assert_eq!(data.data.name, new_split_name);
     } else {
-        assert!(false);
+        panic!();
     }
 }
 
@@ -257,7 +257,7 @@ async fn update_a_transaction_split_fails_with_invalid_data() {
     if let Err(err) = res {
         assert!(err.to_string().contains("Bearer subaccount is required"));
     } else {
-        assert!(false);
+        panic!();
     }
 }
 
@@ -314,7 +314,7 @@ async fn add_a_transaction_split_subaccount_fails_with_invalid_data() {
     if let Err(err) = res {
         assert!(err.to_string().contains("Shares cannot exceed 100%"));
     } else {
-        assert!(false);
+        panic!();
     };
 }
 
@@ -404,6 +404,6 @@ async fn remove_a_subaccount_from_a_transaction_split_fails_with_invalid_data() 
             .to_string()
             .contains("Please specify subaccount to be removed"))
     } else {
-        assert!(false)
+        panic!();
     }
 }

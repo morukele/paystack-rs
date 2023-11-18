@@ -85,7 +85,7 @@ impl<'a> TransactionEndpoints<'a> {
         number_of_transactions: Option<u32>,
         status: Option<Status>,
     ) -> PaystackResult<TransactionStatusListResponse> {
-        let url = format!("{}", BASE_URL);
+        let url = BASE_URL.to_string();
 
         let per_page = number_of_transactions.unwrap_or(10).to_string();
         let status = status.unwrap_or(Status::Success).to_string();

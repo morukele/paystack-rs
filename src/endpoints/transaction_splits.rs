@@ -32,7 +32,7 @@ impl<'a> TransactionSplitEndpoints<'a> {
         &self,
         split_body: CreateTransactionSplitBody,
     ) -> PaystackResult<TransactionSplitResponse> {
-        let url = format!("{}", BASE_URL);
+        let url = BASE_URL.to_string();
 
         match post_request(self.api_key, &url, split_body).await {
             Ok(response) => match response.status() {
@@ -59,7 +59,7 @@ impl<'a> TransactionSplitEndpoints<'a> {
         split_name: Option<&str>,
         split_active: Option<bool>,
     ) -> PaystackResult<TransactionSplitListResponse> {
-        let url = format!("{}", BASE_URL);
+        let url = BASE_URL.to_string();
 
         // Specify a default option for active splits
         let split_active = match split_active {

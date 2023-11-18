@@ -33,7 +33,7 @@ impl<'a> SubaccountEndpoints<'a> {
         &self,
         body: CreateSubaccountBody,
     ) -> PaystackResult<CreateSubaccountResponse> {
-        let url = format!("{}", BASE_URL);
+        let url = BASE_URL.to_string();
 
         match post_request(self.api_key, &url, body).await {
             Ok(response) => match response.status() {
@@ -64,7 +64,7 @@ impl<'a> SubaccountEndpoints<'a> {
         from: Option<&str>,
         to: Option<&str>,
     ) -> PaystackResult<ListSubaccountsResponse> {
-        let url = format!("{}", BASE_URL);
+        let url = BASE_URL.to_string();
 
         let per_page = per_page.unwrap_or(50).to_string();
         let page = page.unwrap_or(1).to_string();
