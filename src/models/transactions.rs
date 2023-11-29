@@ -6,7 +6,7 @@ use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
 /// This struct is used to create a transaction body for creating a transaction using the Paystack API.
-/// This struct should be created using the `InitializeTransactionBodyBuilder`
+/// This struct should be created using the `InitializeTransactionBodyBuilder`.
 /// The Builder derivation allows for the automatic implementation of the builder pattern.
 #[derive(Serialize, Debug, Default, Builder)]
 pub struct InitializeTransactionBody {

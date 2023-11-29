@@ -2,7 +2,8 @@
 //! ===========
 //! The file for the Paystack API client and it's associated functions
 use crate::{
-    SubaccountEndpoints, TerminalEndpoints, TransactionEndpoints, TransactionSplitEndpoints,
+    CustomerEndpoints, SubaccountEndpoints, TerminalEndpoints, TransactionEndpoints,
+    TransactionSplitEndpoints,
 };
 
 /// This is the struct that allows you to authenticate to the PayStack API.
@@ -16,6 +17,8 @@ pub struct PaystackClient<'a> {
     pub subaccount: SubaccountEndpoints<'a>,
     /// Terminal API route
     pub terminal: TerminalEndpoints<'a>,
+    /// Customer API route
+    pub customer: CustomerEndpoints<'a>,
 }
 
 impl<'a> PaystackClient<'a> {
@@ -29,6 +32,7 @@ impl<'a> PaystackClient<'a> {
             transaction_split: TransactionSplitEndpoints::new(key),
             subaccount: SubaccountEndpoints::new(key),
             terminal: TerminalEndpoints::new(key),
+            customer: CustomerEndpoints::new(key),
         }
     }
 }
