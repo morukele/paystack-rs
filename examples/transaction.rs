@@ -25,6 +25,7 @@ async fn main() {
         .email("email@example.com".to_string())
         .currency(Some(Currency::NGN))
         .channels(Some(vec![
+            Channel::Card,
             Channel::ApplePay,
             Channel::Bank,
             Channel::BankTransfer,

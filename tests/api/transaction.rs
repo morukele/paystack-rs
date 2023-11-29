@@ -22,6 +22,7 @@ async fn initialize_transaction_valid() {
         .email(email)
         .currency(Some(Currency::NGN))
         .channels(Some(vec![
+            Channel::Card,
             Channel::ApplePay,
             Channel::BankTransfer,
             Channel::Bank,
@@ -35,7 +36,7 @@ async fn initialize_transaction_valid() {
         .await
         .expect("Unable to initialize transaction");
 
-    // println!("{:#?}", res);
+    println!("{:#?}", res);
 
     // Assert
     assert!(res.status);
