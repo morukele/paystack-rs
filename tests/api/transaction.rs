@@ -29,14 +29,12 @@ async fn initialize_transaction_valid() {
         ]))
         .build()
         .unwrap();
-    // println!("{:#?}", &body);
+
     let res = client
         .transaction
         .initialize_transaction(body)
         .await
         .expect("Unable to initialize transaction");
-
-    println!("{:#?}", res);
 
     // Assert
     assert!(res.status);
@@ -71,7 +69,6 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant
         Ok(_) => (),
         Err(e) => {
             let res = e.to_string();
-            // dbg!("{:#?}", &res);
             assert!(res.contains("Status Code: 403 Forbidden"));
             assert!(res.contains("Currency not supported by merchant"))
         }
@@ -214,7 +211,6 @@ async fn view_transaction_timeline_passes_with_reference() {
         .await
         .expect("unable to get list of integrated transactions");
 
-    // println!("{:#?}", response);
     let reference = &response.data[0].reference.clone().unwrap();
     let transaction_timeline = client
         .transaction

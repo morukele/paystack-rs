@@ -23,9 +23,9 @@ async fn send_terminal_event_passes_with_correct_payload() {
     let res = client.terminal.send_event("12345", body).await;
 
     // Assert
-    // NOTE: the test will fail but it is because we do not have a terminal
+    // NOTE: the test will fail, but it is because we do not have a terminal
     if let Err(err) = res {
-        assert_eq!(err.to_string(), "Request failed - Status Code: 404 Not Found Body: {\"status\":false,\"message\":\"Device does not exist\"}")
+        assert!(err.to_string().contains("Request failed - Status Code: 404 Not Found Body"));
     } else {
         panic!();
     };

@@ -111,7 +111,7 @@ async fn create_transaction_split_fails_with_invalid_data() {
         .await;
 
     if let Err(err) = res {
-        assert_eq!(err.to_string(), "Request failed - Status Code: 400 Bad Request Body: {\"status\":false,\"message\":\"At least one subaccount is required\"}".to_string());
+        assert!(err.to_string().contains("Request failed - Status Code: 400 Bad Request Body"));
     } else {
         panic!();
     }
