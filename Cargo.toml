@@ -24,13 +24,8 @@ readme = "README.md"
 categories = ["api-bindings", "finance"]
 license = "MIT"
 
-[workspace]
-members = [
-	"models",
-	"http",
-	"macros"
-]
-
+[lib]
+name = "paystack"
 
 [dependencies]
 thiserror = "1"

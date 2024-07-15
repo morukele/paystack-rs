@@ -1,5 +1,4 @@
 #![deny(missing_docs)]
-
 //! Convenient rust bindings and types for the Paystack HTTP API aiming to support the entire API surface.
 //! Not the case? Please open an issue. I update the definitions on a weekly basis.
 //!
@@ -20,36 +19,6 @@
 //! Initializing an instance of the Paystack client and creating a transaction.
 //!
 //! ```rust
-//!     use std::env;
-//!     use dotenv::dotenv;
-//!     use paystack::{PaystackClient, InitializeTransactionBodyBuilder, Error, Currency, Channel};
-//!
-//!     #[tokio::main]
-//!     async fn main() -> Result<(), Error>{
-//!         dotenv().ok();
-//!         let api_key = env::var("PAYSTACK_API_KEY").unwrap();
-//!         let client = PaystackClient::new(&api_key);
-//!
-//!         let body = InitializeTransactionBodyBuilder::default()
-//!              .amount("10000".to_string())
-//!              .email("email@example.com".to_string())
-//!              .currency(Some(Currency::NGN))
-//!              .channels(Some(vec![
-//!                  Channel::ApplePay,
-//!                  Channel::Bank,
-//!                  Channel::BankTransfer
-//!              ]))
-//!              .build()
-//!              .unwrap();
-//!
-//!        let transaction = client
-//!             .transaction
-//!             .initialize_transaction(body)
-//!             .await
-//!             .expect("Unable to create transaction");
-//!
-//!         Ok(())
-//!     }
 //!
 //! ```
 //!
@@ -60,19 +29,17 @@
 // ## License
 //!
 //! Licensed under MIT license ([LICENSE-MIT](/LICENSE-MIT)).
+//!
 
-mod client;
-mod endpoints;
-mod error;
+
 mod models;
-mod utils;
+mod http;
+mod macros;
 
-// public re-exports
-pub use client::*;
-pub use endpoints::*;
-pub use error::*;
+// public re-export of modules
 pub use models::*;
-pub use utils::*;
+pub use http::*;
+pub use macros::*;
 
 /// Custom result type for the Paystack API
-pub type PaystackResult<T> = std::result::Result<T, error::Error>;
+pub type PaystackResult<T> = Result<T, Error>;
