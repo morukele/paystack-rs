@@ -27,7 +27,7 @@ impl<'a> TransactionEndpoints<'a> {
 
     /// Initialize a transaction from your backend.
     ///
-    /// It takes a Transaction type as its parameter
+    /// It takes an InitializeTransactionBody type as its parameter
     pub async fn initialize_transaction(
         &self,
         transaction_body: InitializeTransactionBody,
@@ -77,7 +77,7 @@ impl<'a> TransactionEndpoints<'a> {
     /// List transactions carried out on your integration.
     ///
     /// The method takes the following parameters:
-    ///     - perPage (Optional): Number of transactions to return. If None is passed as the parameter, the last 10 transactions are returned.
+    ///     - numberOfTransactions (Optional): Number of transactions to return. If None is passed as the parameter, the last 10 transactions are returned.
     ///     - status (Optional): Filter transactions by status, defaults to Success if no status is passed.
     ///
     pub async fn list_transactions(
@@ -108,7 +108,7 @@ impl<'a> TransactionEndpoints<'a> {
 
     /// Get details of a transaction carried out on your integration.
     ///
-    /// This methods take the Id of the desired transaction as a parameter
+    /// This method take the ID of the desired transaction as a parameter
     pub async fn fetch_transactions(
         &self,
         transaction_id: u32,
@@ -132,7 +132,7 @@ impl<'a> TransactionEndpoints<'a> {
 
     /// All authorizations marked as reusable can be charged with this endpoint whenever you need to receive payments.
     ///
-    /// This function takes a Charge Struct as parameter
+    /// This function takes a ChargeBody Struct as parameter
     pub async fn charge_authorization(
         &self,
         charge: ChargeBody,
@@ -261,7 +261,7 @@ impl<'a> TransactionEndpoints<'a> {
 
     /// Retrieve part of a payment from a customer.
     ///
-    /// It takes a PartialDebitTransaction type as a parameter.
+    /// It takes a PartialDebitTransactionBody type as a parameter.
     ///
     /// NB: it must be created with the PartialDebitTransaction Builder.
     pub async fn partial_debit(

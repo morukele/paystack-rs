@@ -1,6 +1,6 @@
 use reqwest::StatusCode;
 
-use crate::{post_request, CreateCustomerBody, CreateCustomerResponse, Error, PaystackResult};
+use crate::{post_request, CreateCustomerBody, CreateCustomerResponse, Error, PaystackResult, ListCustomerResponse};
 
 /// A struct to hold all the functions of the customer API route
 #[derive(Debug, Clone)]
@@ -18,6 +18,8 @@ impl<'a> CustomerEndpoints<'a> {
     }
 
     /// Create a customer on your integration
+    /// 
+    /// It takes a CreateCustomerBody as its parameter
     pub async fn create_customer(
         self,
         body: CreateCustomerBody,
@@ -37,5 +39,10 @@ impl<'a> CustomerEndpoints<'a> {
             },
             Err(err) => Err(Error::FailedRequest(err.to_string())),
         }
+    }
+
+    /// List the customers in the integration
+    pub async fn list_customers() -> PaystackResult<ListCustomerResponse> {
+
     }
 }

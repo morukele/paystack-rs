@@ -1,0 +1,18 @@
+[package]
+name = "macros"
+version = "0.2.2"
+description = "Macros for paystack-rs"
+authors = ["Oghenemarho Orukele <orukele.dev@gmail.com>"]
+edition = "2021"
+homepage = "https://github.com/morukele/paystack-rs"
+repository = "https://github.com/morukele/paystack-rs"
+documentation = "https://docs.rs/paystack-rs"
+keywords = [
+    "payment",
+    "paystack",
+    "api",
+    "finance",
+]
+readme = "../README.md"
+categories = ["api-bindings", "finance"]
+license = "MIT"

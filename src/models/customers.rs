@@ -83,3 +83,8 @@ pub struct CreateCustomerResponseData {
     #[serde(rename = "updatedAt")]
     pub updated_at: Option<String>,
 }
+
+/// This struct represents the response from the list customer route.
+pub struct ListCustomerResponse {
+
+}
