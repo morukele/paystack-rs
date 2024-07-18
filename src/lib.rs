@@ -1,4 +1,3 @@
-#![deny(missing_docs)]
 //! Convenient rust bindings and types for the Paystack HTTP API aiming to support the entire API surface.
 //! Not the case? Please open an issue. I update the definitions on a weekly basis.
 //!
@@ -31,15 +30,18 @@
 //! Licensed under MIT license ([LICENSE-MIT](/LICENSE-MIT)).
 //!
 
-
-mod models;
-mod http;
-mod macros;
+pub mod client;
+pub mod errors;
+pub mod http;
+pub mod macros;
+pub mod models;
 
 // public re-export of modules
-pub use models::*;
-pub use http::*;
+pub use client::*;
+pub use errors::PaystackAPIError;
+pub use http::HttpClient;
 pub use macros::*;
+pub use models::*;
 
 /// Custom result type for the Paystack API
-pub type PaystackResult<T> = Result<T, Error>;
+pub type PaystackResult<T> = Result<T, PaystackAPIError>;

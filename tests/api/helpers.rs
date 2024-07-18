@@ -1,5 +1,5 @@
-use std::env;
 use dotenv::dotenv;
+use std::env;
 
 pub fn get_bank_account_number_and_code() -> (String, String, String) {
     dotenv().ok();

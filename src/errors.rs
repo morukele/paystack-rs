@@ -1,11 +1,12 @@
 //! Error
 //! ========
 //! This file contains the structs and definitions of the errors in this crate.
+use thiserror::Error;
 
 /// Custom Error for the Paystack API
-#[derive(thiserror::Error, Debug)]
+#[derive(Error, Debug)]
 #[non_exhaustive]
-pub enum Error {
+pub enum PaystackAPIError {
     /// Generic error, not used frequently
     #[error("Generic error: {0}")]
     Generic(String),
@@ -30,13 +31,4 @@ pub enum Error {
     /// Error associated with customer
     #[error("Customer Error: {0}")]
     Customer(String),
-    /// Error for unsuccessful request to the Paystack API
-    #[error("Request failed - Status Code: {0} Body: {1}")]
-    RequestNotSuccessful(String, String),
-    /// Error associated with failed parsing of response from the Paystack API
-    #[error("Response parsing error: {0}")]
-    ResponseParsing(String),
-    /// Default HTTP error from the Reqwest crate
-    #[error(transparent)]
-    Reqwest(#[from] reqwest::Error),
 }
