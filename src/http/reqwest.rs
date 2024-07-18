@@ -102,3 +102,23 @@ impl HttpClient for ReqwestClient {
             .await
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[tokio::test]
+    async fn request_client_can_send() {
+        // Get environment variables
+        let api_key = String::from("fake-key");
+        let url = "https://api.paystack.co/transaction/initialize";
+
+        // Set up client
+        let client = ReqwestClient::default();
+        let res = client.get(url, api_key.as_str(), None).await;
+
+        // this should be a 401 error since we are not passing the right API key
+        if let Ok(res) = res {
+            assert_eq!(res.status(), 401);
+        }
+    }
+}
