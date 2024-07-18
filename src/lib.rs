@@ -31,15 +31,16 @@
 //! Licensed under MIT license ([LICENSE-MIT](/LICENSE-MIT)).
 //!
 
-
-mod models;
+mod client;
 mod http;
 mod macros;
+mod models;
 
 // public re-export of modules
-pub use models::*;
-pub use http::*;
+pub use client::*;
+pub use http::HttpClient;
 pub use macros::*;
+pub use models::*;
 
 /// Custom result type for the Paystack API
 pub type PaystackResult<T> = Result<T, Error>;
