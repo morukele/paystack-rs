@@ -1,9 +1,7 @@
-use reqwest::Body;
-use serde::Deserialize;
-use std::fmt;
-use std::fmt::Debug;
-use std::future::Future;
+use async_trait::async_trait;
+use serde_json::Value;
 
+/// A predefined type for the query type in the HTTP client.
 pub type Query<'a> = Vec<(&'a str, &'a str)>;
 
 /// This trait is a collection of the stand HTTP methods for any client.
@@ -12,35 +10,44 @@ pub type Query<'a> = Vec<(&'a str, &'a str)>;
 ///
 /// The goal is to give a level of flexibility to the user of the crate to work
 /// with their preferred HTTP client.
-pub trait HttpClient: Send + Default + Clone + fmt::Debug {
+/// To be as generic as possible, the U generic stands for the HTTP response.
+/// Ideally, it should be bounded to specific traits common in all response.
+/// TODO: Bound the U generic to the appropriate traits.
+
+#[async_trait]
+pub trait HttpClient {
     /// HTTP error
     type Error;
+
+    /// The output of the function
+    type Output;
+
     /// Send http get request
-    fn get(
+    async fn get(
         &self,
         url: &str,
         api_key: &str,
-        query: Option<Query>,
-    ) -> impl Future<Output = Result<String, Self::Error>> + Send;
+        query: Option<&Query>,
+    ) -> Result<Self::Output, Self::Error>;
     /// Send http post request
-    fn post<'a, T: Deserialize<'a> + Debug>(
+    async fn post(
         &self,
         url: &str,
         api_key: &str,
-        body: T,
-    ) -> impl Future<Output = Result<String, Self::Error>> + Send;
+        body: &Value,
+    ) -> Result<Self::Output, Self::Error>;
     /// Send http put request
-    fn put<'a, T: Deserialize<'a> + Debug>(
+    async fn put(
         &self,
         url: &str,
         api_key: &str,
-        body: T,
-    ) -> impl Future<Output = Result<String, Self::Error>> + Send;
+        body: &Value,
+    ) -> Result<Self::Output, Self::Error>;
     /// Send http delete request
-    fn delete<'a, T: Debug + Deserialize<'a>>(
+    async fn delete(
         &self,
         url: &str,
         api_key: &str,
-        body: T,
-    ) -> impl Future<Output = Result<String, Self::Error>> + Send;
+        body: &Value,
+    ) -> Result<Self::Output, Self::Error>;
 }

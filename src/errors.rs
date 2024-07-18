@@ -6,7 +6,7 @@ use thiserror::Error;
 /// Custom Error for the Paystack API
 #[derive(Error, Debug)]
 #[non_exhaustive]
-pub enum Error {
+pub enum PaystackAPIError {
     /// Generic error, not used frequently
     #[error("Generic error: {0}")]
     Generic(String),
@@ -31,18 +31,4 @@ pub enum Error {
     /// Error associated with customer
     #[error("Customer Error: {0}")]
     Customer(String),
-}
-
-/// An error enum to hold errors from reqwest client
-#[derive(Error, Debug)]
-pub enum ReqwestError {
-    /// Default HTTP error from the Reqwest crate
-    #[error("request: {0}")]
-    Reqwest(#[from] reqwest::Error),
-
-    /// The initial request was successful, but the status code is in the 400
-    /// and 500 range.
-    /// This signifies that API cannot handle the request sent
-    #[error("status code: {}", reqwest::Response::status(.0))]
-    StatusCode(reqwest::Response),
 }
