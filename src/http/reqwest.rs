@@ -33,7 +33,7 @@ impl ReqwestClient {
             .client
             .request(method.clone(), url)
             .bearer_auth(auth_key)
-            .header("", "");
+            .header("Content-Type", "application/json");
 
         // Configure the request for the specific type (get/post/put/delete)
         request = add_data(request);
