@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use async_trait::async_trait;
 use serde_json::Value;
 
@@ -15,7 +16,7 @@ pub type Query<'a> = Vec<(&'a str, &'a str)>;
 /// TODO: Bound the U generic to the appropriate traits.
 
 #[async_trait]
-pub trait HttpClient {
+pub trait HttpClient: Debug + Default + Clone + Send {
     /// HTTP error
     type Error;
 

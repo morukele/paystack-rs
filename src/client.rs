@@ -8,7 +8,7 @@ use crate::HttpClient;
 #[derive(Default, Debug, Clone, Copy)]
 pub struct PaystackClient<'a, T: HttpClient + Default> {
     /// Http client
-    pub(crate) http: T,
+    pub http: T,
     /// API keys
     pub key: &'a str,
     /// Base Url
