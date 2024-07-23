@@ -1,6 +1,6 @@
-use std::fmt::Debug;
 use async_trait::async_trait;
 use serde_json::Value;
+use std::fmt::{Debug, Display};
 
 /// A predefined type for the query type in the HTTP client.
 pub type Query<'a> = Vec<(&'a str, &'a str)>;
@@ -18,10 +18,7 @@ pub type Query<'a> = Vec<(&'a str, &'a str)>;
 #[async_trait]
 pub trait HttpClient: Debug + Default + Clone + Send {
     /// HTTP error
-    type Error;
-
-    /// The output of the function
-    type Output;
+    type Error: Debug + Display;
 
     /// Send http get request
     async fn get(
@@ -29,26 +26,11 @@ pub trait HttpClient: Debug + Default + Clone + Send {
         url: &str,
         api_key: &str,
         query: Option<&Query>,
-    ) -> Result<Self::Output, Self::Error>;
+    ) -> Result<String, Self::Error>;
     /// Send http post request
-    async fn post(
-        &self,
-        url: &str,
-        api_key: &str,
-        body: &Value,
-    ) -> Result<Self::Output, Self::Error>;
+    async fn post(&self, url: &str, api_key: &str, body: &Value) -> Result<String, Self::Error>;
     /// Send http put request
-    async fn put(
-        &self,
-        url: &str,
-        api_key: &str,
-        body: &Value,
-    ) -> Result<Self::Output, Self::Error>;
+    async fn put(&self, url: &str, api_key: &str, body: &Value) -> Result<String, Self::Error>;
     /// Send http delete request
-    async fn delete(
-        &self,
-        url: &str,
-        api_key: &str,
-        body: &Value,
-    ) -> Result<Self::Output, Self::Error>;
+    async fn delete(&self, url: &str, api_key: &str, body: &Value) -> Result<String, Self::Error>;
 }

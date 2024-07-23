@@ -13,7 +13,7 @@ The client aims to make receiving payments for African business or business with
 
 The client currently covers the following section of the API, and the sections to be implemented in order are left unchecked:
 
-- [ ] Transaction
+- [x] Transaction
 - [ ] Transaction Split
 - [ ] Terminal
 - [ ] Customers
@@ -53,7 +53,40 @@ You can also download the source code and use in your code base directly if you 
 Initializing an instance of the Paystack client and creating a transaction.
 
 ```rust
+use std::env;
+use dotenv::dotenv;
+use paystack::{PaystackClient, InitializeTransactionBodyBuilder, PaystackAPIError, Currency, Channel, ReqwestClient};
 
+
+#[tokio::main]
+async fn main() -> Result<(), PaystackAPIError> {
+    dotenv().ok();
+    let api_key = env::var("PAYSTACK_API_KEY").unwrap();
+    let client = PaystackClient<ReqwestClient>::new(api_key);
+
+    
+    let email = "email@example.com".to_string();
+    let amount ="10_000".to_string();
+    let body = TransactionRequestBuilder::default()
+        .amount(amount)
+        .email(email)
+        .currency(Currency::NGN)
+        .channel(vec![
+            Channel::Card,
+            Channel::ApplePay,
+            Channel::BankTransfer,
+            Channel::Bank,
+        ])
+        .build()?;
+
+    let res = client.transaction.initialize_transaction(body).await?;
+
+    // Assert
+    println!("{}", res.status);
+    println!("{}", res.message);
+
+    Ok(())
+}
 ```
 
 ## Contributing

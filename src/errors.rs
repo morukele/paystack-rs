@@ -10,9 +10,6 @@ pub enum PaystackAPIError {
     /// Generic error, not used frequently
     #[error("Generic error: {0}")]
     Generic(String),
-    /// Error associated with failed API request
-    #[error("Failed Request Error: {0}")]
-    FailedRequest(String),
     /// Error associated with Transaction operation
     #[error("Transaction Error: {0}")]
     Transaction(String),
