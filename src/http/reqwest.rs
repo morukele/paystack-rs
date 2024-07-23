@@ -2,7 +2,7 @@ use super::ReqwestError;
 use crate::http::base::Query;
 use crate::HttpClient;
 use async_trait::async_trait;
-use reqwest::{Client, Method, RequestBuilder, Response};
+use reqwest::{Client, Method, RequestBuilder};
 use serde_json::Value;
 use std::fmt::Debug;
 
@@ -27,7 +27,7 @@ impl ReqwestClient {
         url: &str,
         auth_key: &str,
         add_data: D,
-    ) -> Result<Response, ReqwestError> {
+    ) -> Result<String, ReqwestError> {
         // configure the request object
         let mut request = self
             .client
@@ -44,7 +44,7 @@ impl ReqwestClient {
 
         // Checking that we get a 200 range response
         if response.status().is_success() {
-            Ok(response)
+            response.text().await.map_err(Into::into)
         } else {
             Err(ReqwestError::StatusCode(response))
         }
@@ -54,14 +54,13 @@ impl ReqwestClient {
 #[async_trait]
 impl HttpClient for ReqwestClient {
     type Error = ReqwestError;
-    type Output = Response;
 
     async fn get(
         &self,
         url: &str,
         api_key: &str,
         query: Option<&Query>,
-    ) -> Result<Self::Output, Self::Error> {
+    ) -> Result<String, Self::Error> {
         self.send_request(Method::GET, url, api_key, |req| {
             if let Some(query) = query {
                 req.query(query)
@@ -72,32 +71,17 @@ impl HttpClient for ReqwestClient {
         .await
     }
 
-    async fn post(
-        &self,
-        url: &str,
-        api_key: &str,
-        body: &Value,
-    ) -> Result<Self::Output, Self::Error> {
+    async fn post(&self, url: &str, api_key: &str, body: &Value) -> Result<String, Self::Error> {
         self.send_request(Method::POST, url, api_key, |req| req.json(body))
             .await
     }
 
-    async fn put(
-        &self,
-        url: &str,
-        api_key: &str,
-        body: &Value,
-    ) -> Result<Self::Output, Self::Error> {
+    async fn put(&self, url: &str, api_key: &str, body: &Value) -> Result<String, Self::Error> {
         self.send_request(Method::PUT, url, api_key, |req| req.json(body))
             .await
     }
 
-    async fn delete(
-        &self,
-        url: &str,
-        api_key: &str,
-        body: &Value,
-    ) -> Result<Self::Output, Self::Error> {
+    async fn delete(&self, url: &str, api_key: &str, body: &Value) -> Result<String, Self::Error> {
         self.send_request(Method::DELETE, url, api_key, |req| req.json(body))
             .await
     }
@@ -118,8 +102,16 @@ mod tests {
 
         // Assert
         // this should be a 401 error since we are not passing the right API key
-        if let Ok(res) = res {
-            assert_eq!(res.status(), 401);
+        assert!(res.is_err());
+        if let Err(e) = res {
+            match e {
+                ReqwestError::Reqwest(_) => {
+                    // don't need this error here
+                }
+                ReqwestError::StatusCode(code) => {
+                    assert_eq!(code.status(), 401);
+                }
+            }
         }
     }
 
@@ -134,8 +126,14 @@ mod tests {
         let res = client.get(url, api_key, None).await;
 
         // Assert
-        if let Ok(res) = res {
-            assert_eq!(res.status(), 200);
+        assert!(res.is_ok());
+        match res {
+            Ok(res) => {
+                assert!(res.contains("true"))
+            }
+            Err(_) => {
+                // Not going to have an error here.
+            }
         }
     }
 }

@@ -29,9 +29,8 @@ pub fn get_api_key() -> String {
 }
 
 /// A function to get an instance of the paystack client for testing
-pub fn get_paystack_client() -> PaystackClient<ReqwestClient> {
-    let base_url = get_base_url();
-    let api_key = String::from("Fake key");
+pub fn get_paystack_client() -> PaystackClient<'static, ReqwestClient> {
+    let api_key = get_api_key();
 
-    PaystackClient::<ReqwestClient>::new(base_url, api_key)
+    PaystackClient::<ReqwestClient>::new(api_key)
 }
