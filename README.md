@@ -5,6 +5,10 @@
 [![paystack-rs  on docs.rs](https://docs.rs/paystack-rs/badge.svg)](https://docs.rs/paystack-rs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+>*NB: a core rewrite of the project is being carried out, the goal is to make the crate easier to maintain,  
+improve the performance, abstract certain features to improve flexibility, and support for both blocking and non-blocking
+operations.*
+
 Convenient Rust bindings and types for the [Paystack](https://paystack.com) HTTP API aiming to support the entire API surface. Not the case? Please open an issue. I update the definitions on a weekly basis.
 
 The client aims to make receiving payments for African business or business with African clients building with Rust as hassle-free as possible.
@@ -92,6 +96,17 @@ async fn main() -> Result<(), PaystackAPIError> {
 ## Contributing
 
 See [CONTRIBUTING.md](/CONTRIBUTING.md) for information on contributing to paystack-rs.
+
+We use Github actions to conduct CI/CD for the crate. It ensure that code is formated properly using `cargo fmt`, as well
+as proper linting using `cargo clippy`, and finally run all the integration and unit test using `cargo test`.
+
+### Crate module schematic diagram
+A conceptual overview of the crate is illustrated below. This is to help improve the understanding of how the different
+parts of the crate interact with each other to work efficiently. The `PaystackClient` module is the central module of
+the crate and the best entry point to explore the different parts of the crate.
+
+![Crate Schematic](docs/images/paystack-rs.png)
+
 
 ## License
 
