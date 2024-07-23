@@ -31,6 +31,7 @@
 //!
 
 pub mod client;
+pub mod endpoints;
 pub mod errors;
 pub mod http;
 pub mod macros;
@@ -38,10 +39,11 @@ pub mod models;
 
 // public re-export of modules
 pub use client::*;
-pub use errors::PaystackAPIError;
-pub use http::HttpClient;
+pub use endpoints::*;
+pub use errors::*;
+pub use http::*;
 pub use macros::*;
 pub use models::*;
 
 /// Custom result type for the Paystack API
-pub type PaystackResult<T> = Result<T, PaystackAPIError>;
+pub type PaystackResult<T> = Result<Response<T>, PaystackAPIError>;

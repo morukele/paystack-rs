@@ -1,6 +1,6 @@
-use std::fmt::Debug;
 use async_trait::async_trait;
 use serde_json::Value;
+use std::fmt::Debug;
 
 /// A predefined type for the query type in the HTTP client.
 pub type Query<'a> = Vec<(&'a str, &'a str)>;

@@ -5,22 +5,22 @@ use crate::HttpClient;
 
 /// This is the entry level struct for the paystack API.
 /// it allows for authentication of the client
-#[derive(Default, Debug, Clone, Copy)]
-pub struct PaystackClient<'a, T: HttpClient + Default> {
+#[derive(Default, Debug, Clone)]
+pub struct PaystackClient<T: HttpClient + Default> {
     /// Http client
     pub http: T,
     /// API keys
-    pub key: &'a str,
+    pub key: String,
     /// Base Url
-    pub base_url: &'a str,
+    pub base_url: String,
 }
 
-impl<'a, T: HttpClient + Default> PaystackClient<'a, T> {
-    pub fn new(api_key: &'a str, base_url: &'a str, http_client: T) -> PaystackClient<'a, T> {
+impl<T: HttpClient + Default> PaystackClient<T> {
+    pub fn new(api_key: String, base_url: String) -> PaystackClient<T> {
         PaystackClient {
             key: api_key,
             base_url,
-            http: http_client,
+            http: T::default(),
         }
     }
 }
@@ -35,8 +35,7 @@ mod tests {
         // Set
         let url = "fake-url";
         let api_key = "fake-api-key";
-        let client = ReqwestClient::default();
-        let paystack = PaystackClient::new(api_key, url, client);
+        let paystack = PaystackClient::<ReqwestClient>::new(api_key.to_string(), url.to_string());
 
         // Assert
         assert_eq!(paystack.base_url, url);
