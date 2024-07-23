@@ -1,7 +1,7 @@
 use crate::helpers::get_paystack_client;
 use fake::faker::internet::en::SafeEmail;
 use fake::Fake;
-use paystack::{Channel, Currency, Status, TransactionRequestBuilder};
+use paystack::{Channel, Currency, PartialDebitTransactionRequestBuilder, Status, TransactionRequestBuilder};
 use rand::Rng;
 use std::error::Error;
 
@@ -273,6 +273,71 @@ async fn get_transaction_total_is_successful() -> Result<(), Box<dyn Error>> {
     assert_eq!(res.message, "Transaction totals");
     assert!(res.data.total_transactions.is_some());
     assert!(res.data.total_volume.is_some());
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn export_transaction_succeeds_with_default_parameters() -> Result<(), Box<dyn Error>> {
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    let res = client
+        .transaction
+        .export_transaction(None, None, None)
+        .await
+        .expect("unable to export transactions");
+
+    // Assert
+    assert!(res.status);
+    assert_eq!(res.message, "Export successful");
+    assert!(!res.data.path.is_empty());
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status() -> Result<(), Box<dyn Error>>{
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    let transaction = client
+        .transaction
+        .list_transactions(Some(1), Some(Status::Success))
+        .await
+        .expect("Unable to get transaction list");
+
+    let transaction = transaction.data[0].clone();
+    let email = transaction.customer.unwrap().email.unwrap();
+    let authorization_code = transaction
+        .authorization
+        .unwrap()
+        .authorization_code
+        .unwrap();
+    let body = PartialDebitTransactionRequestBuilder::default()
+        .email(email)
+        .amount("10000".to_string())
+        .authorization_code(authorization_code)
+        .currency(Currency::NGN)
+        .build()
+        .unwrap();
+
+    let res = client.transaction.partial_debit(body).await;
+
+    // Assert
+    match res {
+        Ok(result) => {
+            assert!(result.status);
+            assert_eq!(result.message, "Charge attempted");
+            assert!(result.data.customer.unwrap().id.is_some())
+        }
+        Err(error) => {
+            let error = error.to_string();
+            assert!(error.contains("status code: 400 Bad Request"));
+        }
+    }
 
     Ok(())
 }

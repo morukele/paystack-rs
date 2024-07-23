@@ -51,6 +51,27 @@ pub struct TransactionRequest {
     pub bearer: Option<String>,
 }
 
+/// This struct is used to create a partial debit transaction body for creating a partial debit using the Paystack API.
+/// This struct should be created using the `PartialDebitTransactionRequestBuilder`
+/// The derive Builder allows for the automatic creation of the BuilderPattern
+#[derive(Debug, Clone, Serialize, Default, Builder)]
+pub struct PartialDebitTransactionRequest {
+    /// Authorization Code
+    authorization_code: String,
+    /// Specify the currency you want to debit. Allowed values are NGN or GHS.
+    currency: Currency,
+    /// Amount should be in the subunit of the supported currency
+    amount: String,
+    /// Customer's email address (attached to the authorization code)
+    email: String,
+    /// Unique transaction reference. Only `-`, `.`, `=` and alphanumeric characters allowed.
+    #[builder(default = "None")]
+    reference: Option<String>,
+    /// Minimum amount to charge
+    #[builder(default = "None")]
+    at_least: Option<String>,
+}
+
 /// This struct represents the data of the transaction response.
 #[derive(Deserialize, Debug, Clone)]
 pub struct TransactionResponseData {
@@ -156,6 +177,13 @@ pub struct VolumeByCurrency {
     pub currency: String,
     /// Amount in the lowest denomination of the currency.
     pub amount: u32,
+}
+
+/// Export transaction response data.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ExportTransactionData {
+    /// Path to download the exported transaction file.
+    pub path: String,
 }
 
 #[cfg(test)]

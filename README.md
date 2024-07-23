@@ -13,7 +13,7 @@ The client aims to make receiving payments for African business or business with
 
 The client currently covers the following section of the API, and the sections to be implemented in order are left unchecked:
 
-- [ ] Transaction
+- [x] Transaction
 - [ ] Transaction Split
 - [ ] Terminal
 - [ ] Customers

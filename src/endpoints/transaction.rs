@@ -3,9 +3,9 @@
 //! The Transaction route allows to create and manage payments on your integration.
 
 use crate::{
-    ChargeRequest, HttpClient, PaystackAPIError, PaystackResult, Response, Status,
-    TransactionRequest, TransactionResponseData, TransactionStatusData, TransactionTimelineData,
-    TransactionTotalData,
+    ChargeRequest, Currency, ExportTransactionData, HttpClient, PartialDebitTransactionRequest,
+    PaystackAPIError, PaystackResult, Response, Status, TransactionRequest,
+    TransactionResponseData, TransactionStatusData, TransactionTimelineData, TransactionTotalData,
 };
 use std::marker::PhantomData;
 use std::sync::Arc;
@@ -203,7 +203,7 @@ impl<'a, T: HttpClient + Default> TransactionEndpoints<'a, T> {
     ///
     /// This route normally takes a perPage or page query,
     /// However in this case it is ignored.
-    /// If you need it in your work please open an issue
+    /// If you need it in your work please open an issue,
     /// and it will be implemented.
     pub async fn total_transactions(&self) -> PaystackResult<TransactionTotalData> {
         let url = format!("{}/totals", self.base_url);
@@ -212,8 +212,78 @@ impl<'a, T: HttpClient + Default> TransactionEndpoints<'a, T> {
 
         match response {
             Ok(response) => {
-                let parsed_response: Response<TransactionTotalData> = serde_json::from_str(&response)
+                let parsed_response: Response<TransactionTotalData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::Transaction(e.to_string())),
+        }
+    }
+
+    /// Export a list of transactions carried out on your integration.
+    ///
+    /// This method takes the following parameters
+    /// - Status (Optional): The status of the transactions to export. Defaults to all
+    /// - Currency (Optional): The currency of the transactions to export. Defaults to NGN
+    /// - Settled (Optional): To state of the transactions to export. Defaults to False.
+    pub async fn export_transaction(
+        &self,
+        status: Option<Status>,
+        currency: Option<Currency>,
+        settled: Option<bool>,
+    ) -> PaystackResult<ExportTransactionData> {
+        let url = format!("{}/export", self.base_url);
+
+        // Specify a default option for settled transactions.
+        let settled = match settled {
+            Some(settled) => settled.to_string(),
+            None => String::from(""),
+        };
+
+        let status = status.unwrap_or(Status::Success).to_string();
+        let currency = currency.unwrap_or(Currency::NGN).to_string();
+
+        let query = vec![
+            ("status", status.as_str()),
+            ("currency", currency.as_str()),
+            ("settled", settled.as_str()),
+        ];
+
+        let response = self.http.get(&url, &self.key, Some(&query)).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response = serde_json::from_str(&response)
                     .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::Transaction(e.to_string())),
+        }
+    }
+
+    /// Retrieve part of a payment from a customer.
+    ///
+    /// It takes a PartialDebitTransaction type as a parameter.
+    ///
+    /// NB: it must be created with the PartialDebitTransaction Builder.
+    pub async fn partial_debit(
+        &self,
+        partial_debit_transaction_request: PartialDebitTransactionRequest,
+    ) -> PaystackResult<TransactionStatusData> {
+        let url = format!("{}/partial_debit", self.base_url);
+        let body = serde_json::to_value(partial_debit_transaction_request)
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+
+        let response = self.http.post(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<TransactionStatusData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
                 Ok(parsed_response)
             }
