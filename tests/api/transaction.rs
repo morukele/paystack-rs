@@ -131,4 +131,148 @@ async fn list_specified_number_of_transactions_in_the_integration() -> Result<()
     Ok(())
 }
 
+#[tokio::test]
+async fn list_transactions_passes_with_default_values() -> Result<(), Box<dyn Error>> {
+    // Arrange
+    let client = get_paystack_client();
 
+    // Act
+    let response = client
+        .transaction
+        .list_transactions(None, None)
+        .await
+        .expect("unable to get list of integration transactions");
+
+    // Assert
+    assert!(response.status);
+    assert_eq!(10, response.data.len());
+    assert_eq!("Transactions retrieved", response.message);
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn fetch_transaction_succeeds() -> Result<(), Box<dyn Error>> {
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    let response = client
+        .transaction
+        .list_transactions(Some(1), Some(Status::Success))
+        .await
+        .expect("unable to get list of integrated transactions");
+
+    let fetched_transaction = client
+        .transaction
+        .fetch_transactions(response.data[0].id.unwrap())
+        .await
+        .expect("unable to fetch transaction");
+
+    // Assert
+    assert_eq!(response.data[0].id, fetched_transaction.data.id);
+    assert_eq!(
+        response.data[0].reference,
+        fetched_transaction.data.reference
+    );
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn view_transaction_timeline_passes_with_id() -> Result<(), Box<dyn Error>> {
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    let response = client
+        .transaction
+        .list_transactions(Some(1), Some(Status::Success))
+        .await
+        .expect("unable to get list of integrated transactions");
+
+    let transaction_timeline = client
+        .transaction
+        .view_transaction_timeline(response.data[0].id, None)
+        .await
+        .expect("unable to get transaction timeline");
+
+    // Assert
+    assert!(transaction_timeline.status);
+    assert_eq!(transaction_timeline.message, "Timeline retrieved");
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn view_transaction_timeline_passes_with_reference() -> Result<(), Box<dyn Error>> {
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    let response = client
+        .transaction
+        .list_transactions(Some(1), Some(Status::Success))
+        .await
+        .expect("unable to get list of integrated transactions");
+
+    // println!("{:#?}", response);
+    let reference = &response.data[0].reference.clone().unwrap();
+    let transaction_timeline = client
+        .transaction
+        .view_transaction_timeline(None, Some(reference))
+        .await
+        .expect("unable to get transaction timeline");
+
+    // Assert
+    assert!(transaction_timeline.status);
+    assert_eq!(transaction_timeline.message, "Timeline retrieved");
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn view_transaction_timeline_fails_without_id_or_reference() -> Result<(), Box<dyn Error>> {
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    let res = client
+        .transaction
+        .view_transaction_timeline(None, None)
+        .await;
+
+    // Assert
+    match res {
+        Ok(_) => (),
+        Err(e) => {
+            let res = e.to_string();
+            assert!(
+                res.contains("Transaction Id or Reference is need to view transaction timeline")
+            );
+        }
+    }
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn get_transaction_total_is_successful() -> Result<(), Box<dyn Error>> {
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    let res = client
+        .transaction
+        .total_transactions()
+        .await
+        .expect("unable to get transaction total");
+
+    // Assert
+    assert!(res.status);
+    assert_eq!(res.message, "Transaction totals");
+    assert!(res.data.total_transactions.is_some());
+    assert!(res.data.total_volume.is_some());
+
+    Ok(())
+}

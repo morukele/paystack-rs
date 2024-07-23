@@ -97,6 +97,67 @@ pub struct TransactionStatusData {
     pub authorization: Option<Authorization>,
 }
 
+/// This struct represents the transaction timeline data.
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct TransactionTimelineData {
+    /// Time spent in carrying out the transaction in ms.
+    pub time_spent: Option<u32>,
+    /// Number of attempts for the transaction.
+    pub attempts: Option<u32>,
+    /// Authentication use for the transaction.
+    pub authentication: Option<String>,
+    /// Number of errors for the transaction.
+    pub errors: Option<u32>,
+    /// Success status of the transaction.
+    pub success: Option<bool>,
+    /// If transaction was carried out with mobile.
+    pub mobile: Option<bool>,
+    /// Transaction inputs i.e. messages associated with the transaction.
+    pub input: Option<String>,
+    /// Transaction channel.
+    pub channel: Option<String>,
+    /// Transaction history.
+    pub history: Option<Vec<TransactionHistoryResponse>>,
+}
+
+/// This struct represents the transaction history data
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct TransactionHistoryResponse {
+    /// Transaction action.
+    #[serde(rename = "type")]
+    pub action_type: String,
+    /// Description of the action.
+    pub message: String,
+    /// Time action was taken in ms.
+    pub time: u32,
+}
+
+/// Transaction total data.
+#[derive(Debug, Deserialize, Serialize)]
+pub struct TransactionTotalData {
+    /// Total number of transactions in the integration.
+    pub total_transactions: Option<u32>,
+    /// Total of unique number of customers in the integration.
+    pub unique_customers: Option<u32>,
+    /// Total volume of transaction in the integration.
+    pub total_volume: Option<u32>,
+    /// Total volume of transaction broken down by currency.
+    pub total_volume_by_currency: Option<Vec<VolumeByCurrency>>,
+    /// Total volume of pending transfers.
+    pub pending_transfers: Option<u32>,
+    /// Total volume of pending transfer broken down by currency.
+    pub pending_transfers_by_currency: Option<Vec<VolumeByCurrency>>,
+}
+
+/// Transaction volume by currency.
+#[derive(Debug, Deserialize, Serialize)]
+pub struct VolumeByCurrency {
+    /// Currency code.
+    pub currency: String,
+    /// Amount in the lowest denomination of the currency.
+    pub amount: u32,
+}
+
 #[cfg(test)]
 mod test {
     use super::*;

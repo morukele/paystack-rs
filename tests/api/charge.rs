@@ -1,13 +1,13 @@
-use std::error::Error;
 use crate::helpers::get_paystack_client;
 use paystack::{Channel, ChargeRequestBuilder, Currency};
 use rand::Rng;
+use std::error::Error;
 
 /// Values are hardcoded in this test because of the nature of the test.
 /// The values reflect the values in my integration.
 /// If you can come up with a way to improve this test, take a stab at it.
 #[tokio::test]
-async fn charge_authorization_succeeds() -> Result<(), Box<dyn Error>>{
+async fn charge_authorization_succeeds() -> Result<(), Box<dyn Error>> {
     // Arrange
     let client = get_paystack_client();
     let mut rng = rand::thread_rng();
@@ -24,10 +24,7 @@ async fn charge_authorization_succeeds() -> Result<(), Box<dyn Error>>{
         .transaction_charge(Some(100))
         .build()?;
 
-    let charge_response = client
-        .transaction
-        .charge_authorization(charge)
-        .await?;
+    let charge_response = client.transaction.charge_authorization(charge).await?;
 
     // Assert
     assert!(charge_response.status);

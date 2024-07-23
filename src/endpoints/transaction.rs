@@ -4,7 +4,8 @@
 
 use crate::{
     ChargeRequest, HttpClient, PaystackAPIError, PaystackResult, Response, Status,
-    TransactionRequest, TransactionResponseData, TransactionStatusData,
+    TransactionRequest, TransactionResponseData, TransactionStatusData, TransactionTimelineData,
+    TransactionTotalData,
 };
 use std::marker::PhantomData;
 use std::sync::Arc;
@@ -156,7 +157,62 @@ impl<'a, T: HttpClient + Default> TransactionEndpoints<'a, T> {
 
         match response {
             Ok(response) => {
-                let parsed_response: Response<TransactionStatusData> = serde_json::from_str(&response)
+                let parsed_response: Response<TransactionStatusData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::Transaction(e.to_string())),
+        }
+    }
+
+    /// View the timeline of a transaction.
+    ///
+    /// This method takes in the Transaction id or reference as a parameter
+    pub async fn view_transaction_timeline(
+        &self,
+        id: Option<u32>,
+        reference: Option<&str>,
+    ) -> PaystackResult<TransactionTimelineData> {
+        // This is a hacky implementation to ensure that the transaction reference or id is not empty.
+        // If they are empty, a new url without them as parameter is created.
+        let url = match (id, reference) {
+            (Some(id), None) => Ok(format!("{}/timeline/{}", self.base_url, id)),
+            (None, Some(reference)) => Ok(format!("{}/timeline/{}", self.base_url, &reference)),
+            _ => Err(PaystackAPIError::Transaction(
+                "Transaction Id or Reference is need to view transaction timeline".to_string(),
+            )),
+        }?; // propagate the error upstream
+
+        let response = self.http.get(&url, &self.key, None).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<TransactionTimelineData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::Transaction(e.to_string())),
+        }
+    }
+
+    /// Total amount received on your account.
+    ///
+    /// This route normally takes a perPage or page query,
+    /// However in this case it is ignored.
+    /// If you need it in your work please open an issue
+    /// and it will be implemented.
+    pub async fn total_transactions(&self) -> PaystackResult<TransactionTotalData> {
+        let url = format!("{}/totals", self.base_url);
+
+        let response = self.http.get(&url, &self.key, None).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<TransactionTotalData> = serde_json::from_str(&response)
                     .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
                 Ok(parsed_response)
