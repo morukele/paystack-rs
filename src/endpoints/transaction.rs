@@ -3,8 +3,8 @@
 //! The Transaction route allows to create and manage payments on your integration.
 
 use crate::{
-    HttpClient, PaystackAPIError, PaystackResult, Response, Status, TransactionRequest,
-    TransactionResponseData, TransactionStatusData,
+    ChargeRequest, HttpClient, PaystackAPIError, PaystackResult, Response, Status,
+    TransactionRequest, TransactionResponseData, TransactionStatusData,
 };
 use std::marker::PhantomData;
 use std::sync::Arc;
@@ -111,6 +111,53 @@ impl<'a, T: HttpClient + Default> TransactionEndpoints<'a, T> {
                 let parsed_response: Response<Vec<TransactionStatusData>> =
                     serde_json::from_str(&response)
                         .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::Transaction(e.to_string())),
+        }
+    }
+
+    /// Get details of a transaction carried out on your integration.
+    ///
+    /// This method take the ID of the desired transaction as a parameter
+    pub async fn fetch_transactions(
+        &self,
+        transaction_id: u32,
+    ) -> PaystackResult<TransactionStatusData> {
+        let url = format!("{}/{}", self.base_url, transaction_id);
+
+        let response = self.http.get(&url, &self.key, None).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<TransactionStatusData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::Transaction(e.to_string())),
+        }
+    }
+
+    /// All authorizations marked as reusable can be charged with this endpoint whenever you need to receive payments.
+    ///
+    /// This function takes a Charge Struct as parameter
+    pub async fn charge_authorization(
+        &self,
+        charge_request: ChargeRequest,
+    ) -> PaystackResult<TransactionStatusData> {
+        let url = format!("{}/charge_authorization", self.base_url);
+        let body = serde_json::to_value(charge_request)
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+
+        let response = self.http.post(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<TransactionStatusData> = serde_json::from_str(&response)
+                    .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
                 Ok(parsed_response)
             }

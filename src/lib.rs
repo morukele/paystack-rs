@@ -18,7 +18,42 @@
 //! Initializing an instance of the Paystack client and creating a transaction.
 //!
 //! ```rust
+//! use std::env;
+//! use std::error::Error;
+//! use dotenv::dotenv;
+//! use paystack::{PaystackClient, TransactionRequestBuilder, PaystackAPIError, Currency, Channel, ReqwestClient};
 //!
+//!
+//! #[tokio::main]
+//! async fn main() -> Result<(), Box<dyn Error>> {
+//!     dotenv().ok();
+//!     use std::error::Error;
+//!     let api_key = env::var("PAYSTACK_API_KEY").unwrap();
+//!     let client = PaystackClient::<ReqwestClient>::new(api_key);
+//!
+//!
+//!     let email = "email@example.com".to_string();
+//!     let amount ="10000".to_string();
+//!     let body = TransactionRequestBuilder::default()
+//!         .amount(amount)
+//!         .email(email)
+//!         .currency(Currency::NGN)
+//!         .channel(vec![
+//!             Channel::Card,
+//!             Channel::ApplePay,
+//!             Channel::BankTransfer,
+//!             Channel::Bank,
+//!         ])
+//!         .build()?;
+//!
+//!     let res = client
+//!         .transaction
+//!         .initialize_transaction(body)
+//!         .await
+//!         .expect("Unable to create transaction");
+//!
+//!     Ok(())
+//! }
 //! ```
 //!
 //! ## Contributing

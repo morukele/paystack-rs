@@ -112,7 +112,7 @@ async fn valid_transaction_is_verified() -> Result<(), Box<dyn Error>> {
 }
 
 #[tokio::test]
-async fn list_specified_number_of_transactions_in_the_integration() -> Result<(), Box<dyn Error>>{
+async fn list_specified_number_of_transactions_in_the_integration() -> Result<(), Box<dyn Error>> {
     // Arrange
     let client = get_paystack_client();
 
@@ -130,3 +130,5 @@ async fn list_specified_number_of_transactions_in_the_integration() -> Result<()
 
     Ok(())
 }
+
+

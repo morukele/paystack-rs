@@ -1,8 +1,8 @@
 //! response
 //! ========
 //! Holds the generic response templates for the API
-use serde::{Deserialize, Serialize};
 use crate::utils::string_to_u8;
+use serde::{Deserialize, Serialize};
 
 /// Generic response body template for the API
 #[derive(Clone, Debug, Serialize, Deserialize)]
