@@ -36,7 +36,7 @@ async fn initialize_transaction_valid() -> Result<(), Box<dyn Error>> {
 }
 
 #[tokio::test]
-async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant() {
+async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant() -> Result<(), Box<dyn Error>> {
     // Arrange
     let client = get_paystack_client();
     let mut rng = rand::thread_rng();
@@ -53,8 +53,7 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant
             Channel::BankTransfer,
             Channel::Bank,
         ])
-        .build()
-        .unwrap();
+        .build()?;
 
     let res = client.transaction.initialize_transaction(body).await;
 
@@ -66,4 +65,6 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant
             assert!(res.contains("status code: 403 Forbidden"));
         }
     }
+
+    Ok(())
 }
