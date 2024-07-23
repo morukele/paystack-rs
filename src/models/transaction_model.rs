@@ -4,7 +4,7 @@
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
-use crate::{Channel, Currency};
+use crate::{Authorization, Channel, Currency, Customer};
 
 /// This struct is used to create a transaction body for creating a transaction using the Paystack API.
 /// This struct is built using the `TransactionRequestBuilder` struct.
@@ -60,6 +60,41 @@ pub struct TransactionResponseData {
     pub access_code: String,
     /// Reference of the transaction.
     pub reference: String,
+}
+
+/// This struct represents the data of the transaction status response.
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct TransactionStatusData {
+    /// Id of the Transaction
+    pub id: Option<u32>,
+    /// Status of the Transaction. It can be `success`, `abandoned` or `failed`
+    pub status: Option<String>,
+    /// Reference of the Transaction
+    pub reference: Option<String>,
+    /// Amount of the transaction in the lowest denomination of the currency e.g. Kobo for NGN and cent for USD.
+    pub amount: Option<u32>,
+    /// Message from the transaction.
+    pub message: Option<String>,
+    /// Response from the payment gateway.
+    pub gateway_response: Option<String>,
+    /// Time the Transaction was completed.
+    pub paid_at: Option<String>,
+    /// Time the Transaction was created.
+    pub created_at: Option<String>,
+    /// Transaction channel. It can be `card` or `bank`.
+    pub channel: Option<String>,
+    /// Currency code of the Transaction e.g. `NGN for Nigerian Naira` and `USD for US Dollar`.
+    pub currency: Option<String>,
+    /// IP address of the computers the Transaction has passed through.
+    pub ip_address: Option<String>,
+    /// Meta data associated with the Transaction.
+    pub metadata: Option<String>,
+    /// Transaction fees to override the default fees specified in the integration.
+    pub fees: Option<i32>,
+    /// Transaction customer data.
+    pub customer: Option<Customer>,
+    /// Transaction authorization data.
+    pub authorization: Option<Authorization>,
 }
 
 #[cfg(test)]

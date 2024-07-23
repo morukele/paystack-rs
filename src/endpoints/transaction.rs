@@ -3,8 +3,8 @@
 //! The Transaction route allows to create and manage payments on your integration.
 
 use crate::{
-    HttpClient, PaystackAPIError, PaystackResult, Response, TransactionRequest,
-    TransactionResponseData,
+    HttpClient, PaystackAPIError, PaystackResult, Response, Status, TransactionRequest,
+    TransactionResponseData, TransactionStatusData,
 };
 use std::marker::PhantomData;
 use std::sync::Arc;
@@ -58,10 +58,63 @@ impl<'a, T: HttpClient + Default> TransactionEndpoints<'a, T> {
             }
             Err(e) => {
                 // convert the error to a transaction error
-                Err(PaystackAPIError::Transaction(
-                    e.to_string(),
-                ))
+                Err(PaystackAPIError::Transaction(e.to_string()))
             }
+        }
+    }
+
+    /// Confirm the status of a transaction.
+    ///
+    /// It takes the following parameters:
+    ///     - reference: The transaction reference used to initiate the transaction
+    pub async fn verify_transaction(
+        &self,
+        reference: &str,
+    ) -> PaystackResult<TransactionStatusData> {
+        let url = format!("{}/verify/{}", self.base_url, reference);
+
+        let response = self.http.get(&url, &self.key, None).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<TransactionStatusData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::Transaction(e.to_string())),
+        }
+    }
+
+    /// List transactions carried out on your integration.
+    ///
+    /// The method takes the following parameters:
+    ///     - perPage (Optional): Number of transactions to return. If None is passed as the parameter, the last 10 transactions are returned.
+    ///     - status (Optional): Filter transactions by status, defaults to Success if no status is passed.
+    ///
+    pub async fn list_transactions(
+        &self,
+        number_of_transactions: Option<u32>,
+        status: Option<Status>,
+    ) -> PaystackResult<Vec<TransactionStatusData>> {
+        let url = self.base_url.to_string();
+
+        let per_page = number_of_transactions.unwrap_or(10).to_string();
+        let status = status.unwrap_or(Status::Success).to_string();
+        let query = vec![("perPage", per_page.as_str()), ("status", status.as_str())];
+
+        let response = self.http.get(&url, &self.key, Some(&query)).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<Vec<TransactionStatusData>> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::Transaction(e.to_string())),
         }
     }
 }

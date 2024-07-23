@@ -36,6 +36,7 @@ pub mod errors;
 pub mod http;
 pub mod macros;
 pub mod models;
+pub mod utils;
 
 // public re-export of modules
 pub use client::*;
@@ -43,6 +44,7 @@ pub use endpoints::*;
 pub use errors::*;
 pub use http::*;
 pub use models::*;
+pub use utils::*;
 
 /// Custom result type for the Paystack API
 pub type PaystackResult<T> = Result<Response<T>, PaystackAPIError>;
