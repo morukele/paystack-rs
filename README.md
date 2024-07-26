@@ -93,6 +93,10 @@ async fn main() -> Result<(), PaystackAPIError> {
 }
 ```
 
+### Examples
+We provide some examples of use cases for the Paystack-rs crate. The examples are located in the [examples](examples) folder.
+
+
 ## Contributing
 
 See [CONTRIBUTING.md](/CONTRIBUTING.md) for information on contributing to paystack-rs.

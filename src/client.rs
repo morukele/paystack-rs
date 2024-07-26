@@ -1,27 +1,28 @@
 //! Client
 //! =========
 //! This file contains the Paystack API client, and it associated endpoints.
-use crate::{HttpClient, TransactionEndpoints};
-use std::marker::PhantomData;
+use crate::{HttpClient, SubaccountEndpoints, TransactionEndpoints, TransactionSplitEndpoints};
 use std::sync::Arc;
 
 /// This is the entry level struct for the paystack API.
 /// it allows for authentication of the client
-pub struct PaystackClient<'a, T: HttpClient + Default> {
+pub struct PaystackClient<T: HttpClient + Default> {
     /// Transaction API route
-    pub transaction: TransactionEndpoints<'a, T>,
-
-    //Phantom data to keep compiler happy with lifetime
-    phantom: PhantomData<&'a T>,
+    pub transaction: TransactionEndpoints<T>,
+    /// Transaction Split API route
+    pub transaction_split: TransactionSplitEndpoints<T>,
+    /// Subaccount API route
+    pub subaccount: SubaccountEndpoints<T>,
 }
 
-impl<'a, T: HttpClient + Default> PaystackClient<'a, T> {
-    pub fn new(api_key: String) -> PaystackClient<'a, T> {
+impl<T: HttpClient + Default> PaystackClient<T> {
+    pub fn new(api_key: String) -> PaystackClient<T> {
         let http = Arc::new(T::default());
+        // TODO: consider making api_key work without cloning. Arc or Reference??
         PaystackClient {
-            transaction: TransactionEndpoints::new(api_key, Arc::clone(&http)),
-            // use less data
-            phantom: PhantomData,
+            transaction: TransactionEndpoints::new(api_key.clone(), Arc::clone(&http)),
+            transaction_split: TransactionSplitEndpoints::new(api_key.clone(), Arc::clone(&http)),
+            subaccount: SubaccountEndpoints::new(api_key.clone(), Arc::clone(&http)),
         }
     }
 }

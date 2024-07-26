@@ -7,33 +7,27 @@ use crate::{
     PaystackAPIError, PaystackResult, Response, Status, TransactionRequest,
     TransactionResponseData, TransactionStatusData, TransactionTimelineData, TransactionTotalData,
 };
-use std::marker::PhantomData;
 use std::sync::Arc;
 
 /// A struct to hold all the functions of the transaction API endpoint
 #[derive(Debug, Clone)]
-pub struct TransactionEndpoints<'a, T: HttpClient + Default> {
+pub struct TransactionEndpoints<T: HttpClient + Default> {
     /// Paystack API Key
     key: String,
     /// Base URL for the transaction route
     base_url: String,
     /// Http client for the route
     http: Arc<T>,
-
-    // to keep compiler happy
-    phantom: PhantomData<&'a T>,
 }
 
-impl<'a, T: HttpClient + Default> TransactionEndpoints<'a, T> {
+impl<T: HttpClient + Default> TransactionEndpoints<T> {
     /// Constructor for the transaction object
-    pub fn new(key: String, http: Arc<T>) -> TransactionEndpoints<'a, T> {
+    pub fn new(key: String, http: Arc<T>) -> TransactionEndpoints<T> {
         let base_url = String::from("https://api.paystack.co/transaction");
         TransactionEndpoints {
             key,
             base_url,
             http,
-            // useless
-            phantom: PhantomData,
         }
     }
 

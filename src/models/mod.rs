@@ -1,16 +1,24 @@
+pub mod bearer;
 pub mod channel;
 pub mod charge;
 pub mod currency;
 pub mod customer_model;
 pub mod response;
+pub mod split;
 pub mod status;
+pub mod subaccount_model;
 pub mod transaction_model;
+pub mod transaction_split_model;
 
 // public re-export
+pub use bearer::*;
 pub use channel::*;
 pub use charge::*;
 pub use currency::*;
 pub use customer_model::*;
 pub use response::*;
+pub use split::*;
 pub use status::*;
+pub use subaccount_model::*;
 pub use transaction_model::*;
+pub use transaction_split_model::*;
