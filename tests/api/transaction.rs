@@ -1,12 +1,13 @@
 use crate::helpers::get_paystack_client;
 use fake::faker::internet::en::SafeEmail;
 use fake::Fake;
-use paystack::{Channel, Currency, PartialDebitTransactionRequestBuilder, Status, TransactionRequestBuilder};
+use paystack::{
+    Channel, Currency, PartialDebitTransactionRequestBuilder, Status, TransactionRequestBuilder,
+};
 use rand::Rng;
-use std::error::Error;
 
 #[tokio::test]
-async fn initialize_transaction_valid() -> Result<(), Box<dyn Error>> {
+async fn initialize_transaction_valid() {
     // Arrange
     let client = get_paystack_client();
     let mut rng = rand::thread_rng();
@@ -24,20 +25,22 @@ async fn initialize_transaction_valid() -> Result<(), Box<dyn Error>> {
             Channel::BankTransfer,
             Channel::Bank,
         ])
-        .build()?;
+        .build()
+        .unwrap();
 
-    let res = client.transaction.initialize_transaction(body).await?;
+    let res = client
+        .transaction
+        .initialize_transaction(body)
+        .await
+        .expect("unable to create transaction");
 
     // Assert
     assert!(res.status);
     assert_eq!("Authorization URL created", res.message);
-
-    Ok(())
 }
 
 #[tokio::test]
-async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant(
-) -> Result<(), Box<dyn Error>> {
+async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant() {
     // Arrange
     let client = get_paystack_client();
     let mut rng = rand::thread_rng();
@@ -54,7 +57,8 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant
             Channel::BankTransfer,
             Channel::Bank,
         ])
-        .build()?;
+        .build()
+        .expect("unable to build Transaction Request");
 
     let res = client.transaction.initialize_transaction(body).await;
 
@@ -66,12 +70,10 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant
             assert!(res.contains("status code: 403 Forbidden"));
         }
     }
-
-    Ok(())
 }
 
 #[tokio::test]
-async fn valid_transaction_is_verified() -> Result<(), Box<dyn Error>> {
+async fn valid_transaction_is_verified() {
     // Arrange
     let client = get_paystack_client();
     let mut rng = rand::thread_rng();
@@ -107,12 +109,10 @@ async fn valid_transaction_is_verified() -> Result<(), Box<dyn Error>> {
     assert!(response.status);
     assert_eq!(response.message, "Verification successful");
     assert!(response.data.status.is_some());
-
-    Ok(())
 }
 
 #[tokio::test]
-async fn list_specified_number_of_transactions_in_the_integration() -> Result<(), Box<dyn Error>> {
+async fn list_specified_number_of_transactions_in_the_integration() {
     // Arrange
     let client = get_paystack_client();
 
@@ -127,12 +127,10 @@ async fn list_specified_number_of_transactions_in_the_integration() -> Result<()
     assert_eq!(5, response.data.len());
     assert!(response.status);
     assert_eq!("Transactions retrieved", response.message);
-
-    Ok(())
 }
 
 #[tokio::test]
-async fn list_transactions_passes_with_default_values() -> Result<(), Box<dyn Error>> {
+async fn list_transactions_passes_with_default_values() {
     // Arrange
     let client = get_paystack_client();
 
@@ -147,12 +145,10 @@ async fn list_transactions_passes_with_default_values() -> Result<(), Box<dyn Er
     assert!(response.status);
     assert_eq!(10, response.data.len());
     assert_eq!("Transactions retrieved", response.message);
-
-    Ok(())
 }
 
 #[tokio::test]
-async fn fetch_transaction_succeeds() -> Result<(), Box<dyn Error>> {
+async fn fetch_transaction_succeeds() {
     // Arrange
     let client = get_paystack_client();
 
@@ -175,12 +171,10 @@ async fn fetch_transaction_succeeds() -> Result<(), Box<dyn Error>> {
         response.data[0].reference,
         fetched_transaction.data.reference
     );
-
-    Ok(())
 }
 
 #[tokio::test]
-async fn view_transaction_timeline_passes_with_id() -> Result<(), Box<dyn Error>> {
+async fn view_transaction_timeline_passes_with_id() {
     // Arrange
     let client = get_paystack_client();
 
@@ -200,12 +194,10 @@ async fn view_transaction_timeline_passes_with_id() -> Result<(), Box<dyn Error>
     // Assert
     assert!(transaction_timeline.status);
     assert_eq!(transaction_timeline.message, "Timeline retrieved");
-
-    Ok(())
 }
 
 #[tokio::test]
-async fn view_transaction_timeline_passes_with_reference() -> Result<(), Box<dyn Error>> {
+async fn view_transaction_timeline_passes_with_reference() {
     // Arrange
     let client = get_paystack_client();
 
@@ -227,12 +219,10 @@ async fn view_transaction_timeline_passes_with_reference() -> Result<(), Box<dyn
     // Assert
     assert!(transaction_timeline.status);
     assert_eq!(transaction_timeline.message, "Timeline retrieved");
-
-    Ok(())
 }
 
 #[tokio::test]
-async fn view_transaction_timeline_fails_without_id_or_reference() -> Result<(), Box<dyn Error>> {
+async fn view_transaction_timeline_fails_without_id_or_reference() {
     // Arrange
     let client = get_paystack_client();
 
@@ -252,12 +242,10 @@ async fn view_transaction_timeline_fails_without_id_or_reference() -> Result<(),
             );
         }
     }
-
-    Ok(())
 }
 
 #[tokio::test]
-async fn get_transaction_total_is_successful() -> Result<(), Box<dyn Error>> {
+async fn get_transaction_total_is_successful() {
     // Arrange
     let client = get_paystack_client();
 
@@ -273,12 +261,10 @@ async fn get_transaction_total_is_successful() -> Result<(), Box<dyn Error>> {
     assert_eq!(res.message, "Transaction totals");
     assert!(res.data.total_transactions.is_some());
     assert!(res.data.total_volume.is_some());
-
-    Ok(())
 }
 
 #[tokio::test]
-async fn export_transaction_succeeds_with_default_parameters() -> Result<(), Box<dyn Error>> {
+async fn export_transaction_succeeds_with_default_parameters() {
     // Arrange
     let client = get_paystack_client();
 
@@ -293,12 +279,10 @@ async fn export_transaction_succeeds_with_default_parameters() -> Result<(), Box
     assert!(res.status);
     assert_eq!(res.message, "Export successful");
     assert!(!res.data.path.is_empty());
-
-    Ok(())
 }
 
 #[tokio::test]
-async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status() -> Result<(), Box<dyn Error>>{
+async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status() {
     // Arrange
     let client = get_paystack_client();
 
@@ -338,6 +322,4 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status(
             assert!(error.contains("status code: 400 Bad Request"));
         }
     }
-
-    Ok(())
 }
