@@ -73,7 +73,7 @@ pub struct PartialDebitTransactionRequest {
 }
 
 /// This struct represents the data of the transaction response.
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Default)]
 pub struct TransactionResponseData {
     /// Generated URL to authorize the transaction.
     pub authorization_url: String,
@@ -84,7 +84,7 @@ pub struct TransactionResponseData {
 }
 
 /// This struct represents the data of the transaction status response.
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
 pub struct TransactionStatusData {
     /// Id of the Transaction
     pub id: Option<u32>,
@@ -119,7 +119,7 @@ pub struct TransactionStatusData {
 }
 
 /// This struct represents the transaction timeline data.
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
 pub struct TransactionTimelineData {
     /// Time spent in carrying out the transaction in ms.
     pub time_spent: Option<u32>,
@@ -154,7 +154,7 @@ pub struct TransactionHistoryResponse {
 }
 
 /// Transaction total data.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Default)]
 pub struct TransactionTotalData {
     /// Total number of transactions in the integration.
     pub total_transactions: Option<u32>,
@@ -171,7 +171,7 @@ pub struct TransactionTotalData {
 }
 
 /// Transaction volume by currency.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Default)]
 pub struct VolumeByCurrency {
     /// Currency code.
     pub currency: String,
@@ -180,7 +180,7 @@ pub struct VolumeByCurrency {
 }
 
 /// Export transaction response data.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Default)]
 pub struct ExportTransactionData {
     /// Path to download the exported transaction file.
     pub path: String,

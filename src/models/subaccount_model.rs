@@ -41,7 +41,7 @@ pub struct SubaccountRequest {
 /// It can be used as the payload for the API end points that require a subaccount as a payload.
 /// It is also possible to extract a single field from this struct to use as well.
 /// The Struct is constructed using the `SubaccountBodyBuilder`
-#[derive(Serialize, Debug, Clone, Builder)]
+#[derive(Serialize, Debug, Clone, Builder, Default)]
 pub struct SubaccountBody {
     /// This is the subaccount code
     pub subaccount: String,
@@ -50,7 +50,7 @@ pub struct SubaccountBody {
 }
 
 /// Represents the data of th Subaccounts
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Default)]
 pub struct SubaccountData {
     /// Sub account data
     pub subaccount: SubaccountsResponseData,
@@ -59,7 +59,7 @@ pub struct SubaccountData {
 }
 
 /// Data of the list Subaccount response
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Default)]
 pub struct SubaccountsResponseData {
     /// Integration ID of subaccount.
     pub integration: Option<u32>,
@@ -100,7 +100,7 @@ pub struct SubaccountsResponseData {
 }
 
 /// Represents the JSON response for fetch subaccount.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Default)]
 pub struct FetchSubaccountResponse {
     /// The status of the JSON response.
     pub status: bool,
@@ -111,7 +111,7 @@ pub struct FetchSubaccountResponse {
 }
 
 /// This struct is used to create the body for deleting a subaccount on your integration.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Builder, Default)]
 pub struct DeleteSubAccountBody {
     /// This is the subaccount code
     pub subaccount: String,

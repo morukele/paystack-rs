@@ -4,8 +4,9 @@ use fake::{
     Fake,
 };
 use paystack::{
-    Currency, PaystackClient, ReqwestClient, SubaccountBody, SubaccountBodyBuilder,
-    SubaccountRequestBuilder, TransactionSplitRequest, TransactionSplitRequestBuilder,
+    Currency, DeleteSubAccountBody, PaystackClient, ReqwestClient, SubaccountBody,
+    SubaccountBodyBuilder, SubaccountRequestBuilder, TransactionSplitRequest,
+    TransactionSplitRequestBuilder, UpdateTransactionSplitRequestBuilder,
 };
 
 async fn create_subaccount_body(
@@ -110,6 +111,295 @@ async fn create_transaction_split_fails_with_invalid_data() {
 
     if let Err(err) = res {
         assert!(err.to_string().contains("status code: 400 Bad Request"));
+    } else {
+        panic!();
+    }
+}
+
+#[tokio::test]
+async fn list_transaction_splits_in_the_integration() {
+    // Arrange
+    let client = get_paystack_client();
+    let (split_name, split_body) = build_transaction_split(&client).await;
+
+    // Act
+    // Create transaction split
+    client
+        .transaction_split
+        .create_transaction_split(split_body)
+        .await
+        .expect("Failed to create transaction split");
+
+    // Fetch the splits
+    let res = client
+        .transaction_split
+        .list_transaction_splits(Some(&split_name), None)
+        .await;
+
+    // Assert
+    if let Ok(data) = res {
+        assert!(data.status);
+        assert_eq!(data.message, "Split retrieved".to_string());
+        assert_eq!(data.data.len(), 1);
+
+        let transaction_split = data.data.first().unwrap();
+        assert_eq!(
+            transaction_split.split_type,
+            paystack::SplitType::Percentage.to_string()
+        );
+    } else {
+        dbg!("response: {:?}", &res);
+        panic!();
+    }
+}
+
+#[tokio::test]
+async fn fetch_a_transaction_split_in_the_integration() {
+    //Arrange
+    let client = get_paystack_client();
+    let (_, split_body) = build_transaction_split(&client).await;
+
+    // Act
+    let transaction_split = client
+        .transaction_split
+        .create_transaction_split(split_body)
+        .await
+        .expect("Failed to create transaction split");
+
+    let res = client
+        .transaction_split
+        .fetch_transaction_split(&transaction_split.data.id.to_string())
+        .await
+        .unwrap();
+
+    // Assert
+    dbg!(&res);
+    assert!(res.status);
+    assert_eq!(
+        res.data.total_subaccounts as usize,
+        res.data.subaccounts.len()
+    );
+    assert_eq!(res.message, "Split retrieved".to_string());
+}
+
+#[tokio::test]
+async fn update_a_transaction_split_passes_with_valid_data() {
+    //Arrange
+    let client = get_paystack_client();
+    let transaction_split = client
+        .transaction_split
+        .list_transaction_splits(None, Some(true))
+        .await
+        .expect("Failed to create transaction split");
+
+    // Act
+    let new_subaccount_body = create_subaccount_body(&client, 44.3, 30.0).await;
+    let new_split_name: String = FirstName().fake();
+
+    // create update split body
+    let update_split_body = UpdateTransactionSplitRequestBuilder::default()
+        .active(false)
+        .bearer_type(paystack::BearerType::Account)
+        .bearer_subaccount(new_subaccount_body)
+        .name(new_split_name.clone())
+        .build()
+        .unwrap();
+
+    // Act
+    let split_id = transaction_split.data[0].id.to_string();
+    let res = client
+        .transaction_split
+        .update_transaction_split(&split_id, update_split_body)
+        .await;
+
+    // Assert
+    if let Ok(data) = res {
+        assert!(data.status);
+        assert_eq!(data.message, "Split group updated".to_string());
+        assert!(!data.data.active.unwrap());
+        assert_eq!(data.data.name, new_split_name);
+    } else {
+        panic!();
+    }
+}
+
+#[tokio::test]
+async fn update_a_transaction_split_fails_with_invalid_data() {
+    //Arrange
+    let client = get_paystack_client();
+    let (_, split_body) = build_transaction_split(&client).await;
+
+    // Act
+    let transaction_split = client
+        .transaction_split
+        .create_transaction_split(split_body)
+        .await
+        .expect("Failed to create transaction split");
+
+    // create update split body
+    let update_split_body = UpdateTransactionSplitRequestBuilder::default()
+        .active(true)
+        .bearer_type(paystack::BearerType::Subaccount)
+        .name("".to_string())
+        .build()
+        .unwrap();
+
+    // Act
+    let split_id = transaction_split.data.id.to_string();
+    let res = client
+        .transaction_split
+        .update_transaction_split(&split_id, update_split_body)
+        .await;
+
+    // Assert
+    if let Err(err) = res {
+        assert!(err.to_string().contains("400 Bad Request"));
+    } else {
+        panic!();
+    }
+}
+
+#[tokio::test]
+async fn add_a_transaction_split_subaccount_passes_with_valid_data() {
+    // Arrange
+    let client = get_paystack_client();
+    let (_, split_body) = build_transaction_split(&client).await;
+
+    // Act
+    let transaction_split = client
+        .transaction_split
+        .create_transaction_split(split_body)
+        .await
+        .expect("Failed to create transaction split");
+
+    let new_subaccount_body = create_subaccount_body(&client, 2.8, 4.0).await;
+
+    let split_id = transaction_split.data.id.to_string();
+    let res = client
+        .transaction_split
+        .add_or_update_subaccount_split(&split_id, new_subaccount_body.clone())
+        .await
+        .unwrap();
+
+    // Assert
+    assert!(res.status);
+    assert_eq!(res.message, "Subaccount added");
+    assert_eq!(res.data.subaccounts.len(), 3);
+}
+
+#[tokio::test]
+async fn add_a_transaction_split_subaccount_fails_with_invalid_data() {
+    // Arrange
+    let client = get_paystack_client();
+    let (_, split_body) = build_transaction_split(&client).await;
+
+    // Act
+    let transaction_split = client
+        .transaction_split
+        .create_transaction_split(split_body)
+        .await
+        .expect("Failed to create transaction split");
+
+    let new_subaccount_body = create_subaccount_body(&client, 55.0, 120.0).await;
+
+    let split_id = transaction_split.data.id.to_string();
+    let res = client
+        .transaction_split
+        .add_or_update_subaccount_split(&split_id, new_subaccount_body.clone())
+        .await;
+
+    // Assert
+    if let Err(err) = res {
+        dbg!(&err);
+        assert!(err.to_string().contains("400 Bad Request"));
+    } else {
+        panic!();
+    };
+}
+
+#[tokio::test]
+async fn remove_a_subaccount_from_a_transaction_split_passes_with_valid_data() {
+    // Arrange
+    let client = get_paystack_client();
+    let (_, split_body) = build_transaction_split(&client).await;
+
+    // Act
+    let transaction_split = client
+        .transaction_split
+        .create_transaction_split(split_body)
+        .await
+        .expect("Failed to create transaction split");
+    let split_id = transaction_split.data.id.to_string();
+
+    // Validate the number of subaccounts attached
+    assert_eq!(transaction_split.data.subaccounts.len(), 2);
+
+    let subaccount_data = transaction_split.data.subaccounts.first().unwrap();
+    let code = &subaccount_data.subaccount.subaccount_code;
+    // Remove subaccount
+    let res = client
+        .transaction_split
+        .remove_subaccount_from_transaction_split(
+            &split_id,
+            DeleteSubAccountBody {
+                subaccount: code.to_string(),
+            },
+        )
+        .await
+        .unwrap();
+
+    // Assert
+    assert!(res.status);
+    assert_eq!(res.message, "Subaccount removed");
+
+    // Revalidate number of subaccounts attached
+    let transaction_split = client
+        .transaction_split
+        .fetch_transaction_split(&split_id)
+        .await
+        .unwrap();
+
+    // Assert
+    assert!(transaction_split.status);
+    assert_eq!(transaction_split.data.total_subaccounts, 1);
+    let remaining_subaccount = transaction_split.data.subaccounts.first().unwrap();
+    assert_ne!(
+        remaining_subaccount.subaccount.subaccount_code,
+        subaccount_data.subaccount.subaccount_code
+    );
+}
+
+#[tokio::test]
+async fn remove_a_subaccount_from_a_transaction_split_fails_with_invalid_data() {
+    // Arrange
+    let client = get_paystack_client();
+    let (_, split_body) = build_transaction_split(&client).await;
+
+    // Act
+    let transaction_split = client
+        .transaction_split
+        .create_transaction_split(split_body)
+        .await
+        .expect("Failed to create transaction split");
+    let split_id = transaction_split.data.id.to_string();
+
+    // Validate the number of subaccounts attached
+    assert_eq!(transaction_split.data.subaccounts.len(), 2);
+
+    // Remove subaccount
+    let res = client
+        .transaction_split
+        .remove_subaccount_from_transaction_split(
+            &split_id,
+            DeleteSubAccountBody {
+                subaccount: "".to_string(),
+            },
+        )
+        .await;
+
+    // Assert
+    if let Err(err) = res {
+        assert!(err.to_string().contains("400 Bad Request"))
     } else {
         panic!();
     }
