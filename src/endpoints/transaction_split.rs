@@ -5,7 +5,7 @@
 
 use crate::{
     HttpClient, PaystackAPIError, PaystackResult, Response, TransactionSplitRequest,
-    TransactionSplitResponseData,
+    TransactionSplitResponseData, UpdateTransactionSplitRequest,
 };
 use std::sync::Arc;
 
@@ -40,6 +40,94 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
             .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
 
         let response = self.http.post(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<TransactionSplitResponseData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::TransactionSplit(e.to_string())),
+        }
+    }
+
+    /// List the transaction splits available on your integration
+    ///
+    /// Takes in the following parameters:
+    ///     - `split_name`: (Optional) name of the split to retrieve.
+    ///     - `split_active`: (Optional) status of the split to retrieve.
+    pub async fn list_transaction_splits(
+        &self,
+        split_name: Option<&str>,
+        split_active: Option<bool>,
+    ) -> PaystackResult<Vec<TransactionSplitResponseData>> {
+        let url = self.base_url.to_string();
+
+        // Specify a default option for active splits
+        let split_active = match split_active {
+            Some(active) => active.to_string(),
+            None => "".to_string(),
+        };
+
+        let query = vec![
+            ("name", split_name.unwrap_or("")),
+            ("active", &split_active),
+        ];
+
+        let response = self.http.get(&url, &self.key, Some(&query)).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<Vec<TransactionSplitResponseData>> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::TransactionSplit(e.to_string())),
+        }
+    }
+
+    /// Get details of a split on your integration.
+    ///
+    /// Takes in the following parameter:
+    ///     - `split_id`:  ID of the transaction split.
+    pub async fn fetch_transaction_split(
+        &self,
+        split_id: &str,
+    ) -> PaystackResult<TransactionSplitResponseData> {
+        let url = format!("{}/{}", self.base_url, split_id);
+
+        let response = self.http.get(&url, &self.key, None).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<TransactionSplitResponseData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::TransactionSplit(e.to_string())),
+        }
+    }
+
+    /// Update a transaction split details on your integration.
+    ///
+    /// Takes in a
+    /// - `update_body` as a `UpdateTransactionSplitRequest` struct which is created from the `UpdateTransactionSplitRequestBuilder` struct
+    /// - `split_id`, the ID of the split to update
+    pub async fn update_transaction_split(
+        &self,
+        split_id: &str,
+        update_body: UpdateTransactionSplitRequest,
+    ) -> PaystackResult<TransactionSplitResponseData> {
+        let url = format!("{}/{}", self.base_url, split_id);
+        let body = serde_json::to_value(update_body)
+            .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
+
+        let response = self.http.put(&url, &self.key, &body).await;
 
         match response {
             Ok(response) => {
