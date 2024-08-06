@@ -26,7 +26,7 @@ pub struct TransactionSplitRequest {
 }
 
 /// Represents the percentage split data received in the JSON response.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Default)]
 pub struct TransactionSplitResponseData {
     /// The ID of the percentage split.
     pub id: u32,

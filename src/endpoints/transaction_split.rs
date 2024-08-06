@@ -4,8 +4,8 @@
 //! transaction across their payout account, and one or more subaccounts.
 
 use crate::{
-    HttpClient, PaystackAPIError, PaystackResult, Response, TransactionSplitRequest,
-    TransactionSplitResponseData, UpdateTransactionSplitRequest,
+    DeleteSubAccountBody, HttpClient, PaystackAPIError, PaystackResult, Response, SubaccountBody,
+    TransactionSplitRequest, TransactionSplitResponseData, UpdateTransactionSplitRequest,
 };
 use std::sync::Arc;
 
@@ -134,6 +134,61 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
                 let parsed_response: Response<TransactionSplitResponseData> =
                     serde_json::from_str(&response)
                         .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::TransactionSplit(e.to_string())),
+        }
+    }
+
+    /// Add a Subaccount to a Transaction Split, or update the share of an existing Subaccount in a Transaction Split
+    ///
+    /// Takes in the following parameters:
+    ///     - `split_id`: Id of the transaction split to update.
+    ///     - `body`: Subaccount to add to the transaction split.
+    pub async fn add_or_update_subaccount_split(
+        &self,
+        split_id: &str,
+        body: SubaccountBody,
+    ) -> PaystackResult<TransactionSplitResponseData> {
+        let url = format!("{}/{}/subaccount/add", self.base_url, split_id);
+        let body = serde_json::to_value(body)
+            .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
+
+        let response = self.http.post(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<TransactionSplitResponseData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::TransactionSplit(e.to_string())),
+        }
+    }
+
+    /// Remove a subaccount from a transaction split.
+    ///
+    /// Takes in the following parameters
+    ///     - split_id: Id of the transaction split
+    ///     - subaccount: subaccount code to remove
+    pub async fn remove_subaccount_from_transaction_split(
+        &self,
+        split_id: &str,
+        subaccount: DeleteSubAccountBody,
+    ) -> PaystackResult<String> {
+        let url = format!("{}/{}/subaccount/remove", self.base_url, split_id);
+        let body = serde_json::to_value(subaccount)
+            .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
+
+        let response = self.http.post(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<String> = serde_json::from_str(&response)
+                    .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
+
                 Ok(parsed_response)
             }
             Err(e) => Err(PaystackAPIError::TransactionSplit(e.to_string())),

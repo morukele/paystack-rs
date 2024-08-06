@@ -12,6 +12,7 @@ pub struct Response<T> {
     /// This is a summary of the response and its status.
     pub message: String,
     /// This contains the result of your request
+    #[serde(default)]
     pub data: T,
     /// This contains meta data object
     pub meta: Option<Meta>,
