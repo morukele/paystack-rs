@@ -21,7 +21,7 @@ pub struct TransactionEndpoints<T: HttpClient + Default> {
 }
 
 impl<T: HttpClient + Default> TransactionEndpoints<T> {
-    /// Constructor for the transaction object
+    /// Constructor
     pub fn new(key: String, http: Arc<T>) -> TransactionEndpoints<T> {
         let base_url = String::from("https://api.paystack.co/transaction");
         TransactionEndpoints {

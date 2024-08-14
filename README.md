@@ -94,8 +94,8 @@ async fn main() -> Result<(), PaystackAPIError> {
 ```
 
 ### Examples
-We provide some examples of use cases for the Paystack-rs crate. The examples are located in the [examples](examples) folder.
 
+We provide some examples of use cases for the Paystack-rs crate. The examples are located in the [examples](examples) folder.
 
 ## Contributing
 
@@ -105,12 +105,12 @@ We use Github actions to conduct CI/CD for the crate. It ensure that code is for
 as proper linting using `cargo clippy`, and finally run all the integration and unit test using `cargo test`.
 
 ### Crate module schematic diagram
+
 A conceptual overview of the crate is illustrated below. This is to help improve the understanding of how the different
 parts of the crate interact with each other to work efficiently. The `PaystackClient` module is the central module of
 the crate and the best entry point to explore the different parts of the crate.
 
 ![Crate Schematic](docs/images/paystack-rs.png)
-
 
 ## License
 

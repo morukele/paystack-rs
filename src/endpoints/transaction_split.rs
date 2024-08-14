@@ -18,7 +18,7 @@ pub struct TransactionSplitEndpoints<T: HttpClient + Default> {
 }
 
 impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
-    /// Constructor for the transaction object
+    /// Constructor
     pub fn new(key: String, http: Arc<T>) -> TransactionSplitEndpoints<T> {
         let base_url = String::from("https://api.paystack.co/split");
         TransactionSplitEndpoints {
