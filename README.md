@@ -41,6 +41,43 @@ The client currently covers the following section of the API, and the sections t
 
 See the [Rust API docs](https://docs.rs/paystack-rs) or the [examples](/examples).
 
+## Crate module schematic diagram
+
+A conceptual overview of the crate is illustrated below. This is to help improve the understanding of how the different
+parts of the crate interact with each other to work efficiently. The `PaystackClient` module is the central module of
+the crate and the best entry point to explore the different parts of the crate.
+
+```mermaid
+---
+config:
+  layout: dagre
+  theme: default
+---
+flowchart TD
+ subgraph subGraph0["HTTP Layer"]
+        HTTPClient["&lt;Trait&gt; HTTPClient"]
+        ReqwestClient["ReqwestClient"]
+        OtherClients["OtherClients"]
+  end
+ subgraph Core["Core"]
+        Models["Models"]
+        APIEndpoints["APIEndpoints"]
+        Macros["Macros"]
+  end
+ subgraph Types["Types"]
+        Response["Response"]
+        Request["Request"]
+        Error["Error"]
+  end
+    ReqwestClient --> HTTPClient
+    OtherClients --> HTTPClient
+    HTTPClient --> PaystackClient["PaystackClient"]
+    PaystackClient --> APIEndpoints
+    APIEndpoints --> Models
+    Macros --> Models & APIEndpoints
+    Models --> Response & Request & Error
+```
+
 ## Installation
 
 `paystack-rs` uses the `reqwest` HTTP client under the hood and the `tokio` runtime for async operations.
@@ -103,43 +140,6 @@ See [CONTRIBUTING.md](/CONTRIBUTING.md) for information on contributing to payst
 
 We use Github actions to conduct CI/CD for the crate. It ensure that code is formated properly using `cargo fmt`, as well
 as proper linting using `cargo clippy`, and finally run all the integration and unit test using `cargo test`.
-
-### Crate module schematic diagram
-
-A conceptual overview of the crate is illustrated below. This is to help improve the understanding of how the different
-parts of the crate interact with each other to work efficiently. The `PaystackClient` module is the central module of
-the crate and the best entry point to explore the different parts of the crate.
-
-```mermaid
----
-config:
-  layout: dagre
-  theme: default
----
-flowchart TD
- subgraph subGraph0["HTTP Layer"]
-        HTTPClient["&lt;Trait&gt; HTTPClient"]
-        ReqwestClient["ReqwestClient"]
-        OtherClients["OtherClients"]
-  end
- subgraph Core["Core"]
-        Models["Models"]
-        APIEndpoints["APIEndpoints"]
-        Macros["Macros"]
-  end
- subgraph Types["Types"]
-        Response["Response"]
-        Request["Request"]
-        Error["Error"]
-  end
-    ReqwestClient --> HTTPClient
-    OtherClients --> HTTPClient
-    HTTPClient --> PaystackClient["PaystackClient"]
-    PaystackClient --> APIEndpoints
-    APIEndpoints --> Models
-    Macros --> Models & APIEndpoints
-    Models --> Response & Request & Error
-```
 
 ## License
 
