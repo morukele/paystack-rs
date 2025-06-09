@@ -5,9 +5,9 @@
 [![paystack-rs  on docs.rs](https://docs.rs/paystack-rs/badge.svg)](https://docs.rs/paystack-rs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
->*NB: a core rewrite of the project is being carried out, the goal is to make the crate easier to maintain,  
-improve the performance, abstract certain features to improve flexibility, and support for both blocking and non-blocking
-operations.*
+> _NB: a core rewrite of the project is being carried out, the goal is to make the crate easier to maintain,  
+> improve the performance, abstract certain features to improve flexibility, and support for both blocking and non-blocking
+> operations._
 
 Convenient Rust bindings and types for the [Paystack](https://paystack.com) HTTP API aiming to support the entire API surface. Not the case? Please open an issue. I update the definitions on a weekly basis.
 
@@ -68,7 +68,7 @@ async fn main() -> Result<(), PaystackAPIError> {
     let api_key = env::var("PAYSTACK_API_KEY").unwrap();
     let client = PaystackClient<ReqwestClient>::new(api_key);
 
-    
+
     let email = "email@example.com".to_string();
     let amount ="10_000".to_string();
     let body = TransactionRequestBuilder::default()
@@ -110,7 +110,36 @@ A conceptual overview of the crate is illustrated below. This is to help improve
 parts of the crate interact with each other to work efficiently. The `PaystackClient` module is the central module of
 the crate and the best entry point to explore the different parts of the crate.
 
-![Crate Schematic](docs/images/paystack-rs.png)
+```mermaid
+---
+config:
+  layout: dagre
+  theme: default
+---
+flowchart TD
+ subgraph subGraph0["HTTP Layer"]
+        HTTPClient["&lt;Trait&gt; HTTPClient"]
+        ReqwestClient["ReqwestClient"]
+        OtherClients["OtherClients"]
+  end
+ subgraph Core["Core"]
+        Models["Models"]
+        APIEndpoints["APIEndpoints"]
+        Macros["Macros"]
+  end
+ subgraph Types["Types"]
+        Response["Response"]
+        Request["Request"]
+        Error["Error"]
+  end
+    ReqwestClient --> HTTPClient
+    OtherClients --> HTTPClient
+    HTTPClient --> PaystackClient["PaystackClient"]
+    PaystackClient --> APIEndpoints
+    APIEndpoints --> Models
+    Macros --> Models & APIEndpoints
+    Models --> Response & Request & Error
+```
 
 ## License
 
