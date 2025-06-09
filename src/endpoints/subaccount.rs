@@ -19,10 +19,10 @@ pub struct SubaccountEndpoints<T: HttpClient + Default> {
 
 impl<T: HttpClient + Default> SubaccountEndpoints<T> {
     /// Constructor
-    pub fn new(key: String, http: Arc<T>) -> SubaccountEndpoints<T> {
+    pub fn new(key: Arc<String>, http: Arc<T>) -> SubaccountEndpoints<T> {
         let base_url = String::from("https://api.paystack.co/subaccount");
         SubaccountEndpoints {
-            key,
+            key: key.to_string(),
             base_url,
             http,
         }
