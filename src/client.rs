@@ -23,12 +23,12 @@ pub struct PaystackClient<T: HttpClient + Default> {
 impl<T: HttpClient + Default> PaystackClient<T> {
     pub fn new(api_key: String) -> PaystackClient<T> {
         let http = Arc::new(T::default());
-        // TODO: consider making api_key work without cloning. Arc or Reference??
+        let key = Arc::new(api_key);
         PaystackClient {
-            transaction: TransactionEndpoints::new(api_key.clone(), Arc::clone(&http)),
-            transaction_split: TransactionSplitEndpoints::new(api_key.clone(), Arc::clone(&http)),
-            subaccount: SubaccountEndpoints::new(api_key.clone(), Arc::clone(&http)),
-            terminal: TerminalEndpoints::new(api_key.clone(), Arc::clone(&http)),
+            transaction: TransactionEndpoints::new(Arc::clone(&key), Arc::clone(&http)),
+            transaction_split: TransactionSplitEndpoints::new(Arc::clone(&key), Arc::clone(&http)),
+            subaccount: SubaccountEndpoints::new(Arc::clone(&key), Arc::clone(&http)),
+            terminal: TerminalEndpoints::new(Arc::clone(&key), Arc::clone(&http)),
         }
     }
 }
