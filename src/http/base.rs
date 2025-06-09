@@ -13,7 +13,6 @@ pub type Query<'a> = Vec<(&'a str, &'a str)>;
 /// with their preferred HTTP client.
 /// To be as generic as possible, the U generic stands for the HTTP response.
 /// Ideally, it should be bounded to specific traits common in all response.
-/// TODO: Bound the U generic to the appropriate traits.
 
 #[async_trait]
 pub trait HttpClient: Debug + Default + Clone + Send {

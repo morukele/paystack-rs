@@ -1,7 +1,10 @@
 //! Client
 //! =========
 //! This file contains the Paystack API client, and it associated endpoints.
-use crate::{HttpClient, SubaccountEndpoints, TransactionEndpoints, TransactionSplitEndpoints};
+use crate::{
+    HttpClient, SubaccountEndpoints, TerminalEndpoints, TransactionEndpoints,
+    TransactionSplitEndpoints,
+};
 use std::sync::Arc;
 
 /// This is the entry level struct for the paystack API.
@@ -13,6 +16,8 @@ pub struct PaystackClient<T: HttpClient + Default> {
     pub transaction_split: TransactionSplitEndpoints<T>,
     /// Subaccount API route
     pub subaccount: SubaccountEndpoints<T>,
+    /// Terminal API route
+    pub terminal: TerminalEndpoints<T>,
 }
 
 impl<T: HttpClient + Default> PaystackClient<T> {
@@ -23,6 +28,7 @@ impl<T: HttpClient + Default> PaystackClient<T> {
             transaction: TransactionEndpoints::new(api_key.clone(), Arc::clone(&http)),
             transaction_split: TransactionSplitEndpoints::new(api_key.clone(), Arc::clone(&http)),
             subaccount: SubaccountEndpoints::new(api_key.clone(), Arc::clone(&http)),
+            terminal: TerminalEndpoints::new(api_key.clone(), Arc::clone(&http)),
         }
     }
 }
