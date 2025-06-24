@@ -13,7 +13,7 @@ pub struct Response<T> {
     pub message: String,
     /// This contains the result of your request
     #[serde(default)]
-    pub data: T,
+    pub data: Option<T>,
     /// This contains meta data object
     pub meta: Option<Meta>,
 }
@@ -37,4 +37,6 @@ pub struct Meta {
     /// This is how many pages in total are available for retrieval considering the maximum records per page specified.
     #[serde(deserialize_with = "string_or_number_to_u16")]
     pub page_count: u16,
+    pub next: Option<String>,
+    pub previous: Option<String>,
 }

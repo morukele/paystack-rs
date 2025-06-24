@@ -5,7 +5,7 @@
 [![paystack-rs  on docs.rs](https://docs.rs/paystack-rs/badge.svg)](https://docs.rs/paystack-rs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> _NB: a core rewrite of the project is being carried out, the goal is to make the crate easier to maintain,  
+> _NB: a core rewrite of the project is being carried out, the goal is to make the crate easier to maintain,
 > improve the performance, abstract certain features to improve flexibility, and support for both blocking and non-blocking
 > operations._
 
@@ -19,7 +19,8 @@ The client currently covers the following section of the API, and the sections t
 
 - [x] Transaction
 - [x] Transaction Split
-- [ ] Terminal
+- [x] Terminal
+- [ ] Virtual Terminal
 - [ ] Customers
 - [ ] Dedicated Virtual Account
 - [ ] Apple Pay

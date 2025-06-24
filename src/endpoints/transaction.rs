@@ -91,18 +91,16 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
     ///
     pub async fn list_transactions(
         &self,
-        number_of_transactions: Option<u32>,
+        per_page: Option<u32>,
         status: Option<Status>,
     ) -> PaystackResult<Vec<TransactionStatusData>> {
         let url = self.base_url.to_string();
 
-        let per_page = number_of_transactions.unwrap_or(10).to_string();
+        let per_page = per_page.unwrap_or(10).to_string();
         let status = status.unwrap_or(Status::Success).to_string();
         let query = vec![("perPage", per_page.as_str()), ("status", status.as_str())];
 
         let response = self.http.get(&url, &self.key, Some(&query)).await;
-
-        dbg!("{:#?}", &response);
 
         match response {
             Ok(response) => {

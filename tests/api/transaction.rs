@@ -102,14 +102,14 @@ async fn valid_transaction_is_verified() {
 
     let response = client
         .transaction
-        .verify_transaction(&content.data.reference)
+        .verify_transaction(&content.data.unwrap().reference)
         .await
         .expect("unable to verify transaction");
 
     // Assert
     assert!(response.status);
     assert_eq!(response.message, "Verification successful");
-    assert_eq!(response.data.status, "abandoned");
+    assert_eq!(response.data.unwrap().status, "abandoned");
 }
 
 #[tokio::test]
@@ -125,7 +125,7 @@ async fn list_specified_number_of_transactions_in_the_integration() {
         .expect("unable to get list of integrated transactions");
 
     // Assert
-    assert_eq!(5, response.data.len());
+    assert_eq!(5, response.data.unwrap().len());
     assert!(response.status);
     assert_eq!("Transactions retrieved", response.message);
 }
@@ -144,7 +144,7 @@ async fn list_transactions_passes_with_default_values() {
 
     // Assert
     assert!(response.status);
-    assert_eq!(10, response.data.len());
+    assert_eq!(10, response.data.unwrap().len());
     assert_eq!("Transactions retrieved", response.message);
 }
 
@@ -160,18 +160,17 @@ async fn fetch_transaction_succeeds() {
         .await
         .expect("unable to get list of integrated transactions");
 
+    let data = response.data.unwrap();
     let fetched_transaction = client
         .transaction
-        .fetch_transactions(response.data[0].id)
+        .fetch_transactions(data[0].id)
         .await
         .expect("unable to fetch transaction");
 
     // Assert
-    assert_eq!(response.data[0].id, fetched_transaction.data.id);
-    assert_eq!(
-        response.data[0].reference,
-        fetched_transaction.data.reference
-    );
+    let res = fetched_transaction.data.unwrap();
+    assert_eq!(&data[0].id, &res.id);
+    assert_eq!(&data[0].reference, &res.reference);
 }
 
 #[tokio::test]
@@ -186,7 +185,8 @@ async fn view_transaction_timeline_passes_with_id() {
         .await
         .expect("unable to get list of integrated transactions");
 
-    let identifier = TransactionIdentifier::Id(response.data[0].id);
+    let data = response.data.unwrap();
+    let identifier = TransactionIdentifier::Id(data[0].id);
 
     let transaction_timeline = client
         .transaction
@@ -212,7 +212,8 @@ async fn view_transaction_timeline_passes_with_reference() {
         .expect("unable to get list of integrated transactions");
 
     // println!("{:#?}", response);
-    let reference = response.data[0].reference.clone();
+    let data = response.data.unwrap();
+    let reference = data[0].reference.clone();
     let identifier = TransactionIdentifier::Reference(reference);
     let transaction_timeline = client
         .transaction
@@ -238,10 +239,11 @@ async fn get_transaction_total_is_successful() {
         .expect("unable to get transaction total");
 
     // Assert
+    let data = res.data.unwrap();
     assert!(res.status);
     assert_eq!(res.message, "Transaction totals");
-    assert!(res.data.total_transactions.is_some());
-    assert!(res.data.total_volume.is_some());
+    assert!(data.total_transactions.is_some());
+    assert!(data.total_volume.is_some());
 }
 
 #[tokio::test]
@@ -257,9 +259,10 @@ async fn export_transaction_succeeds_with_default_parameters() {
         .expect("unable to export transactions");
 
     // Assert
+    let data = res.data.unwrap();
     assert!(res.status);
     assert_eq!(res.message, "Export successful");
-    assert!(!res.data.path.is_empty());
+    assert!(!data.path.is_empty());
 }
 
 #[tokio::test]
@@ -274,7 +277,8 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status(
         .await
         .expect("Unable to get transaction list");
 
-    let transaction = transaction.data[0].clone();
+    let data = transaction.data.unwrap();
+    let transaction = data[0].clone();
     let email = transaction.customer.email;
     let authorization_code = transaction.authorization.authorization_code.unwrap();
     let body = PartialDebitTransactionRequestBuilder::default()
