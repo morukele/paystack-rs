@@ -1,16 +1,16 @@
 use serde::{Deserialize, Serialize};
 
 /// This struct represents the Paystack customer data
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
 pub struct Customer {
     /// Customer's Id.
-    pub id: Option<u32>,
+    pub id: u32,
     /// Customer's first name.
     pub first_name: Option<String>,
     /// Customer's last name.
     pub last_name: Option<String>,
     /// Customer's email address.
-    pub email: Option<String>,
+    pub email: String,
     /// Customer's code.
     pub customer_code: String,
     /// Customer's phone number.

@@ -12,8 +12,11 @@ use std::sync::Arc;
 /// A struct to hold all the functions of the transaction split API endpoint
 #[derive(Debug, Clone)]
 pub struct TransactionSplitEndpoints<T: HttpClient + Default> {
+    /// Paystack API Key
     key: String,
+    /// Base URL for the transaction route
     base_url: String,
+    /// Http client for the route
     http: Arc<T>,
 }
 

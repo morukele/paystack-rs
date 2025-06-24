@@ -28,28 +28,14 @@ async fn charge_authorization_succeeds() -> Result<(), Box<dyn Error>> {
 
     // Assert
     assert!(charge_response.status);
+    assert_eq!(charge_response.data.customer.email, "susanna@example.net");
     assert_eq!(
-        charge_response.data.customer.unwrap().email.unwrap(),
-        "susanna@example.net"
+        charge_response.data.authorization.clone().channel,
+        Some("card".into())
     );
     assert_eq!(
-        charge_response
-            .data
-            .authorization
-            .clone()
-            .unwrap()
-            .channel
-            .unwrap(),
-        "card"
-    );
-    assert_eq!(
-        charge_response
-            .data
-            .authorization
-            .unwrap()
-            .authorization_code
-            .unwrap(),
-        "AUTH_ik4t69fo2y"
+        charge_response.data.authorization.authorization_code,
+        Some("AUTH_ik4t69fo2y".into())
     );
 
     Ok(())

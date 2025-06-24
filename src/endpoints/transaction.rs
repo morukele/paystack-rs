@@ -3,9 +3,10 @@
 //! The Transaction route allows to create and manage payments on your integration.
 
 use crate::{
-    ChargeRequest, Currency, ExportTransactionData, HttpClient, PartialDebitTransactionRequest,
-    PaystackAPIError, PaystackResult, Response, Status, TransactionRequest,
-    TransactionResponseData, TransactionStatusData, TransactionTimelineData, TransactionTotalData,
+    ChargeRequest, ChargeResponseData, Currency, ExportTransactionData, HttpClient,
+    PartialDebitTransactionRequest, PaystackAPIError, PaystackResult, Response, Status,
+    TransactionIdentifier, TransactionRequest, TransactionResponseData, TransactionStatusData,
+    TransactionTimelineData, TransactionTotalData,
 };
 use std::sync::Arc;
 
@@ -70,6 +71,8 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
 
         let response = self.http.get(&url, &self.key, None).await;
 
+        dbg!("{:#?}", &response);
+
         match response {
             Ok(response) => {
                 let parsed_response: Response<TransactionStatusData> =
@@ -101,6 +104,8 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
 
         let response = self.http.get(&url, &self.key, Some(&query)).await;
 
+        dbg!("{:#?}", &response);
+
         match response {
             Ok(response) => {
                 let parsed_response: Response<Vec<TransactionStatusData>> =
@@ -118,7 +123,7 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
     /// This method take the ID of the desired transaction as a parameter
     pub async fn fetch_transactions(
         &self,
-        transaction_id: u32,
+        transaction_id: u64,
     ) -> PaystackResult<TransactionStatusData> {
         let url = format!("{}/{}", self.base_url, transaction_id);
 
@@ -142,7 +147,7 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
     pub async fn charge_authorization(
         &self,
         charge_request: ChargeRequest,
-    ) -> PaystackResult<TransactionStatusData> {
+    ) -> PaystackResult<ChargeResponseData> {
         let url = format!("{}/charge_authorization", self.base_url);
         let body = serde_json::to_value(charge_request)
             .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
@@ -151,9 +156,8 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
 
         match response {
             Ok(response) => {
-                let parsed_response: Response<TransactionStatusData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+                let parsed_response: Response<ChargeResponseData> = serde_json::from_str(&response)
+                    .map_err(|e| PaystackAPIError::Charge(e.to_string()))?;
 
                 Ok(parsed_response)
             }
@@ -163,20 +167,18 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
 
     /// View the timeline of a transaction.
     ///
-    /// This method takes in the Transaction id or reference as a parameter
+    /// This method takes in the TransactionIdentifier as a parameter
     pub async fn view_transaction_timeline(
         &self,
-        id: Option<u32>,
-        reference: Option<&str>,
+        identifier: TransactionIdentifier,
     ) -> PaystackResult<TransactionTimelineData> {
         // This is a hacky implementation to ensure that the transaction reference or id is not empty.
         // If they are empty, a new url without them as parameter is created.
-        let url = match (id, reference) {
-            (Some(id), None) => Ok(format!("{}/timeline/{}", self.base_url, id)),
-            (None, Some(reference)) => Ok(format!("{}/timeline/{}", self.base_url, &reference)),
-            _ => Err(PaystackAPIError::Transaction(
-                "Transaction Id or Reference is need to view transaction timeline".to_string(),
-            )),
+        let url = match identifier {
+            TransactionIdentifier::Id(id) => Ok(format!("{}/timeline/{}", self.base_url, id)),
+            TransactionIdentifier::Reference(reference) => {
+                Ok(format!("{}/timeline/{}", self.base_url, &reference))
+            }
         }?; // propagate the error upstream
 
         let response = self.http.get(&url, &self.key, None).await;

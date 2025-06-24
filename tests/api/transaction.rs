@@ -2,7 +2,8 @@ use crate::helpers::get_paystack_client;
 use fake::faker::internet::en::SafeEmail;
 use fake::Fake;
 use paystack::{
-    Channel, Currency, PartialDebitTransactionRequestBuilder, Status, TransactionRequestBuilder,
+    Channel, Currency, PartialDebitTransactionRequestBuilder, Status, TransactionIdentifier,
+    TransactionRequestBuilder,
 };
 use rand::Rng;
 
@@ -108,7 +109,7 @@ async fn valid_transaction_is_verified() {
     // Assert
     assert!(response.status);
     assert_eq!(response.message, "Verification successful");
-    assert!(response.data.status.is_some());
+    assert_eq!(response.data.status, "abandoned");
 }
 
 #[tokio::test]
@@ -161,7 +162,7 @@ async fn fetch_transaction_succeeds() {
 
     let fetched_transaction = client
         .transaction
-        .fetch_transactions(response.data[0].id.unwrap())
+        .fetch_transactions(response.data[0].id)
         .await
         .expect("unable to fetch transaction");
 
@@ -185,9 +186,11 @@ async fn view_transaction_timeline_passes_with_id() {
         .await
         .expect("unable to get list of integrated transactions");
 
+    let identifier = TransactionIdentifier::Id(response.data[0].id);
+
     let transaction_timeline = client
         .transaction
-        .view_transaction_timeline(response.data[0].id, None)
+        .view_transaction_timeline(identifier)
         .await
         .expect("unable to get transaction timeline");
 
@@ -209,39 +212,17 @@ async fn view_transaction_timeline_passes_with_reference() {
         .expect("unable to get list of integrated transactions");
 
     // println!("{:#?}", response);
-    let reference = &response.data[0].reference.clone().unwrap();
+    let reference = response.data[0].reference.clone();
+    let identifier = TransactionIdentifier::Reference(reference);
     let transaction_timeline = client
         .transaction
-        .view_transaction_timeline(None, Some(reference))
+        .view_transaction_timeline(identifier)
         .await
         .expect("unable to get transaction timeline");
 
     // Assert
     assert!(transaction_timeline.status);
     assert_eq!(transaction_timeline.message, "Timeline retrieved");
-}
-
-#[tokio::test]
-async fn view_transaction_timeline_fails_without_id_or_reference() {
-    // Arrange
-    let client = get_paystack_client();
-
-    // Act
-    let res = client
-        .transaction
-        .view_transaction_timeline(None, None)
-        .await;
-
-    // Assert
-    match res {
-        Ok(_) => (),
-        Err(e) => {
-            let res = e.to_string();
-            assert!(
-                res.contains("Transaction Id or Reference is need to view transaction timeline")
-            );
-        }
-    }
 }
 
 #[tokio::test]
@@ -294,12 +275,8 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status(
         .expect("Unable to get transaction list");
 
     let transaction = transaction.data[0].clone();
-    let email = transaction.customer.unwrap().email.unwrap();
-    let authorization_code = transaction
-        .authorization
-        .unwrap()
-        .authorization_code
-        .unwrap();
+    let email = transaction.customer.email;
+    let authorization_code = transaction.authorization.authorization_code.unwrap();
     let body = PartialDebitTransactionRequestBuilder::default()
         .email(email)
         .amount("10000".to_string())
@@ -315,7 +292,6 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status(
         Ok(result) => {
             assert!(result.status);
             assert_eq!(result.message, "Charge attempted");
-            assert!(result.data.customer.unwrap().id.is_some())
         }
         Err(error) => {
             let error = error.to_string();
