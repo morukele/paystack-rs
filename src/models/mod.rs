@@ -1,3 +1,4 @@
+pub mod authorization;
 pub mod bearer;
 pub mod channel;
 pub mod charge;
@@ -12,6 +13,7 @@ pub mod transaction;
 pub mod transaction_split;
 
 // public re-export
+pub use authorization::*;
 pub use bearer::*;
 pub use channel::*;
 pub use charge::*;

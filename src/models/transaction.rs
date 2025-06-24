@@ -87,25 +87,25 @@ pub struct TransactionResponseData {
 #[derive(Deserialize, Serialize, Debug, Clone, Default)]
 pub struct TransactionStatusData {
     /// Id of the Transaction
-    pub id: Option<u32>,
+    pub id: u64,
     /// Status of the Transaction. It can be `success`, `abandoned` or `failed`
-    pub status: Option<String>,
+    pub status: String,
     /// Reference of the Transaction
-    pub reference: Option<String>,
+    pub reference: String,
     /// Amount of the transaction in the lowest denomination of the currency e.g. Kobo for NGN and cent for USD.
-    pub amount: Option<u32>,
+    pub amount: u32,
     /// Message from the transaction.
     pub message: Option<String>,
     /// Response from the payment gateway.
-    pub gateway_response: Option<String>,
+    pub gateway_response: String,
     /// Time the Transaction was completed.
     pub paid_at: Option<String>,
     /// Time the Transaction was created.
-    pub created_at: Option<String>,
+    pub created_at: String,
     /// Transaction channel. It can be `card` or `bank`.
-    pub channel: Option<String>,
+    pub channel: String,
     /// Currency code of the Transaction e.g. `NGN for Nigerian Naira` and `USD for US Dollar`.
-    pub currency: Option<String>,
+    pub currency: String,
     /// IP address of the computers the Transaction has passed through.
     pub ip_address: Option<String>,
     /// Meta data associated with the Transaction.
@@ -113,9 +113,9 @@ pub struct TransactionStatusData {
     /// Transaction fees to override the default fees specified in the integration.
     pub fees: Option<i32>,
     /// Transaction customer data.
-    pub customer: Option<Customer>,
+    pub customer: Customer,
     /// Transaction authorization data.
-    pub authorization: Option<Authorization>,
+    pub authorization: Authorization,
 }
 
 /// This struct represents the transaction timeline data.
@@ -184,6 +184,14 @@ pub struct VolumeByCurrency {
 pub struct ExportTransactionData {
     /// Path to download the exported transaction file.
     pub path: String,
+}
+
+/// Transaction identifier.
+///
+/// It can either be a transaction reference or a transaction ID
+pub enum TransactionIdentifier {
+    Id(u64),
+    Reference(String),
 }
 
 #[cfg(test)]

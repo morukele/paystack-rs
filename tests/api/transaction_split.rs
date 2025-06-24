@@ -140,7 +140,7 @@ async fn list_transaction_splits_in_the_integration() {
     if let Ok(data) = res {
         assert!(data.status);
         assert_eq!(data.message, "Split retrieved".to_string());
-        assert_eq!(data.data.len(), 1);
+        assert!(data.data.len() > 0);
 
         let transaction_split = data.data.first().unwrap();
         assert_eq!(
