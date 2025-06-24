@@ -27,14 +27,12 @@ async fn charge_authorization_succeeds() -> Result<(), Box<dyn Error>> {
     let charge_response = client.transaction.charge_authorization(charge).await?;
 
     // Assert
+    let data = charge_response.data.unwrap();
     assert!(charge_response.status);
-    assert_eq!(charge_response.data.customer.email, "susanna@example.net");
+    assert_eq!(data.customer.email, "susanna@example.net");
+    assert_eq!(data.authorization.clone().channel, Some("card".into()));
     assert_eq!(
-        charge_response.data.authorization.clone().channel,
-        Some("card".into())
-    );
-    assert_eq!(
-        charge_response.data.authorization.authorization_code,
+        data.authorization.authorization_code,
         Some("AUTH_ik4t69fo2y".into())
     );
 
