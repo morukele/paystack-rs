@@ -5,10 +5,6 @@
 [![paystack-rs  on docs.rs](https://docs.rs/paystack-rs/badge.svg)](https://docs.rs/paystack-rs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> _NB: a core rewrite of the project is being carried out, the goal is to make the crate easier to maintain,
-> improve the performance, abstract certain features to improve flexibility, and support for both blocking and non-blocking
-> operations._
-
 Convenient Rust bindings and types for the [Paystack](https://paystack.com) HTTP API aiming to support the entire API surface. Not the case? Please open an issue. I update the definitions on a weekly basis.
 
 The client aims to make receiving payments for African business or business with African clients building with Rust as hassle-free as possible.

@@ -1,0 +1,47 @@
+name: Release and Changelog
+
+on:
+  push:
+    branches:
+      - main # Trigger only when a PR is merged to main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install tools
+        run: |
+          cargo install git-cliff cargo-release
+
+      - name: Determine next version
+        id: semver
+        uses: ietf-tools/semver-action@v1
+        with:
+          token: ${{ github.token }}
+          branch: main
+
+      - name: Generate changelog
+        run: git-cliff -o CHANGELOG.md
+
+      - name: Commit changelog
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add CHANGELOG.md
+          git commit -m "chore: update changelog [skip ci]" || echo "no changes"
+
+      - name: Perform release
+        run: |
+          bump=${{ steps.semver.outputs.bump }}
+          cargo release $bump --no-confirm
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+      - name: Push
+        run: |
+          git push
+          git push --tags
