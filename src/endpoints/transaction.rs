@@ -71,8 +71,6 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
 
         let response = self.http.get(&url, &self.key, None).await;
 
-        dbg!("{:#?}", &response);
-
         match response {
             Ok(response) => {
                 let parsed_response: Response<TransactionStatusData> =

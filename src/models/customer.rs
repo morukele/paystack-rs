@@ -15,8 +15,6 @@ pub struct Customer {
     pub customer_code: String,
     /// Customer's phone number.
     pub phone: Option<String>,
-    /// Customer's metadata.
-    pub metadata: Option<String>,
     /// Customer's risk action.
     pub risk_action: Option<String>,
     /// Customer's phone number in international format.
