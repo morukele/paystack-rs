@@ -1,6 +1,6 @@
 [package]
 name = "paystack-rs"
-version = "0.2.3"
+version = "0.2.2"
 description = "Paystack API Wrapper"
 authors = ["Oghenemarho Orukele <orukele.dev@gmail.com>"]
 edition = "2021"
