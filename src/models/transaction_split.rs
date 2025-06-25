@@ -68,9 +68,9 @@ pub struct UpdateTransactionSplitRequest {
     /// True or False
     active: bool,
     /// Any of subaccount
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(strip_option), default)]
     bearer_type: Option<BearerType>,
     /// Subaccount code of a subaccount in the split group. This should be specified only if the `bearer_type is subaccount
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(strip_option), default)]
     bearer_subaccount: Option<SubaccountBody>,
 }
