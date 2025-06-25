@@ -50,9 +50,12 @@ pub struct TransactionSplitResponseData {
     /// The subaccount ID of the bearer associated with the percentage split.
     pub bearer_subaccount: u32,
     /// The creation timestamp of the percentage split.
+    #[serde(rename = "createdAt")]
     pub created_at: Option<String>,
     /// The last update timestamp of the percentage split.
+    #[serde(rename = "updatedAt")]
     pub updated_at: Option<String>,
+    pub is_dynamic: Option<bool>,
     /// The list of subaccounts involved in the percentage split.
     pub subaccounts: Vec<SubaccountData>,
     /// The total count of subaccounts in the percentage split.

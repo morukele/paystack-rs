@@ -60,11 +60,16 @@ pub struct VirtualTerminalResponseData {
 
 #[derive(Debug, Deserialize, Clone, Serialize, Default)]
 pub struct DestinationResponse {
+    pub integration: Option<u32>,
     pub target: Option<String>,
+    pub name: Option<String>,
     #[serde(rename = "type")]
     pub destination_type: Option<String>,
-    pub name: Option<String>,
+    pub id: Option<u32>,
+    #[serde(rename = "createdAt")]
     pub created_at: Option<String>,
+    #[serde(rename = "updatedAt")]
+    pub updated_at: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

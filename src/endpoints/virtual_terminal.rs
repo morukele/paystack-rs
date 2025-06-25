@@ -7,7 +7,8 @@ use std::{marker::PhantomData, sync::Arc};
 use serde_json::json;
 
 use crate::{
-    HttpClient, PaystackAPIError, PaystackResult, Response, VirtualTerminalRequestData,
+    DestinationRequest, DestinationResponse, HttpClient, PaystackAPIError, PaystackResult,
+    Response, TransactionSplitResponseData, VirtualTerminalRequestData,
     VirtualTerminalResponseData, VirtualTerminalStatus,
 };
 
@@ -153,6 +154,122 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
         let body = json!({}); // empty body cause the route takes none
 
         let response = self.http.put(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<PhantomData<String>> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
+        }
+    }
+
+    /// Add a destination (WhatsApp number) to a Virtual Terminal on your integration
+    ///
+    /// Takes in the following:
+    ///     - `code`: Code of the Virtual Terminal
+    ///     - `destinations`: A vector of `DestinationRequest` containing the notification recipients for payments to the Virtual Terminal.
+    pub async fn assign_virtual_terminal_destination(
+        &self,
+        code: String,
+        destinations: Vec<DestinationRequest>,
+    ) -> PaystackResult<Vec<DestinationResponse>> {
+        let url = format!("{}/{}/destination/assign", self.base_url, code);
+        let body = json!({
+            "destinations": destinations
+        });
+
+        let response = self.http.post(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<Vec<DestinationResponse>> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
+        }
+    }
+
+    /// Unassign a destination (WhatsApp Number) summary of transactions from a Virtual Terminal on your integration
+    ///
+    /// Takes in the following:
+    ///     - `code`: Code of the Virtual Terminal.
+    ///     - `targets`: A vector of destination targets to unassign.
+    pub async fn unassign_virtual_terminal_destination(
+        &self,
+        code: String,
+        targets: Vec<String>,
+    ) -> PaystackResult<PhantomData<String>> {
+        let url = format!("{}/{}/destination/unassign", self.base_url, code);
+        let body = json!({
+            "targets": targets
+        });
+
+        let response = self.http.post(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<PhantomData<String>> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
+        }
+    }
+
+    /// Add a split code to a Virtual Terminal on your integration
+    ///
+    /// Takes in the following:
+    ///     - `code`: Code of the Virtual Terminal
+    ///     - `split_code`: Split code to be added to the Virtual Terminal
+    pub async fn add_split_code_to_virtual_terminal(
+        &self,
+        code: String,
+        split_code: String,
+    ) -> PaystackResult<TransactionSplitResponseData> {
+        let url = format!("{}/{}/split_code", self.base_url, code);
+        let body = json!({
+            "split_code": split_code
+        });
+
+        let response = self.http.put(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<TransactionSplitResponseData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
+        }
+    }
+
+    /// Remove a split code from a Virtual Terminal on your integration
+    ///
+    /// Takes in the following:
+    ///     - `code`: Code of the Virtual Terminal
+    ///     - `split_code`: Split code to be removed from the Virtual Terminal
+    pub async fn remove_split_code_from_virtual_terminal(
+        &self,
+        code: String,
+        split_code: String,
+    ) -> PaystackResult<PhantomData<String>> {
+        let url = format!("{}/{}/split_code", self.base_url, code);
+        let body = json!({
+            "split_code": split_code
+        });
+
+        let response = self.http.delete(&url, &self.key, &body).await;
 
         match response {
             Ok(response) => {
