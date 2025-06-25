@@ -2,7 +2,9 @@
 //! ================
 //! The Virtual Terminal API allows you to accept in-person payments without a POS device.
 
-use std::sync::Arc;
+use std::{marker::PhantomData, sync::Arc};
+
+use serde_json::json;
 
 use crate::{
     HttpClient, PaystackAPIError, PaystackResult, Response, VirtualTerminalRequestData,
@@ -74,11 +76,87 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
 
         let response = self.http.get(&url, &self.key, Some(&query)).await;
 
-        dbg!("{:#?}", &response);
-
         match response {
             Ok(response) => {
                 let parsed_response: Response<Vec<VirtualTerminalResponseData>> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
+        }
+    }
+
+    /// Fetch a Virtual Terminal on your integration
+    ///
+    /// Takes in the following:
+    ///     - `code`: Code of the Virtual Terminal
+    pub async fn fetch_virtual_terminal(
+        self,
+        code: String,
+    ) -> PaystackResult<VirtualTerminalResponseData> {
+        let url = format!("{}/{}", self.base_url, code);
+
+        let response = self.http.get(&url, &self.key, None).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<VirtualTerminalResponseData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
+        }
+    }
+
+    /// Update a Virtual Terminal on your integration
+    ///
+    /// Takes in the following:
+    ///     - `code`: Code of the Virtual Terminal to update.
+    ///     - `name`: Name of the Virtual Terminal.
+    pub async fn update_virtual_terminal(
+        &self,
+        code: String,
+        name: String,
+    ) -> PaystackResult<PhantomData<String>> {
+        let url = format!("{}/{}", self.base_url, code);
+        let body = json!({
+            "name": name
+        });
+
+        let response = self.http.put(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<PhantomData<String>> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
+        }
+    }
+
+    /// Deactivate a Virtual Terminal on your integration
+    ///
+    /// Takes in the following:
+    ///     - `code`: Code of the Virtual Terminal to deactivate.
+    pub async fn deactivate_virtual_terminal(
+        &self,
+        code: String,
+    ) -> PaystackResult<PhantomData<String>> {
+        let url = format!("{}/{}/deactivate", self.base_url, code);
+        let body = json!({}); // empty body cause the route takes none
+
+        let response = self.http.put(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<PhantomData<String>> =
                     serde_json::from_str(&response)
                         .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 

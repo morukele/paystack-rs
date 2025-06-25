@@ -16,6 +16,9 @@ pub struct Response<T> {
     pub data: Option<T>,
     /// This contains meta data object
     pub meta: Option<Meta>,
+    #[serde(rename = "type")]
+    pub response_type: Option<String>,
+    pub code: Option<String>,
 }
 
 /// The Meta object is used to provide context for the contents of the data key.
@@ -40,4 +43,5 @@ pub struct Meta {
     pub page_count: Option<u16>,
     pub next: Option<String>,
     pub previous: Option<String>,
+    pub next_step: Option<String>,
 }

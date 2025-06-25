@@ -169,7 +169,7 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
         let body = serde_json::to_value(update_request)
             .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self.http.put(&url, &self.key, &body).await;
 
         match response {
             Ok(response) => {

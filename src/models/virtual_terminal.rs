@@ -52,6 +52,7 @@ pub struct VirtualTerminalResponseData {
     pub payment_methods: Option<Vec<String>>,
     pub active: bool,
     pub metadata: Option<String>,
+    pub connect_account_id: Option<String>,
     pub destinations: Option<Vec<DestinationResponse>>,
     pub currency: Option<String>,
     pub created_at: Option<String>,
