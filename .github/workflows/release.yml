@@ -34,6 +34,6 @@ jobs:
       - name: Perform Release
         run: |
           LEVEL="${{ github.event.inputs.level || 'patch' }}"
-          cargo release $LEVEL --no-confirm
+          cargo release $LEVEL --execute
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN}}
