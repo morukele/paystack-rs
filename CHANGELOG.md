@@ -2,7 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.2.2] - 2023-11-11
+## [unreleased]
+
+### 🚀 Features
+
+- *(virtual_terminal)* Added support for creating virtual terminal
+- *(virtual_terminal)* Added support for all the endpoints in the  virtual terminal route
+
+### 🐛 Bug Fixes
+
+- *(builder)* Stripped all options as input in builder structs for easier development
+- *(response)* Added support for response_type and code field in the response struct
+
+### ⚙️ Miscellaneous Tasks
+
+- Removed release workflow
+- *(ci)* Added release ci flow for github action
+- *(ci)* Remove support for change log generation from main branch to dev branch
+- Added a new deserialiser for option_string_or_number_to_u8 and for the u16 variant
+- *(ci)* Remove support for change log generation from main branch to dev branch
+
+## [1.0.0] - 2025-06-24
+
+### ⚙️ Miscellaneous Tasks
+
+- Release paystack-rs version 0.2.3
+- Release paystack-rs version 1.0.0
+- Release paystack-rs version 1.0.0
+- Release paystack-rs version 1.0.0
+
+## [0.2.1] - 2023-11-11
 
 ### ⚙️ Miscellaneous Tasks
 
