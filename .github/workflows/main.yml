@@ -1,4 +1,4 @@
-name: Rust
+name: Run test on main
 on:
   push:
     branches: ["main", "master"]
