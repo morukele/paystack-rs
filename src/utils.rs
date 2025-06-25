@@ -74,3 +74,81 @@ where
 
     deserializer.deserialize_any(StringOrNumberVisitor)
 }
+
+pub fn option_string_or_number_to_u8<'de, D>(deserializer: D) -> Result<Option<u8>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    struct OptionStringOrNumberVisitor;
+
+    impl<'de> serde::de::Visitor<'de> for OptionStringOrNumberVisitor {
+        type Value = Option<u8>;
+
+        fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+            formatter.write_str("an optional u8, either as a number, a string, or null")
+        }
+
+        fn visit_none<E>(self) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            Ok(None)
+        }
+
+        fn visit_unit<E>(self) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            Ok(None)
+        }
+
+        fn visit_some<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
+        where
+            D: serde::Deserializer<'de>,
+        {
+            // Delegate to the exisiting deserializer
+            super::string_or_number_to_u8(deserializer).map(Some)
+        }
+    }
+
+    deserializer.deserialize_option(OptionStringOrNumberVisitor)
+}
+
+pub fn option_string_or_number_to_u16<'de, D>(deserializer: D) -> Result<Option<u16>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    struct OptionStringOrNumberVisitor;
+
+    impl<'de> serde::de::Visitor<'de> for OptionStringOrNumberVisitor {
+        type Value = Option<u16>;
+
+        fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+            formatter.write_str("an optional u8, either as a number, a string, or null")
+        }
+
+        fn visit_none<E>(self) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            Ok(None)
+        }
+
+        fn visit_unit<E>(self) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            Ok(None)
+        }
+
+        fn visit_some<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
+        where
+            D: serde::Deserializer<'de>,
+        {
+            // Delegate to the exisiting deserializer
+            super::string_or_number_to_u16(deserializer).map(Some)
+        }
+    }
+
+    deserializer.deserialize_option(OptionStringOrNumberVisitor)
+}

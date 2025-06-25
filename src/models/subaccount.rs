@@ -21,19 +21,19 @@ pub struct SubaccountRequest {
     /// A description for this subaccount
     description: String,
     /// A contact email for the subaccount
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(strip_option), default)]
     primary_contact_email: Option<String>,
     /// A name for the contact person for this subaccount
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(strip_option), default)]
     primary_contact_name: Option<String>,
     /// A phone number to call for this subaccount
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(strip_option), default)]
     primary_contact_phone: Option<String>,
     /// Stringified JSON object.
     /// Add a custom_fields attribute which has an array of objects if you would like the fields to be
     /// added to your transaction when displayed on the dashboard.
     /// Sample: {"custom_fields":[{"display_name":"Cart ID","variable_name": "cart_id","value": "8393"}]}
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(strip_option), default)]
     metadata: Option<String>,
 }
 

@@ -118,7 +118,7 @@ mod tests {
     #[tokio::test]
     async fn reqwest_client_can_get() {
         // Set
-        let api_key = "fake-hey";
+        let api_key = "fake-key";
         let url = "https://api.paystack.co/";
 
         // Run

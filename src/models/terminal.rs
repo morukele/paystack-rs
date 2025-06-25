@@ -23,6 +23,7 @@ pub struct EventRequest {
 #[derive(Debug, Serialize, Deserialize, Clone, Builder)]
 pub struct EventRequestData {
     pub id: String,
+    #[builder(setter(strip_option), default)]
     pub reference: Option<String>,
 }
 
@@ -71,8 +72,10 @@ impl fmt::Display for EventType {
 #[derive(Debug, Serialize, Deserialize, Builder, Default)]
 pub struct UpdateTerminalRequest {
     /// Name of the terminal
+    #[builder(setter(strip_option), default)]
     pub address: Option<String>,
     /// The address of the terminal
+    #[builder(setter(strip_option), default)]
     pub name: Option<String>,
 }
 
@@ -116,8 +119,8 @@ mod tests {
     #[test]
     fn create_event_request() {
         let even_request_data = EventRequestDataBuilder::default()
-            .id("some-id".into())
-            .reference(Some("some-ref".into()))
+            .id("some-id".to_string())
+            .reference("some-ref".to_string())
             .build()
             .expect("failed to build event request data");
 
@@ -137,8 +140,8 @@ mod tests {
     #[test]
     fn create_update_terminal_request() {
         let update_request = UpdateTerminalRequestBuilder::default()
-            .address(Some("some-address".to_string()))
-            .name(Some("some-name".to_string()))
+            .address("some-address".to_string())
+            .name("some-name".to_string())
             .build()
             .expect("failed to build update terminal request");
 
