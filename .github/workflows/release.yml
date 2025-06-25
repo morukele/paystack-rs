@@ -36,6 +36,11 @@ jobs:
         with:
           fetch-depth: 0 # required for git-cliff
 
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Install cargo-release
         run: cargo install cargo-release
 
