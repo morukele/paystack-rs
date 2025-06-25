@@ -1,3 +1,5 @@
+use std::fmt;
+
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
@@ -62,6 +64,22 @@ pub struct DestinationResponse {
     pub destination_type: Option<String>,
     pub name: Option<String>,
     pub created_at: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub enum VirtualTerminalStatus {
+    Active,
+    Inactive,
+}
+
+impl fmt::Display for VirtualTerminalStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let lowercase_string = match self {
+            VirtualTerminalStatus::Active => "active",
+            VirtualTerminalStatus::Inactive => "inactive",
+        };
+        write!(f, "{}", lowercase_string)
+    }
 }
 
 #[cfg(test)]

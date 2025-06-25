@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 use crate::{
     HttpClient, PaystackAPIError, PaystackResult, Response, VirtualTerminalRequestData,
-    VirtualTerminalResponseData,
+    VirtualTerminalResponseData, VirtualTerminalStatus,
 };
 
 #[derive(Debug, Clone)]
@@ -47,6 +47,38 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
         match response {
             Ok(response) => {
                 let parsed_response: Response<VirtualTerminalResponseData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
+        }
+    }
+
+    /// List Virtual Terminals on your integration.
+    ///
+    /// Takes in the following:
+    ///     - `status`: Filter terminal by status.
+    ///     - `per_page`: Number of records per page.
+    pub async fn list_virtual_terminals(
+        &self,
+        status: VirtualTerminalStatus,
+        per_page: i32,
+    ) -> PaystackResult<Vec<VirtualTerminalResponseData>> {
+        let url = format!("{}", self.base_url);
+        let status = status.to_string();
+        let per_page = per_page.to_string();
+
+        let query = vec![("status", status.as_str()), ("perPage", per_page.as_str())];
+
+        let response = self.http.get(&url, &self.key, Some(&query)).await;
+
+        dbg!("{:#?}", &response);
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<Vec<VirtualTerminalResponseData>> =
                     serde_json::from_str(&response)
                         .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
