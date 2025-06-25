@@ -23,7 +23,7 @@ pub struct VirtualTerminalRequestData {
     pub custom_field: Option<Vec<CustomField>>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Builder)]
+#[derive(Debug, Serialize, Deserialize, Clone, Builder, Default)]
 pub struct DestinationRequest {
     /// The Whatsapp phone number to send notifications to.
     pub target: String,
@@ -31,12 +31,37 @@ pub struct DestinationRequest {
     pub name: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Builder)]
+#[derive(Debug, Serialize, Deserialize, Clone, Builder, Default)]
 pub struct CustomField {
     /// What will be displayed on the Virtual Terminal page
     pub display_name: String,
     /// Parameter for referencing the custom field programmatically
     pub variable_name: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct VirtualTerminalResponseData {
+    pub id: u64,
+    pub name: String,
+    pub integration: u64,
+    pub domain: String,
+    pub code: String,
+    pub payment_methods: Option<Vec<String>>,
+    pub active: bool,
+    pub metadata: Option<String>,
+    pub destinations: Option<Vec<DestinationResponse>>,
+    pub currency: Option<String>,
+    pub created_at: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Clone, Serialize, Default)]
+pub struct DestinationResponse {
+    pub target: Option<String>,
+    #[serde(rename = "type")]
+    pub destination_type: Option<String>,
+    pub name: Option<String>,
+    pub created_at: Option<String>,
 }
 
 #[cfg(test)]

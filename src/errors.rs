@@ -25,6 +25,9 @@ pub enum PaystackAPIError {
     /// Error associated with terminal
     #[error("Terminal Error: {0}")]
     Terminal(String),
+    /// Error associated with virtual terminal
+    #[error("Virtual Terminal Error: {0}")]
+    VirtualTerminal(String),
     /// Error associated with customer
     #[error("Customer Error: {0}")]
     Customer(String),
