@@ -19,9 +19,9 @@ async fn charge_authorization_succeeds() -> Result<(), Box<dyn Error>> {
         .email("susanna@example.net".to_string())
         .amount(amount)
         .authorization_code("AUTH_ik4t69fo2y".to_string())
-        .currency(Some(Currency::NGN))
-        .channel(Some(vec![Channel::Card]))
-        .transaction_charge(Some(100))
+        .currency(Currency::NGN)
+        .channel(vec![Channel::Card])
+        .transaction_charge(100)
         .build()?;
 
     let charge_response = client.transaction.charge_authorization(charge).await?;

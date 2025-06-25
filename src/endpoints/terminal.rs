@@ -2,7 +2,7 @@
 //! ========
 //! The Terminal API allows you to build delightful in-person payment experiences.
 
-use std::sync::Arc;
+use std::{marker::PhantomData, sync::Arc};
 
 use crate::{
     EventRequest, FetchEventStatusResponseData, FetchTerminalStatusResponseData, HttpClient,
@@ -164,17 +164,18 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
         &self,
         terminal_id: String,
         update_request: UpdateTerminalRequest,
-    ) -> PaystackResult<String> {
+    ) -> PaystackResult<PhantomData<String>> {
         let url = format!("{}/{}", self.base_url, terminal_id);
         let body = serde_json::to_value(update_request)
             .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self.http.put(&url, &self.key, &body).await;
 
         match response {
             Ok(response) => {
-                let parsed_response: Response<String> = serde_json::from_str(&response)
-                    .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
+                let parsed_response: Response<PhantomData<String>> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
                 Ok(parsed_response)
             }
@@ -188,7 +189,10 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
     ///     - `serial_number`: The device serial number
     /// NB: The generic for the result here is a `String`, because there is no data field in the response from the API.
     /// The string will be ignored because the underlying `data` field in the `response` is an `Option`.
-    pub async fn commission_terminal(&self, serial_number: String) -> PaystackResult<String> {
+    pub async fn commission_terminal(
+        &self,
+        serial_number: String,
+    ) -> PaystackResult<PhantomData<String>> {
         let url = format!("{}/commission_device", self.base_url);
         let body = serde_json::json!({
             "serial_number": serial_number
@@ -198,8 +202,9 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
 
         match response {
             Ok(response) => {
-                let parsed_response: Response<String> = serde_json::from_str(&response)
-                    .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
+                let parsed_response: Response<PhantomData<String>> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
                 Ok(parsed_response)
             }
@@ -213,7 +218,10 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
     ///     - `serial_number`: The device serial number
     /// NB: The generic for the result here is a `String`, because there is no data field in the response from the API.
     /// The string will be ignored because the underlying `data` field in the `response` is an `Option`.
-    pub async fn decommission_terminal(&self, serial_number: String) -> PaystackResult<String> {
+    pub async fn decommission_terminal(
+        &self,
+        serial_number: String,
+    ) -> PaystackResult<PhantomData<String>> {
         let url = format!("{}/decommission_device", self.base_url);
         let body = serde_json::json!({
             "serial_number": serial_number
@@ -223,8 +231,9 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
 
         match response {
             Ok(response) => {
-                let parsed_response: Response<String> = serde_json::from_str(&response)
-                    .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
+                let parsed_response: Response<PhantomData<String>> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
                 Ok(parsed_response)
             }
