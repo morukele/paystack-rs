@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased]
+## [unreleased] - ReleaseDate
 
 ### 🚀 Features
 
@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
 - *(builder)* Stripped all options as input in builder structs for easier development
 - *(response)* Added support for response_type and code field in the response struct
 
+### 📚 Documentation
+
+- Update changelog generation in cargo release
+
 ### ⚙️ Miscellaneous Tasks
 
 - Removed release workflow
@@ -21,6 +25,8 @@ All notable changes to this project will be documented in this file.
 - *(ci)* Remove support for change log generation from main branch to dev branch
 - Added a new deserialiser for option_string_or_number_to_u8 and for the u16 variant
 - *(ci)* Remove support for change log generation from main branch to dev branch
+- *(ci)* Improved ci/cd to allow release run with a dev is merged into main
+- *(ci)* Improved ci/cd to allow release run with a dev is merged into main
 
 ## [1.0.0] - 2025-06-24
 
