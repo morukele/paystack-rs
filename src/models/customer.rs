@@ -1,22 +1,78 @@
+use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
+
+use super::{Authorization, Subscription, TransactionStatusData};
 
 /// This struct represents the Paystack customer data
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
-pub struct Customer {
-    /// Customer's Id.
-    pub id: u32,
-    /// Customer's first name.
+pub struct CustomerResponseData {
+    pub id: u64,
+    pub integration: Option<u64>,
+    pub domain: Option<String>,
+    pub identified: Option<bool>,
     pub first_name: Option<String>,
-    /// Customer's last name.
     pub last_name: Option<String>,
-    /// Customer's email address.
     pub email: String,
-    /// Customer's code.
     pub customer_code: String,
-    /// Customer's phone number.
     pub phone: Option<String>,
-    /// Customer's risk action.
     pub risk_action: Option<String>,
-    /// Customer's phone number in international format.
     pub international_format_phone: Option<String>,
+    pub identification: Option<String>,
+    pub transactions: Option<Vec<TransactionStatusData>>,
+    pub subscriptions: Option<Vec<Subscription>>,
+    pub authorizations: Option<Vec<Authorization>>,
+    #[serde(rename = "createdAt")]
+    pub created_at: Option<String>,
+    #[serde(rename = "updatedAt")]
+    pub updated_at: Option<String>,
+    pub total_transactions: Option<u16>,
+    pub total_transaction_value: Option<Vec<String>>,
+    pub dedicated_account: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Default, Deserialize, Builder)]
+pub struct CreateCustomerRequest {
+    /// Customer's email address
+    pub email: String,
+    /// Customer's first name
+    pub first_name: String,
+    /// Customer's last name
+    pub last_name: String,
+    /// Customer's phone number
+    #[builder(setter(strip_option), default)]
+    pub phone: Option<String>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn can_build_customer() {
+        let customer = CreateCustomerRequestBuilder::default()
+            .email("customer@example.com".to_string())
+            .first_name("Zero".to_string())
+            .last_name("Sum".to_string())
+            .phone("+2348123456789".to_string())
+            .build()
+            .expect("unable to build customer request");
+
+        assert_eq!(customer.first_name, "Zero");
+        assert_eq!(customer.last_name, "Sum");
+    }
+
+    #[test]
+    fn create_customer_with_invalid_data_fails() {
+        let first_name = "Zero".to_string();
+        let last_name = "Sum".to_string();
+        let phone = "+2348123456789".to_string();
+
+        let body = CreateCustomerRequestBuilder::default()
+            .first_name(first_name)
+            .last_name(last_name)
+            .phone(phone)
+            .build();
+
+        assert!(body.is_err());
+    }
 }

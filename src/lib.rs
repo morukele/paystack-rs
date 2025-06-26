@@ -47,7 +47,7 @@
 //!         .build()?;
 //!
 //!     let res = client
-//!         .transaction
+//!         .transactions
 //!         .initialize_transaction(body)
 //!         .await
 //!         .expect("Unable to create transaction");

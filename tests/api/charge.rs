@@ -24,7 +24,7 @@ async fn charge_authorization_succeeds() -> Result<(), Box<dyn Error>> {
         .transaction_charge(100)
         .build()?;
 
-    let charge_response = client.transaction.charge_authorization(charge).await?;
+    let charge_response = client.transactions.charge_authorization(charge).await?;
 
     // Assert
     let data = charge_response.data.unwrap();

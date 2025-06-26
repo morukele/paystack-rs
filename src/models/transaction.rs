@@ -4,7 +4,7 @@
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
-use crate::{Authorization, Channel, Currency, Customer};
+use crate::{Authorization, Channel, Currency, CustomerResponseData};
 
 /// This struct is used to create a transaction body for creating a transaction using the Paystack API.
 /// This struct is built using the `TransactionRequestBuilder` struct.
@@ -113,7 +113,7 @@ pub struct TransactionStatusData {
     /// Transaction fees to override the default fees specified in the integration.
     pub fees: Option<i32>,
     /// Transaction customer data.
-    pub customer: Customer,
+    pub customer: CustomerResponseData,
     /// Transaction authorization data.
     pub authorization: Authorization,
 }

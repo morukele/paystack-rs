@@ -16,8 +16,8 @@ The client currently covers the following section of the API, and the sections t
 - [x] Transaction
 - [x] Transaction Split
 - [x] Terminal
-- [ ] Virtual Terminal
-- [ ] Customers
+- [x] Virtual Terminal
+- [x] Customers
 - [ ] Dedicated Virtual Account
 - [ ] Apple Pay
 - [ ] Subaccounts
