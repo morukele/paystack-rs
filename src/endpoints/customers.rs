@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 use crate::{
     CreateCustomerRequest, CustomerResponseData, HttpClient, PaystackAPIError, PaystackResult,
-    Response,
+    Response, UpdateCustomerRequest,
 };
 
 /// A struct to hold all the functions of the customers API endpoint
@@ -99,6 +99,35 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
         let url = format!("{}/{}", self.base_url, email_or_code);
 
         let response = self.http.get(&url, &self.key, None).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<CustomerResponseData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::Customer(e.to_string())),
+        }
+    }
+
+    /// Update a customer's details on your integration
+    ///
+    /// It takes the following parameters:
+    ///     - `code`: The customer's code
+    ///     - `update_customer_request`: The data to update the customer with.
+    ///     It should be created with the `UpdateCustomerRequestBuilder` struct.
+    pub async fn update_customer(
+        &self,
+        code: String,
+        update_customer_request: UpdateCustomerRequest,
+    ) -> PaystackResult<CustomerResponseData> {
+        let url = format!("{}/{}", self.base_url, code);
+        let body = serde_json::to_value(update_customer_request)
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+
+        let response = self.http.put(&url, &self.key, &body).await;
 
         match response {
             Ok(response) => {

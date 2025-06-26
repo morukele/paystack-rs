@@ -30,10 +30,25 @@ pub struct CustomerResponseData {
     pub dedicated_account: Option<String>,
 }
 
+/// This struct constains the data for creating a customer in your integration
 #[derive(Debug, Clone, Serialize, Default, Deserialize, Builder)]
 pub struct CreateCustomerRequest {
     /// Customer's email address
     pub email: String,
+    /// Customer's first name
+    #[builder(setter(strip_option), default)]
+    pub first_name: Option<String>,
+    /// Customer's last name
+    #[builder(setter(strip_option), default)]
+    pub last_name: Option<String>,
+    /// Customer's phone number
+    #[builder(setter(strip_option), default)]
+    pub phone: Option<String>,
+}
+
+/// This struct constains the data for updating a customer in your integration
+#[derive(Debug, Clone, Serialize, Default, Deserialize, Builder)]
+pub struct UpdateCustomerRequest {
     /// Customer's first name
     #[builder(setter(strip_option), default)]
     pub first_name: Option<String>,
@@ -64,7 +79,7 @@ mod tests {
     }
 
     #[test]
-    fn create_customer_with_invalid_data_fails() {
+    fn build_customer_with_invalid_data_fails() {
         let first_name = "Zero".to_string();
         let last_name = "Sum".to_string();
         let phone = "+2348123456789".to_string();

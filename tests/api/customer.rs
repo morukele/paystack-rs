@@ -6,7 +6,7 @@ use fake::{
     },
     Fake,
 };
-use paystack::CreateCustomerRequestBuilder;
+use paystack::{CreateCustomerRequestBuilder, UpdateCustomerRequestBuilder};
 
 use crate::helpers::get_paystack_client;
 
@@ -140,4 +140,55 @@ async fn can_fetch_customer_from_the_integration_with_customer_code() {
     assert!(res.status);
     assert_eq!(&res_data.email, &customer_data.email);
     assert_eq!(&res_data.customer_code, &customer_data.customer_code);
+}
+
+// TODO: find a way to clean up customers in the integration after the test
+#[tokio::test]
+async fn can_modify_customer_information() {
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    let body = CreateCustomerRequestBuilder::default()
+        .email("test@email.com".to_string())
+        .first_name("Old First Name".to_string())
+        .last_name("Old Last Name".to_string())
+        .build()
+        .unwrap();
+    let customer = client
+        .customers
+        .create_customer(body)
+        .await
+        .expect("unable to create customer");
+
+    let customer_data = customer.data.unwrap();
+
+    // Check that these fields don't exist
+    assert!(customer.status);
+    assert!(customer.message.contains("Customer created"));
+
+    // update customer
+    let update_request = UpdateCustomerRequestBuilder::default()
+        .first_name("New First Name".to_string())
+        .last_name("New Last Name".to_string())
+        .build()
+        .unwrap();
+    let updated_customer = client
+        .customers
+        .update_customer(customer_data.customer_code, update_request)
+        .await
+        .expect("unable to update customer");
+
+    // Assert
+    let updated_customer_data = updated_customer.data.unwrap();
+    assert!(updated_customer.status);
+    assert!(updated_customer.message.contains("Customer updated"));
+    assert_eq!(
+        updated_customer_data.first_name,
+        Some("New First Name".to_string())
+    );
+    assert_eq!(
+        updated_customer_data.last_name,
+        Some("New Last Name".to_string())
+    )
 }
