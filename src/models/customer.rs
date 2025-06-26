@@ -35,9 +35,11 @@ pub struct CreateCustomerRequest {
     /// Customer's email address
     pub email: String,
     /// Customer's first name
-    pub first_name: String,
+    #[builder(setter(strip_option), default)]
+    pub first_name: Option<String>,
     /// Customer's last name
-    pub last_name: String,
+    #[builder(setter(strip_option), default)]
+    pub last_name: Option<String>,
     /// Customer's phone number
     #[builder(setter(strip_option), default)]
     pub phone: Option<String>,
@@ -57,8 +59,8 @@ mod tests {
             .build()
             .expect("unable to build customer request");
 
-        assert_eq!(customer.first_name, "Zero");
-        assert_eq!(customer.last_name, "Sum");
+        assert_eq!(customer.first_name, Some("Zero".to_string()));
+        assert_eq!(customer.last_name, Some("Sum".to_string()));
     }
 
     #[test]

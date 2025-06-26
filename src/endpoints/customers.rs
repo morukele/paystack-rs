@@ -57,4 +57,58 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
             Err(e) => Err(PaystackAPIError::Customer(e.to_string())),
         }
     }
+
+    /// List customers available on your integration
+    ///
+    /// It takes the following parameters:
+    ///     - `per_page`: Specify how many records you want to retreive per page. If not specified, default value of 50.
+    ///     - `page`: Specify exactly waht page you want to retreive. If not specified, default value of 1.
+    pub async fn list_customers(
+        &self,
+        per_page: Option<u8>,
+        page: Option<u8>,
+    ) -> PaystackResult<Vec<CustomerResponseData>> {
+        let url = format!("{}", self.base_url);
+
+        let per_page = per_page.unwrap_or(50).to_string();
+        let page = page.unwrap_or(1).to_string();
+        let query = vec![("perPage", per_page.as_str()), ("page", page.as_str())];
+
+        let response = self.http.get(&url, &self.key, Some(&query)).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<Vec<CustomerResponseData>> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::Customer(e.to_string())),
+        }
+    }
+
+    /// Get details of a customer on your integration.
+    ///
+    /// It takes the following parameters:
+    ///     - `email_or_code`: An `email`or `customer code` for the customer you want to fetch.
+    pub async fn fetch_customer(
+        &self,
+        email_or_code: String,
+    ) -> PaystackResult<CustomerResponseData> {
+        let url = format!("{}/{}", self.base_url, email_or_code);
+
+        let response = self.http.get(&url, &self.key, None).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<CustomerResponseData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::Customer(e.to_string())),
+        }
+    }
 }
