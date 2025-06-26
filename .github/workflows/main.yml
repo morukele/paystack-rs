@@ -1,7 +1,7 @@
 name: Build
 on:
   push:
-    branches: ["main", "master"]
+    branches: ["main", "master", "dev"]
 env:
   CARGO_TERM_COLOR: always
   PAYSTACK_API_KEY: ${{secrets.PAYSTACK_API_KEY}}
