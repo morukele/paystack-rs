@@ -27,8 +27,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout branch
+        uses: actions/checkout@v3
         with:
+          token: ${{ secrets.GH_PAT }}
           fetch-depth: 0 # required for git-cliff
 
       - name: Configure Git
