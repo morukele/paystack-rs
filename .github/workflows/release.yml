@@ -12,10 +12,6 @@ on:
           - minor
           - major
 
-  pull_request:
-    branches: ["main"]
-    types: [closed]
-
 jobs:
   release:
     name: Release Crate
