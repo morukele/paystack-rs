@@ -2,3 +2,14 @@ pre-release-replacements = [
     { file = "CHANGELOG.md", search = "unreleased", replace = "{{version}}" },
     { file = "CHANGELOG.md", search = "ReleaseDate", replace = "{{date}}" },
 ]
+
+# Configure the release process
+[release]
+sign-commit = false
+sign-tag = false
+push = true
+publish = true
+allow-branch = ["main"]
+consolidate-commits = false
+changelog = true
+changelog_command = "git cliff -o CHANGELOG.md -n"

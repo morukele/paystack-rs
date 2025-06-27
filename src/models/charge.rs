@@ -7,7 +7,7 @@ use crate::{Channel, Currency};
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
-use super::{Authorization, Customer};
+use super::{Authorization, CustomerResponseData};
 
 /// This struct is used to create a charge body for creating a Charge Authorization using the Paystack API.
 /// The struct is constructed using the `ChargeBodyBuilder`
@@ -67,7 +67,7 @@ pub struct ChargeResponseData {
     pub ip_address: Option<String>,
     pub fees: u64,
     pub authorization: Authorization,
-    pub customer: Customer,
+    pub customer: CustomerResponseData,
     pub plan: Option<String>,
     pub id: Option<u64>,
 }

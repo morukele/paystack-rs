@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.1.1] - 2025-06-26
+## [unreleased] - ReleaseDate
 
 ### 🚀 Features
 
@@ -27,6 +27,17 @@ All notable changes to this project will be documented in this file.
 - *(ci)* Remove support for change log generation from main branch to dev branch
 - *(ci)* Improved ci/cd to allow release run with a dev is merged into main
 - *(ci)* Improved ci/cd to allow release run with a dev is merged into main
+- *(ci)* Added username and email to ci/cd pipeline
+- *(ci)* Made release pipeline manual
+- *(doc)* Bumped up version number
+- *(ci)* Added support for checklog development into dev merge
+- *(ci)* Added PAT to allow push to protected branch
+- *(ci)* Removed automatic running on pull request
+- Release paystack-rs version 1.1.1
+- *(doc)* Fixed the test passing badge
+- *(doc)* Fixed the test passing badge
+- *(ci)* Added support for test run when push made to dev branch
+- *(ci)* Added support for running changelog generation in CI/CD
 
 ## [1.0.0] - 2025-06-24
 

@@ -2,7 +2,7 @@
 //! =========
 //! This file contains the Paystack API client, and it associated endpoints.
 use crate::{
-    HttpClient, SubaccountEndpoints, TerminalEndpoints, TransactionEndpoints,
+    CustomersEndpoints, HttpClient, SubaccountEndpoints, TerminalEndpoints, TransactionEndpoints,
     TransactionSplitEndpoints, VirtualTerminalEndpoints,
 };
 use std::sync::Arc;
@@ -11,7 +11,7 @@ use std::sync::Arc;
 /// it allows for authentication of the client
 pub struct PaystackClient<T: HttpClient + Default> {
     /// Transaction API route
-    pub transaction: TransactionEndpoints<T>,
+    pub transactions: TransactionEndpoints<T>,
     /// Transaction Split API route
     pub transaction_split: TransactionSplitEndpoints<T>,
     /// Subaccount API route
@@ -20,6 +20,8 @@ pub struct PaystackClient<T: HttpClient + Default> {
     pub terminal: TerminalEndpoints<T>,
     /// Virutal Terminal API route
     pub virutal_terminal: VirtualTerminalEndpoints<T>,
+    /// Customers API route
+    pub customers: CustomersEndpoints<T>,
 }
 
 impl<T: HttpClient + Default> PaystackClient<T> {
@@ -27,11 +29,12 @@ impl<T: HttpClient + Default> PaystackClient<T> {
         let http = Arc::new(T::default());
         let key = Arc::new(api_key);
         PaystackClient {
-            transaction: TransactionEndpoints::new(Arc::clone(&key), Arc::clone(&http)),
+            transactions: TransactionEndpoints::new(Arc::clone(&key), Arc::clone(&http)),
             transaction_split: TransactionSplitEndpoints::new(Arc::clone(&key), Arc::clone(&http)),
             subaccount: SubaccountEndpoints::new(Arc::clone(&key), Arc::clone(&http)),
             terminal: TerminalEndpoints::new(Arc::clone(&key), Arc::clone(&http)),
             virutal_terminal: VirtualTerminalEndpoints::new(Arc::clone(&key), Arc::clone(&http)),
+            customers: CustomersEndpoints::new(Arc::clone(&key), Arc::clone(&http)),
         }
     }
 }

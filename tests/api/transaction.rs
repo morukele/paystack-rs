@@ -30,7 +30,7 @@ async fn initialize_transaction_valid() {
         .unwrap();
 
     let res = client
-        .transaction
+        .transactions
         .initialize_transaction(body)
         .await
         .expect("unable to create transaction");
@@ -61,7 +61,7 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant
         .build()
         .expect("unable to build Transaction Request");
 
-    let res = client.transaction.initialize_transaction(body).await;
+    let res = client.transactions.initialize_transaction(body).await;
 
     // Assert
     match res {
@@ -95,13 +95,13 @@ async fn valid_transaction_is_verified() {
         .unwrap();
 
     let content = client
-        .transaction
+        .transactions
         .initialize_transaction(body)
         .await
         .expect("unable to initiate transaction");
 
     let response = client
-        .transaction
+        .transactions
         .verify_transaction(&content.data.unwrap().reference)
         .await
         .expect("unable to verify transaction");
@@ -119,7 +119,7 @@ async fn list_specified_number_of_transactions_in_the_integration() {
 
     // Act
     let response = client
-        .transaction
+        .transactions
         .list_transactions(Some(5), Some(Status::Abandoned))
         .await
         .expect("unable to get list of integrated transactions");
@@ -137,7 +137,7 @@ async fn list_transactions_passes_with_default_values() {
 
     // Act
     let response = client
-        .transaction
+        .transactions
         .list_transactions(None, None)
         .await
         .expect("unable to get list of integration transactions");
@@ -155,14 +155,14 @@ async fn fetch_transaction_succeeds() {
 
     // Act
     let response = client
-        .transaction
+        .transactions
         .list_transactions(Some(1), Some(Status::Success))
         .await
         .expect("unable to get list of integrated transactions");
 
     let data = response.data.unwrap();
     let fetched_transaction = client
-        .transaction
+        .transactions
         .fetch_transactions(data[0].id)
         .await
         .expect("unable to fetch transaction");
@@ -180,7 +180,7 @@ async fn view_transaction_timeline_passes_with_id() {
 
     // Act
     let response = client
-        .transaction
+        .transactions
         .list_transactions(Some(1), Some(Status::Success))
         .await
         .expect("unable to get list of integrated transactions");
@@ -189,7 +189,7 @@ async fn view_transaction_timeline_passes_with_id() {
     let identifier = TransactionIdentifier::Id(data[0].id);
 
     let transaction_timeline = client
-        .transaction
+        .transactions
         .view_transaction_timeline(identifier)
         .await
         .expect("unable to get transaction timeline");
@@ -206,7 +206,7 @@ async fn view_transaction_timeline_passes_with_reference() {
 
     // Act
     let response = client
-        .transaction
+        .transactions
         .list_transactions(Some(1), Some(Status::Success))
         .await
         .expect("unable to get list of integrated transactions");
@@ -216,7 +216,7 @@ async fn view_transaction_timeline_passes_with_reference() {
     let reference = data[0].reference.clone();
     let identifier = TransactionIdentifier::Reference(reference);
     let transaction_timeline = client
-        .transaction
+        .transactions
         .view_transaction_timeline(identifier)
         .await
         .expect("unable to get transaction timeline");
@@ -233,7 +233,7 @@ async fn get_transaction_total_is_successful() {
 
     // Act
     let res = client
-        .transaction
+        .transactions
         .total_transactions()
         .await
         .expect("unable to get transaction total");
@@ -253,7 +253,7 @@ async fn export_transaction_succeeds_with_default_parameters() {
 
     // Act
     let res = client
-        .transaction
+        .transactions
         .export_transaction(None, None, None)
         .await
         .expect("unable to export transactions");
@@ -272,7 +272,7 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status(
 
     // Act
     let transaction = client
-        .transaction
+        .transactions
         .list_transactions(Some(1), Some(Status::Success))
         .await
         .expect("Unable to get transaction list");
@@ -289,7 +289,7 @@ async fn partial_debit_transaction_passes_or_fails_depending_on_merchant_status(
         .build()
         .unwrap();
 
-    let res = client.transaction.partial_debit(body).await;
+    let res = client.transactions.partial_debit(body).await;
 
     // Assert
     match res {

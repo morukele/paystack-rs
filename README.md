@@ -1,6 +1,6 @@
 # paystack-rs
 
-[![Rust](https://github.com/morukele/paystack-rs/actions/workflows/rust.yml/badge.svg?branch=main)](https://github.com/morukele/paystack-rs/actions/workflows/rust.yml)
+[![Rust](https://github.com/morukele/paystack-rs/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/morukele/paystack-rs/actions/workflows/main.yml)
 [![paystack-rs on crates.io](https://img.shields.io/crates/v/paystack-rs.svg)](https://crates.io/crates/paystack-rs)
 [![paystack-rs  on docs.rs](https://docs.rs/paystack-rs/badge.svg)](https://docs.rs/paystack-rs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -16,8 +16,8 @@ The client currently covers the following section of the API, and the sections t
 - [x] Transaction
 - [x] Transaction Split
 - [x] Terminal
-- [ ] Virtual Terminal
-- [ ] Customers
+- [x] Virtual Terminal
+- [x] Customers
 - [ ] Dedicated Virtual Account
 - [ ] Apple Pay
 - [ ] Subaccounts
