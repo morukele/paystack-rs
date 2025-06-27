@@ -17,7 +17,7 @@ pub struct CustomerResponseData {
     pub email: String,
     pub customer_code: String,
     pub phone: Option<String>,
-    pub risk_action: Option<String>,
+    pub risk_action: Option<RiskAction>,
     pub international_format_phone: Option<String>,
     pub identification: Option<String>,
     pub transactions: Option<Vec<TransactionStatusData>>,
@@ -105,6 +105,26 @@ impl fmt::Display for IdentificationType {
             IdentificationType::BankAccount => "bank_account",
         };
         write!(f, "{}", identification_type)
+    }
+}
+
+#[derive(Debug, Serialize, Default, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum RiskAction {
+    #[default]
+    Default,
+    Allow,
+    Deny,
+}
+
+impl fmt::Display for RiskAction {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let risk_action = match self {
+            RiskAction::Allow => "allow",
+            RiskAction::Default => "default",
+            RiskAction::Deny => "deny",
+        };
+        write!(f, "{}", risk_action)
     }
 }
 

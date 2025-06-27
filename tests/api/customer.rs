@@ -7,7 +7,7 @@ use fake::{
     Fake,
 };
 use paystack::{
-    CreateCustomerRequestBuilder, IdentificationType, UpdateCustomerRequestBuilder,
+    CreateCustomerRequestBuilder, IdentificationType, RiskAction, UpdateCustomerRequestBuilder,
     ValidateCustomerRequestBuilder,
 };
 
@@ -89,18 +89,16 @@ async fn can_fetch_a_customer_from_the_integration_with_email() {
     let client = get_paystack_client();
 
     // create customer
-    let body = CreateCustomerRequestBuilder::default()
-        .email("test@email.com".to_string())
-        .build()
-        .unwrap();
+    // get existing customer from integration
     let customer = client
         .customers
-        .create_customer(body)
+        .list_customers(Some(1), Some(1))
         .await
-        .expect("unable to create customer");
+        .expect("unable to get customer");
+    let data = customer.data.unwrap();
+    let customer_data = data[0].clone();
 
     // Act
-    let customer_data = customer.data.unwrap();
     let res = client
         .customers
         .fetch_customer(customer_data.email.clone())
@@ -120,18 +118,16 @@ async fn can_fetch_customer_from_the_integration_with_customer_code() {
     let client = get_paystack_client();
 
     // create customer
-    let body = CreateCustomerRequestBuilder::default()
-        .email("test@email.com".to_string())
-        .build()
-        .unwrap();
+    // get existing customer from integration
     let customer = client
         .customers
-        .create_customer(body)
+        .list_customers(Some(1), Some(1))
         .await
-        .expect("unable to create customer");
+        .expect("unable to get customer");
+    let data = customer.data.unwrap();
+    let customer_data = data[0].clone();
 
     // Act
-    let customer_data = customer.data.unwrap();
     let res = client
         .customers
         .fetch_customer(customer_data.customer_code.clone())
@@ -244,4 +240,45 @@ async fn can_initiate_customer_validation_request() {
     assert!(validation_response
         .message
         .contains("Customer Identification in progress"))
+}
+
+#[tokio::test]
+async fn can_blacklist_and_whitelist_a_customer() {
+    // Arrange
+    let client = get_paystack_client();
+
+    // Act
+    // get customer
+    let customer = client
+        .customers
+        .list_customers(Some(1), Some(1))
+        .await
+        .expect("unable to get customer");
+    let data = customer.data.unwrap();
+    let customer_data = data[0].clone();
+
+    // blacklist customer
+    let res = client
+        .customers
+        .whitelist_or_blacklist_customer(customer_data.customer_code.clone(), RiskAction::Deny)
+        .await
+        .expect("Unable to blacklist client");
+
+    // Assert
+    assert!(res.status);
+    assert!(res.message.contains("Customer updated"));
+    assert_eq!(res.data.unwrap().risk_action, Some(RiskAction::Deny));
+
+    // whitelist customer
+    // ! For some reason, setting to allow is forbidden
+    // `Default` is as good as `Allow` for a large amount of cases.
+    let res = client
+        .customers
+        .whitelist_or_blacklist_customer(customer_data.email, RiskAction::Default)
+        .await
+        .expect("Unable to whitelist customer");
+
+    assert!(res.status);
+    assert!(res.message.contains("Customer updated"));
+    assert_eq!(res.data.unwrap().risk_action, Some(RiskAction::Default));
 }

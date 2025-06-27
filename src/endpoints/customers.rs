@@ -4,9 +4,11 @@
 
 use std::{marker::PhantomData, sync::Arc};
 
+use serde_json::json;
+
 use crate::{
     CreateCustomerRequest, CustomerResponseData, HttpClient, PaystackAPIError, PaystackResult,
-    Response, UpdateCustomerRequest, ValidateCustomerRequest,
+    Response, RiskAction, UpdateCustomerRequest, ValidateCustomerRequest,
 };
 
 /// A struct to hold all the functions of the customers API endpoint
@@ -115,15 +117,15 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
     /// Update a customer's details on your integration
     ///
     /// It takes the following parameters:
-    ///     - `code`: The customer's code
+    ///     - `customer_code`: The customer's code
     ///     - `update_customer_request`: The data to update the customer with.
     ///     It should be created with the `UpdateCustomerRequestBuilder` struct.
     pub async fn update_customer(
         &self,
-        code: String,
+        customer_code: String,
         update_customer_request: UpdateCustomerRequest,
     ) -> PaystackResult<CustomerResponseData> {
-        let url = format!("{}/{}", self.base_url, code);
+        let url = format!("{}/{}", self.base_url, customer_code);
         let body = serde_json::to_value(update_customer_request)
             .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
@@ -161,6 +163,36 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
         match response {
             Ok(response) => {
                 let parsed_response: Response<PhantomData<String>> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::Customer(e.to_string())),
+        }
+    }
+
+    /// Whitelist or blacklist a customer on your integration
+    ///
+    /// It takes in the following parameters:
+    ///     - `customer_code`: Customer's code, or email address.
+    ///     - `risk_action`: One of the possible risk actions for the customer.
+    pub async fn whitelist_or_blacklist_customer(
+        &self,
+        customer_code: String,
+        risk_action: RiskAction,
+    ) -> PaystackResult<CustomerResponseData> {
+        let url = format!("{}/set_risk_action", self.base_url);
+        let body = json!({
+            "customer": customer_code,
+            "risk_action": risk_action
+        });
+
+        let response = self.http.post(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<CustomerResponseData> =
                     serde_json::from_str(&response)
                         .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
