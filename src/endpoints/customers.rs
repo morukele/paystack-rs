@@ -201,4 +201,31 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
             Err(e) => Err(PaystackAPIError::Customer(e.to_string())),
         }
     }
+
+    /// Deactivate an authorization when the card needs to be forgotten
+    ///
+    /// It takes the following parameters:
+    ///     - `authorization_code`: Authorization code to be deactivated.
+    pub async fn deactivate_authorization(
+        &self,
+        authorization_code: String,
+    ) -> PaystackResult<PhantomData<String>> {
+        let url = format!("{}/authorization/deactivate", self.base_url);
+        let body = json!({
+            "authorization_code": authorization_code
+        });
+
+        let response = self.http.post(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<PhantomData<String>> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::Customer(e.to_string())),
+        }
+    }
 }

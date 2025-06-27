@@ -282,3 +282,5 @@ async fn can_blacklist_and_whitelist_a_customer() {
     assert!(res.message.contains("Customer updated"));
     assert_eq!(res.data.unwrap().risk_action, Some(RiskAction::Default));
 }
+
+// TODO: make test for dea
