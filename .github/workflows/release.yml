@@ -15,10 +15,6 @@ on:
 jobs:
   release:
     name: Release Crate
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
-      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -34,12 +30,24 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Install cargo-release
-        run: cargo install cargo-release
+      - name: Install dependencies
+        run: |
+          cargo install cargo-release
+          cargo install git-cliff
+
+      - name: Generate Changelog
+        run: |
+          git cliff -o CHANGELOG.md -n
+
+      - name: Commit Changelog
+        run: |
+          git add CHANGELOG.md
+          git commit -m "chore(changelog): update CHANGELOG.md for release" || echo "No changes to commit"
+          git push origin HEAD
 
       - name: Perform Release
         run: |
-          LEVEL="${{ github.event.inputs.level || 'patch' }}"
+          LEVEL="${{ github.event.inputs.level}}"
           cargo release $LEVEL --execute --no-confirm
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN}}
