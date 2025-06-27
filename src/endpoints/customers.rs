@@ -2,11 +2,11 @@
 //! =========
 //! Thse Customers API allows you to create and maange customers on your integration
 
-use std::sync::Arc;
+use std::{marker::PhantomData, sync::Arc};
 
 use crate::{
     CreateCustomerRequest, CustomerResponseData, HttpClient, PaystackAPIError, PaystackResult,
-    Response, UpdateCustomerRequest,
+    Response, UpdateCustomerRequest, ValidateCustomerRequest,
 };
 
 /// A struct to hold all the functions of the customers API endpoint
@@ -132,6 +132,35 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
         match response {
             Ok(response) => {
                 let parsed_response: Response<CustomerResponseData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::Customer(e.to_string())),
+        }
+    }
+
+    /// Validate a customer's identity
+    ///
+    /// It takes in the following parameters:
+    ///     - `customer_code`: email, or customer code of customer to be identified.
+    ///     - `customer_validation_request`: The data to validate the customer with.
+    /// It should be created with the `ValidateCustomerRequestBuilder` struct.
+    pub async fn validate_customer(
+        &self,
+        customer_code: String,
+        customer_validation_request: ValidateCustomerRequest,
+    ) -> PaystackResult<PhantomData<String>> {
+        let url = format!("{}/{}/identification", self.base_url, customer_code);
+        let body = serde_json::to_value(customer_validation_request)
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+
+        let response = self.http.post(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<PhantomData<String>> =
                     serde_json::from_str(&response)
                         .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 

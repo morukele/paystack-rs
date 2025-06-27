@@ -6,7 +6,10 @@ use fake::{
     },
     Fake,
 };
-use paystack::{CreateCustomerRequestBuilder, UpdateCustomerRequestBuilder};
+use paystack::{
+    CreateCustomerRequestBuilder, IdentificationType, UpdateCustomerRequestBuilder,
+    ValidateCustomerRequestBuilder,
+};
 
 use crate::helpers::get_paystack_client;
 
@@ -191,4 +194,54 @@ async fn can_modify_customer_information() {
         updated_customer_data.last_name,
         Some("New Last Name".to_string())
     )
+}
+
+#[tokio::test]
+async fn can_initiate_customer_validation_request() {
+    // Arrange
+    let client = get_paystack_client();
+    let first_name: String = FirstName().fake();
+    let last_name: String = LastName().fake();
+    let middle_name: String = FirstName().fake();
+    let email: String = SafeEmail().fake();
+
+    // Act
+    // create customer
+    let body = CreateCustomerRequestBuilder::default()
+        .email(email)
+        .first_name(first_name.clone())
+        .last_name(last_name.clone())
+        .build()
+        .unwrap();
+    let customer = client
+        .customers
+        .create_customer(body)
+        .await
+        .expect("unable to create customer");
+    let customer_data = customer.data.unwrap();
+
+    // validate customer
+    let customer_validation_request = ValidateCustomerRequestBuilder::default()
+        .country("NG".to_string())
+        .identification_type(IdentificationType::BankAccount)
+        .account_number("0123456789".to_string())
+        .bvn("20012345677".to_string())
+        .bank_code("007".to_string())
+        .first_name(first_name.clone())
+        .last_name(last_name.clone())
+        .middle_name(middle_name)
+        .build()
+        .unwrap();
+
+    let validation_response = client
+        .customers
+        .validate_customer(customer_data.customer_code, customer_validation_request)
+        .await
+        .expect("Unable to validate customer");
+
+    // Assert
+    assert!(validation_response.status);
+    assert!(validation_response
+        .message
+        .contains("Customer Identification in progress"))
 }

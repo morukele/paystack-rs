@@ -1,3 +1,5 @@
+use std::fmt;
+
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
@@ -60,6 +62,52 @@ pub struct UpdateCustomerRequest {
     pub phone: Option<String>,
 }
 
+#[derive(Debug, Clone, Serialize, Default, Deserialize, Builder)]
+pub struct ValidateCustomerRequest {
+    /// Customer's first name
+    pub first_name: String,
+    /// Customer's last name
+    pub last_name: String,
+    /// Customer's middle name
+    #[builder(setter(strip_option), default)]
+    pub middle_name: Option<String>,
+    /// Predefined types of identification. Only `bank_code` is supported at the moment
+    #[serde(rename = "type")]
+    pub identification_type: IdentificationType,
+    /// Customer's identification number
+    #[builder(setter(strip_option), default)]
+    pub value: Option<String>,
+    /// 2 letter country code of identification issuer
+    pub country: String,
+    /// Customer's Bank Verification Number
+    pub bvn: String,
+    /// Customer bank code
+    pub bank_code: String,
+    /// Customer's bank account number. (required if `identification_type` is `bank_account`.
+    #[builder(setter(strip_option), default)]
+    pub account_number: Option<String>,
+}
+
+/// Represents the different predefined types of identification.
+///
+/// Only `bank_account`is supported at the moment.
+#[derive(Debug, Serialize, Default, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum IdentificationType {
+    #[default]
+    #[serde(rename = "bank_account")]
+    BankAccount,
+}
+
+impl fmt::Display for IdentificationType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let identification_type = match self {
+            IdentificationType::BankAccount => "bank_account",
+        };
+        write!(f, "{}", identification_type)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -91,5 +139,12 @@ mod tests {
             .build();
 
         assert!(body.is_err());
+    }
+
+    #[test]
+    fn can_use_identification_type() {
+        let identification = IdentificationType::BankAccount;
+
+        assert_eq!(identification.to_string(), "bank_account".to_string());
     }
 }
