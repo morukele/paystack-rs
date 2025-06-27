@@ -37,7 +37,7 @@ jobs:
 
       - name: Generate Changelog
         run: |
-          git cliff -o CHANGELOG.md -n
+          git cliff -o CHANGELOG.md
 
       - name: Commit Changelog
         run: |
