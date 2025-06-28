@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use super::{Currency, CustomerResponseData};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, Builder)]
-pub struct CreateDedicatedVirtualAccountRequest {
+pub struct DedicatedVirtualAccountRequest {
     /// Customer ID or Code
     pub customer: String,
     /// The bank slug for preferred bank. To get a list of available banks, use the List Providers endpoint.
@@ -25,6 +25,21 @@ pub struct CreateDedicatedVirtualAccountRequest {
     /// Customer's phone number
     #[builder(setter(strip_option), default)]
     pub phone: Option<String>,
+    /// Customer's email address
+    #[builder(setter(strip_option), default)]
+    pub email: Option<String>,
+    /// Currently accepts NG and GH only
+    #[builder(setter(strip_option), default)]
+    pub country: Option<String>,
+    /// Customer's account number
+    #[builder(setter(strip_option), default)]
+    pub account_number: Option<String>,
+    /// Customer's Bank Verification Number (Nigeria only)
+    #[builder(setter(strip_option), default)]
+    pub bvn: Option<String>,
+    /// Customer's bank code
+    #[builder(setter(strip_option), default)]
+    pub bank_code: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
