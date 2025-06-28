@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [1.2.0] - 2025-06-28
 
+### ⚙️ Miscellaneous Tasks
+
+- *(doc)* Fixed the test passing badge
+- *(doc)* Fixed the test passing badge
+- *(ci)* Added support for test run when push made to dev branch
+- *(ci)* Added support for running changelog generation in CI/CD
+- *(ci)* Added support for running changelog generation in CI/CD
+- *(ci)* Added support for running changelog generation in CI/CD
+
+## [1.1.1] - 2025-06-26
+
 ### 🚀 Features
 
 - *(virtual_terminal)* Added support for creating virtual terminal
@@ -34,12 +45,6 @@ All notable changes to this project will be documented in this file.
 - *(ci)* Added PAT to allow push to protected branch
 - *(ci)* Removed automatic running on pull request
 - Release paystack-rs version 1.1.1
-- *(doc)* Fixed the test passing badge
-- *(doc)* Fixed the test passing badge
-- *(ci)* Added support for test run when push made to dev branch
-- *(ci)* Added support for running changelog generation in CI/CD
-- *(ci)* Added support for running changelog generation in CI/CD
-- *(ci)* Added support for running changelog generation in CI/CD
 
 ## [1.0.0] - 2025-06-24
 
@@ -50,7 +55,7 @@ All notable changes to this project will be documented in this file.
 - Release paystack-rs version 1.0.0
 - Release paystack-rs version 1.0.0
 
-## [0.2.1] - 2023-11-11
+## [0.2.2] - 2023-11-11
 
 ### ⚙️ Miscellaneous Tasks
 
