@@ -31,4 +31,6 @@ pub enum PaystackAPIError {
     /// Error associated with customer
     #[error("Customer Error: {0}")]
     Customer(String),
+    #[error("Dedicated Virtual Account: {0}")]
+    DedicatedVirtualAccount(String),
 }
