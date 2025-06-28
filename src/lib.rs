@@ -10,7 +10,7 @@
 //!
 //! ```toml
 //!     [dependencies]
-//!     paystack-rs = "0.1"
+//!    paystack-rs = "1.2.0"
 //! ```
 //!
 //! ## Usage

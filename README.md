@@ -81,7 +81,7 @@ flowchart TD
 
 ```toml
 [dependencies]
-paystack-rs = "0.x.x"
+paystack-rs = "1.2.0"
 ```
 
 You can also download the source code and use in your code base directly if you prefer.

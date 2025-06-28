@@ -12,6 +12,9 @@ All notable changes to this project will be documented in this file.
 - *(ci)* Added support for running changelog generation in CI/CD
 - *(ci)* Added support for running changelog generation in CI/CD
 - *(ci)* Added support for running changelog generation in CI/CD
+- *(ci)* Updated automatic release github action
+- *(changelog)* Update CHANGELOG.md for release
+- *(ci)* Updated automatic release github action
 
 ## [1.1.1] - 2025-06-26
 
