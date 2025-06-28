@@ -1,4 +1,4 @@
-name: Release
+name: Release Crate
 
 on:
   workflow_dispatch:
@@ -6,6 +6,7 @@ on:
       level:
         description: "Release level (patch, minor, major)"
         required: true
+        default: patch
         type: choice
         options:
           - patch
@@ -14,40 +15,27 @@ on:
 
 jobs:
   release:
-    name: Release Crate
+    name: Cargo Release
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # for pushing tags/commits
     steps:
-      - name: Checkout branch
+      - name: Checkout code
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.GH_PAT }}
-          fetch-depth: 0 # required for git-cliff
+          fetch-depth: 0 # required for tagging and changelog
 
-      - name: Configure Git
+      - name: Setup Git identity
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Install dependencies
-        run: |
-          cargo install cargo-release
-          cargo install git-cliff
+      - name: Install cargo-release
+        run: cargo install cargo-release
 
-      - name: Generate Changelog
-        run: |
-          git cliff -o CHANGELOG.md
-
-      - name: Commit Changelog
-        run: |
-          git add CHANGELOG.md
-          git commit -m "chore(changelog): update CHANGELOG.md for release" || echo "No changes to commit"
-          git push origin HEAD
-
-      - name: Perform Release
-        run: |
-          LEVEL="${{ github.event.inputs.level}}"
-          cargo release $LEVEL --execute --no-confirm
+      - name: Run cargo-release
         env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN}}
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: |
+          cargo release ${{ github.event.inputs.level }} --execute --no-confirm

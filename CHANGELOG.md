@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased] - ReleaseDate
+## [1.2.0] - 2025-06-28
 
 ### ⚙️ Miscellaneous Tasks
 

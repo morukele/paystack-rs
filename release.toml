@@ -1,9 +1,16 @@
 pre-release-replacements = [
-    { file = "CHANGELOG.md", search = "unreleased", replace = "{{version}}" },
-    { file = "CHANGELOG.md", search = "ReleaseDate", replace = "{{date}}" },
+    { file = "README.md", search = "^paystack-rs = \".*\"$", replace = "{{crate_name}} = \"{{version}}\"" },
+    { file = "src/lib.rs", search = "^//!     paystack-rs = \".*\"$", replace = "//!    {{crate_name}} = \"{{version}}\"" },
+]
+pre-release-hook = [
+    "git",
+    "cliff",
+    "-o",
+    "CHANGELOG.md",
+    "--tag",
+    "{{version}}",
 ]
 
-# Configure the release process
 [release]
 sign-commit = false
 sign-tag = false
@@ -12,4 +19,4 @@ publish = true
 allow-branch = ["main"]
 consolidate-commits = false
 changelog = true
-changelog_command = "git cliff -o CHANGELOG.md -n"
+changelog_command = "cargo release changelog"

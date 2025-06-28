@@ -35,23 +35,3 @@ jobs:
         run: cargo build --verbose
       - name: Run tests
         run: cargo test --verbose
-
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # required for git-cliff
-
-      - name: Install git-cliff
-        run: cargo install git-cliff
-
-      - name: Generate changelog
-        run: git-cliff -o CHANGELOG.md
-
-      - name: Commit changelog
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add CHANGELOG.md
-          git commit -m "chore: update changelog for release" || echo "no changes"
-
-      - name: Push changelog
-        run: git push origin main || echo "no changes"
