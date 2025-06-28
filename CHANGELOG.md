@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [unreleased] - ReleaseDate
+## [1.2.0] - 2025-06-28
 
 ### 🚀 Features
 
@@ -37,6 +37,8 @@ All notable changes to this project will be documented in this file.
 - *(doc)* Fixed the test passing badge
 - *(doc)* Fixed the test passing badge
 - *(ci)* Added support for test run when push made to dev branch
+- *(ci)* Added support for running changelog generation in CI/CD
+- *(ci)* Added support for running changelog generation in CI/CD
 - *(ci)* Added support for running changelog generation in CI/CD
 
 ## [1.0.0] - 2025-06-24
