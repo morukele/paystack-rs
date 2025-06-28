@@ -16,6 +16,3 @@ sign-tag = false
 push = true
 publish = true
 allow-branch = ["main"]
-consolidate-commits = false
-changelog = true
-changelog_command = "cargo release changelog"
