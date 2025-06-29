@@ -17,6 +17,7 @@ pub struct CustomerResponseData {
     pub email: String,
     pub customer_code: String,
     pub phone: Option<String>,
+    pub metadata: Option<CustomerMetaData>,
     pub risk_action: Option<RiskAction>,
     pub international_format_phone: Option<String>,
     pub identification: Option<String>,
@@ -30,6 +31,11 @@ pub struct CustomerResponseData {
     pub total_transactions: Option<u16>,
     pub total_transaction_value: Option<Vec<String>>,
     pub dedicated_account: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CustomerMetaData {
+    pub calling_code: Option<String>,
 }
 
 /// This struct constains the data for creating a customer in your integration

@@ -125,4 +125,66 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
             Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
         }
     }
+
+    /// Get details of a dedicated virtual account on your integration
+    ///
+    /// Takes in the following:
+    ///     - `dedicated_account_id`: ID of dedicated virtual account
+    pub async fn fetch_dedicated_virtual_account(
+        &self,
+        dedicated_account_id: u64,
+    ) -> PaystackResult<DedicatedVirtualAccountResponseData> {
+        let url = format!("{}/{}", self.base_url, dedicated_account_id);
+
+        let response = self.http.get(&url, &self.key, None).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<DedicatedVirtualAccountResponseData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
+        }
+    }
+
+    /// Requery Dedicated Virtual Account for new transactions.
+    ///
+    /// Takes in the following:
+    ///     - `account_number`: Virtual account number to requery
+    ///     - `provider_slug`: The bank's slug in lowercase, without spaces.
+    ///     - `date`: (Optional) The day the transfer was made in `YYYY-MM_DD` format.
+    pub async fn requery_dedicated_account(
+        &self,
+        account_number: String,
+        provider_slug: String,
+        date: Option<String>,
+    ) -> PaystackResult<PhantomData<String>> {
+        let url = format!("{}/requery", self.base_url);
+        let mut query = vec![
+            ("account_number", account_number),
+            ("provider_slug", provider_slug),
+        ];
+        if date.is_some() {
+            query.push(("date", date.unwrap()));
+        }
+
+        // convert Vec<(&str, String)> to Vec<(&str, &str)>
+        let query: Vec<(&str, &str)> = query.iter().map(|(k, v)| (*k, v.as_str())).collect();
+
+        let response = self.http.get(&url, &self.key, Some(&query)).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<PhantomData<String>> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
+        }
+    }
 }

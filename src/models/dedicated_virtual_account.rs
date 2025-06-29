@@ -56,6 +56,12 @@ pub struct DedicatedVirtualAccountResponseData {
     pub updated_at: String,
     pub assignment: Assignment,
     pub customer: CustomerResponseData,
+    pub split_config: Option<SplitConfig>,
+}
+
+#[derive(Debug, Clone, Serialize, Default, Deserialize)]
+pub struct SplitConfig {
+    pub split_code: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
