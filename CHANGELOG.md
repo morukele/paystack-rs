@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2025-06-29
+
+### 🚀 Features
+
+- Added support for initalizing dedicated virtual accounts
+- Added support for creating dedicated virtual account
+- Added support for assigning dedicated virtual account to customer
+- Added support for listing dedicated accounts in the integration
+- Added support for requery dedicated account
+- Added support for deactivating, creating split, and removing split in dedicated virtual account
+- Added support for fetching supported bank providers
+- Added support for the dedicated virtual account api endpoint
+- Added support for the dedicated virtual account api endpoint
+
+### 📚 Documentation
+
+- Updated the doc strings for the different modules
+
 ## [1.2.0] - 2025-06-28
 
 ### ⚙️ Miscellaneous Tasks
@@ -15,6 +33,7 @@ All notable changes to this project will be documented in this file.
 - *(ci)* Updated automatic release github action
 - *(changelog)* Update CHANGELOG.md for release
 - *(ci)* Updated automatic release github action
+- Release paystack-rs version 1.2.0
 
 ## [1.1.1] - 2025-06-26
 
