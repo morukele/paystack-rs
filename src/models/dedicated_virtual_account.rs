@@ -74,3 +74,22 @@ pub struct Assignment {
     pub account_type: String,
     pub assinged_at: String,
 }
+
+#[derive(Clone, Debug, Deserialize, Serialize, Default, Builder)]
+pub struct ListDedicatedAccountFilter {
+    /// Status of the dedicated virtual account
+    #[builder(setter(strip_option), default)]
+    pub active: Option<bool>,
+    /// The currency of the dedicated virtual account.
+    #[builder(setter(strip_option), default)]
+    pub currency: Option<Currency>,
+    /// The bank's slug in lowercase, without spaces.
+    #[builder(setter(strip_option), default)]
+    pub provider_slug: Option<String>,
+    /// The bank's ID
+    #[builder(setter(strip_option), default)]
+    pub bank_id: Option<String>,
+    /// The customer's ID
+    #[builder(setter(strip_option), default)]
+    pub customer: Option<String>,
+}

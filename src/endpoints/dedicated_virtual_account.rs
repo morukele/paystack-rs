@@ -6,7 +6,7 @@ use std::{marker::PhantomData, sync::Arc};
 
 use crate::{
     DedicatedVirtualAccountRequest, DedicatedVirtualAccountResponseData, HttpClient,
-    PaystackAPIError, PaystackResult, Response,
+    ListDedicatedAccountFilter, PaystackAPIError, PaystackResult, Response,
 };
 
 #[derive(Debug, Clone)]
@@ -81,8 +81,48 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
     }
 
     /// List dedicated virtual accounts available on your integration.
+    ///
+    /// Takes in the following:
+    ///     - `filter`: an optional set of parameters to filter the dedicated accounts returned.
+    /// It should be created with the `ListDedicatedAccountFilterBuilder` struct.
     pub async fn list_dedicated_accounts(
+        &self,
+        filter: Option<ListDedicatedAccountFilter>,
     ) -> PaystackResult<Vec<DedicatedVirtualAccountResponseData>> {
-        todo!()
+        let url = format!("{}", self.base_url);
+        let mut query = vec![];
+        // Build the query vec with the value in the filter struct
+        if let Some(filter) = filter {
+            if let Some(active) = filter.active {
+                query.push(("active", active.to_string()));
+            }
+            if let Some(currency) = filter.currency {
+                query.push(("currency", currency.to_string()));
+            }
+            if let Some(provider_slug) = filter.provider_slug {
+                query.push(("provider_slug", provider_slug));
+            }
+            if let Some(bank_id) = filter.bank_id {
+                query.push(("bank_id", bank_id));
+            }
+            if let Some(customer) = filter.customer {
+                query.push(("customer", customer));
+            }
+        }
+
+        // Transform String to &str using iter
+        let query: Vec<(&str, &str)> = query.iter().map(|(k, v)| (*k, v.as_str())).collect();
+        let response = self.http.get(&url, &self.key, Some(&query)).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<Vec<DedicatedVirtualAccountResponseData>> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
+        }
     }
 }
