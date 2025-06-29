@@ -44,7 +44,7 @@ pub struct DedicatedVirtualAccountRequest {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct DedicatedVirtualAccountResponseData {
-    pub bank: Bank,
+    pub bank: Option<Bank>,
     pub account_name: String,
     pub account_number: String,
     pub assigned: bool,
@@ -55,7 +55,7 @@ pub struct DedicatedVirtualAccountResponseData {
     pub created_at: String,
     pub updated_at: String,
     pub assignment: Assignment,
-    pub customer: CustomerResponseData,
+    pub customer: Option<CustomerResponseData>,
     pub split_config: Option<SplitConfig>,
 }
 
@@ -98,4 +98,19 @@ pub struct ListDedicatedAccountFilter {
     /// The customer's ID
     #[builder(setter(strip_option), default)]
     pub customer: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, Default, Builder)]
+pub struct SplitDedicatedAccountTransactionRequest {
+    /// Customer ID or code
+    pub customer: String,
+    /// Subaccount code of the account you want to split the transaction with
+    #[builder(setter(strip_option), default)]
+    pub subaccount: Option<String>,
+    /// Split code consisting of the lists of accounts you want to split the transaction with
+    #[builder(setter(strip_option), default)]
+    pub split_code: Option<String>,
+    /// The bank slug for preferred bank. To get a list of available banks, use the List Providers endpoint
+    #[builder(setter(strip_option), default)]
+    pub preferred_bank: Option<String>,
 }

@@ -4,9 +4,12 @@
 
 use std::{marker::PhantomData, sync::Arc};
 
+use serde_json::json;
+
 use crate::{
     DedicatedVirtualAccountRequest, DedicatedVirtualAccountResponseData, HttpClient,
     ListDedicatedAccountFilter, PaystackAPIError, PaystackResult, Response,
+    SplitDedicatedAccountTransactionRequest,
 };
 
 #[derive(Debug, Clone)]
@@ -223,6 +226,81 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
         &self,
         dedicated_account_id: u64,
     ) -> PaystackResult<DedicatedVirtualAccountResponseData> {
-        todo!()
+        let url = format!("{}/{}", self.base_url, dedicated_account_id);
+        let body = json!({}); // empty body since the route takes none.
+
+        let response = self.http.delete(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<DedicatedVirtualAccountResponseData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
+        }
+    }
+
+    /// Split a dedicated virtual account transaction with one or more accounts.
+    ///
+    /// # Arguments
+    /// * `split_dedocated_account_transaction_request` - The request data to split a transaction.
+    ///   It should be created with the `SplitDedicatedAccountTransactionRequestBuilder` struct.
+    ///
+    /// # Returns
+    /// A Result containing the dedicated virtual account response data or an error
+
+    pub async fn split_dedicated_account_transaction(
+        &self,
+        split_dedocated_account_transaction_request: SplitDedicatedAccountTransactionRequest,
+    ) -> PaystackResult<DedicatedVirtualAccountResponseData> {
+        let url = format!("{}", self.base_url);
+        let body = serde_json::to_value(split_dedocated_account_transaction_request)
+            .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+
+        let response = self.http.post(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<DedicatedVirtualAccountResponseData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
+        }
+    }
+
+    /// If you've previously set up split payment for transactions on a dedicated virtual account, you can remove it with this endpoint
+    ///
+    /// # Arguments
+    /// * `account_number` - The account number of the dedicated virtual account to remove split from
+    ///
+    /// # Returns
+    /// A Result containing the dedicated virtual account response data or an error
+    pub async fn remove_split_from_dedicated_account(
+        &self,
+        account_number: String,
+    ) -> PaystackResult<DedicatedVirtualAccountResponseData> {
+        let url = format!("{}", self.base_url);
+        let body = json!({
+            "account_number": account_number
+        });
+
+        let response = self.http.delete(&url, &self.key, &body).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<DedicatedVirtualAccountResponseData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
+        }
     }
 }
