@@ -21,7 +21,14 @@ pub struct SubaccountEndpoints<T: HttpClient + Default> {
 }
 
 impl<T: HttpClient + Default> SubaccountEndpoints<T> {
-    /// Constructor
+    /// Creates a new SubaccountEndpoints instance
+    ///
+    /// # Arguments
+    /// * `key` - The Paystack API key
+    /// * `http` - The HTTP client implementation to use for API requests
+    ///
+    /// # Returns
+    /// A new SubaccountEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> SubaccountEndpoints<T> {
         let base_url = String::from("https://api.paystack.co/subaccount");
         SubaccountEndpoints {
@@ -33,9 +40,12 @@ impl<T: HttpClient + Default> SubaccountEndpoints<T> {
 
     /// Create a subaccount on your integration
     ///
-    /// Takes in the following parameters
-    ///     - body: subaccount to create `SubaccountRequest`; this is constructed using the
-    ///      `SubaccountRequestBuilder`.
+    /// # Arguments
+    /// * `subaccount_request` - The request data to create the subaccount.
+    ///   It should be created with the `SubaccountRequestBuilder` struct.
+    ///
+    /// # Returns
+    /// A Result containing the subaccount response data or an error
     pub async fn create_subaccount(
         &self,
         subaccount_request: SubaccountRequest,

@@ -22,7 +22,14 @@ pub struct TransactionEndpoints<T: HttpClient + Default> {
 }
 
 impl<T: HttpClient + Default> TransactionEndpoints<T> {
-    /// Constructor
+    /// Creates a new TransactionEndpoints instance
+    ///
+    /// # Arguments
+    /// * `key` - The Paystack API key
+    /// * `http` - The HTTP client implementation to use for API requests
+    ///
+    /// # Returns
+    /// A new TransactionEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> TransactionEndpoints<T> {
         let base_url = String::from("https://api.paystack.co/transaction");
         TransactionEndpoints {
@@ -34,7 +41,12 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
 
     /// Initialize a transaction in your integration
     ///
-    /// Takes a `TransactionRequest`struct as input.
+    /// # Arguments
+    /// * `transaction_request` - The request data to initialize the transaction.
+    ///   Should be created with a `TransactionRequestBuilder` struct
+    ///
+    /// # Returns
+    /// A Result containing the transaction response data or an error
     pub async fn initialize_transaction(
         &self,
         transaction_request: TransactionRequest,
@@ -59,10 +71,13 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
         }
     }
 
-    /// Confirm the status of a transaction.
+    /// Verifies the status of a transaction
     ///
-    /// It takes the following parameters:
-    ///     - reference: The transaction reference used to initiate the transaction
+    /// # Arguments
+    /// * `reference` - The transaction reference used to initiate the transaction
+    ///
+    /// # Returns
+    /// A Result containing the transaction status data or an error
     pub async fn verify_transaction(
         &self,
         reference: &str,
@@ -83,12 +98,14 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
         }
     }
 
-    /// List transactions carried out on your integration.
+    /// Lists transactions carried out on your integration
     ///
-    /// The method takes the following parameters:
-    ///     - perPage (Optional): Number of transactions to return. If None is passed as the parameter, the last 10 transactions are returned.
-    ///     - status (Optional): Filter transactions by status, defaults to Success if no status is passed.
+    /// # Arguments
+    /// * `per_page` - Optional number of transactions to return per page. Defaults to 10 if None
+    /// * `status` - Optional filter for transaction status. Defaults to Success if None
     ///
+    /// # Returns
+    /// A Result containing a vector of transaction status data or an error
     pub async fn list_transactions(
         &self,
         per_page: Option<u32>,
@@ -114,9 +131,13 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
         }
     }
 
-    /// Get details of a transaction carried out on your integration.
+    /// Gets details of a specific transaction
     ///
-    /// This method take the ID of the desired transaction as a parameter
+    /// # Arguments
+    /// * `transaction_id` - The ID of the transaction to fetch
+    ///
+    /// # Returns
+    /// A Result containing the transaction status data or an error
     pub async fn fetch_transactions(
         &self,
         transaction_id: u64,
@@ -137,9 +158,14 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
         }
     }
 
-    /// All authorizations marked as reusable can be charged with this endpoint whenever you need to receive payments.
+    /// Charges a reusable authorization
     ///
-    /// This function takes a Charge Struct as parameter
+    /// # Arguments
+    /// * `charge_request` - The charge request data containing authorization details.
+    ///     Should be created with the `ChargeRequestBuilder` struct.
+    ///
+    /// # Returns
+    /// A Result containing the charge response data or an error
     pub async fn charge_authorization(
         &self,
         charge_request: ChargeRequest,
@@ -161,9 +187,13 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
         }
     }
 
-    /// View the timeline of a transaction.
+    /// Views the timeline of a transaction
     ///
-    /// This method takes in the TransactionIdentifier as a parameter
+    /// # Arguments
+    /// * `identifier` - The transaction identifier (either ID or reference)
+    ///
+    /// # Returns
+    /// A Result containing the transaction timeline data or an error
     pub async fn view_transaction_timeline(
         &self,
         identifier: TransactionIdentifier,
@@ -191,12 +221,10 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
         }
     }
 
-    /// Total amount received on your account.
+    /// Gets the total amount received on your account
     ///
-    /// This route normally takes a perPage or page query,
-    /// However in this case it is ignored.
-    /// If you need it in your work please open an issue,
-    /// and it will be implemented.
+    /// # Returns
+    /// A Result containing the transaction total data or an error
     pub async fn total_transactions(&self) -> PaystackResult<TransactionTotalData> {
         let url = format!("{}/totals", self.base_url);
 
@@ -214,12 +242,15 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
         }
     }
 
-    /// Export a list of transactions carried out on your integration.
+    /// Exports a list of transactions
     ///
-    /// This method takes the following parameters
-    /// - Status (Optional): The status of the transactions to export. Defaults to all
-    /// - Currency (Optional): The currency of the transactions to export. Defaults to NGN
-    /// - Settled (Optional): To state of the transactions to export. Defaults to False.
+    /// # Arguments
+    /// * `status` - Optional status filter for transactions to export. Defaults to Success
+    /// * `currency` - Optional currency filter. Defaults to NGN
+    /// * `settled` - Optional filter for settled transactions. Defaults to false
+    ///
+    /// # Returns
+    /// A Result containing the export transaction data or an error
     pub async fn export_transaction(
         &self,
         status: Option<Status>,
@@ -256,11 +287,14 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
         }
     }
 
-    /// Retrieve part of a payment from a customer.
+    /// Performs a partial debit on a transaction
     ///
-    /// It takes a PartialDebitTransaction type as a parameter.
+    /// # Arguments
+    /// * `partial_debit_transaction_request` - The request data for the partial debit.
+    ///   Must be created with the `PartialDebitTransactionBuilder` Struct.
     ///
-    /// NB: it must be created with the PartialDebitTransaction Builder.
+    /// # Returns
+    /// A Result containing the transaction status data or an error
     pub async fn partial_debit(
         &self,
         partial_debit_transaction_request: PartialDebitTransactionRequest,

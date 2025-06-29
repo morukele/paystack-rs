@@ -1,4 +1,5 @@
 pub mod customers;
+pub mod dedicated_virtual_account;
 pub mod subaccount;
 pub mod terminal;
 pub mod transaction;
@@ -7,6 +8,7 @@ pub mod virtual_terminal;
 
 // public re-export
 pub use customers::*;
+pub use dedicated_virtual_account::*;
 pub use subaccount::*;
 pub use terminal::*;
 pub use transaction::*;

@@ -1,5 +1,6 @@
 pub mod charge;
 pub mod customer;
+pub mod dedicated_virtual_account;
 pub mod helpers;
 pub mod terminal;
 pub mod transaction;

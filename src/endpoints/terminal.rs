@@ -22,7 +22,14 @@ pub struct TerminalEndpoints<T: HttpClient + Default> {
 }
 
 impl<T: HttpClient + Default> TerminalEndpoints<T> {
-    /// Constructor
+    /// Creates a new TerminalEndpoints instance
+    ///
+    /// # Arguments
+    /// * `key` - The Paystack API key
+    /// * `http` - The HTTP client implementation to use for API requests
+    ///
+    /// # Returns
+    /// A new TerminalEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> TerminalEndpoints<T> {
         let base_url = String::from("https://api.paystack.co/terminal");
         TerminalEndpoints {
@@ -34,9 +41,12 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
 
     /// Send an event from your application to the Paystack Terminal
     ///
-    /// Takes in the following:
-    ///     - `terminal_id`: The ID of the Terminal the event should be sent to.
-    ///     - `EventRequest`: A struct containing the information of the event to send to the terminal. It is created with the `EventRequestBuilder`.
+    /// # Arguments
+    /// * `terminal_id` - The ID of the Terminal the event should be sent to
+    /// * `event_request` - Struct containing the information of the event to send to the terminal. Created with EventRequestBuilder
+    ///
+    /// # Returns
+    /// A Result containing the send event response data or an error
     pub async fn send_event(
         &self,
         terminal_id: String,
@@ -62,9 +72,12 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
 
     /// Check the status of an event sent to the Paystack Terminal
     ///
-    /// Takes in the following:
-    ///     - `terminal_id`: The ID of the Terminal the event was sent to.
-    ///     - `event_id`: The ID of the event that was sent to the Terminal.
+    /// # Arguments
+    /// * `terminal_id` - The ID of the Terminal the event was sent to
+    /// * `event_id` - The ID of the event that was sent to the Terminal
+    ///
+    /// # Returns
+    /// A Result containing the event status response data or an error
     pub async fn fetch_event_status(
         &self,
         terminal_id: String,
@@ -88,8 +101,11 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
 
     /// Check the availiability of a Terminal before sending an event to it
     ///
-    /// Takes in the following:
-    ///     - `terminal_id`: The ID of the Terminal you want to check.
+    /// # Arguments
+    /// * `terminal_id` - The ID of the Terminal to check
+    ///
+    /// # Returns
+    /// A Result containing the terminal status response data or an error
     pub async fn fetch_terminal_status(
         &self,
         terminal_id: String,
@@ -112,8 +128,11 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
 
     /// List the Terminals available on your integration
     ///
-    /// Takes in the following:
-    ///     - `per_page`: Specify how many records you want retrieved. Defaults to a value of 50
+    /// # Arguments
+    /// * `per_page` - Optional number of records to retrieve. Defaults to 50
+    ///
+    /// # Returns
+    /// A Result containing a vector of terminal data or an error
     pub async fn list_terminals(&self, per_page: Option<i32>) -> PaystackResult<Vec<TerminalData>> {
         let url = format!("{}", self.base_url);
         let per_page = per_page.unwrap_or(50).to_string();
@@ -134,8 +153,11 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
 
     /// Get the details of a Terminal
     ///
-    /// Takes in the following:
-    ///     - `terminal_id`: The ID of the Terminal the event was sent to.
+    /// # Arguments
+    /// * `terminal_id` - The ID of the Terminal to fetch
+    ///
+    /// # Returns
+    /// A Result containing the terminal data or an error
     pub async fn fetch_terminal(&self, terminal_id: String) -> PaystackResult<TerminalData> {
         let url = format!("{}/{}", self.base_url, terminal_id);
 
@@ -152,14 +174,14 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
         }
     }
 
-    /// Update the details of a Terminal.
+    /// Update the details of a Terminal
     ///
-    /// Takes in the following:
-    ///     - `terminal_id`: The ID of the Terminal you want to update.
-    ///     - `UpdateTerminalRequest`: Contains the datails to be updated in the terminal. Should be constructed using the `UpdateTerminalRequestBuilder`
+    /// # Arguments
+    /// * `terminal_id` - The ID of the Terminal to update
+    /// * `update_request` - The request data to update the terminal. Created with UpdateTerminalRequestBuilder
     ///
-    /// NB: The generic for the result here is a `String`, because there is no data field in the response from the API.
-    /// The string will be ignored because the underlying `data` field in the `response` is an `Option`.
+    /// # Returns
+    /// A Result containing the response or an error. The generic String type is ignored since response has no data field
     pub async fn update_terminal(
         &self,
         terminal_id: String,
@@ -185,10 +207,11 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
 
     /// Activate your debug device by linking it to your integration
     ///
-    /// Take in the following:
-    ///     - `serial_number`: The device serial number
-    /// NB: The generic for the result here is a `String`, because there is no data field in the response from the API.
-    /// The string will be ignored because the underlying `data` field in the `response` is an `Option`.
+    /// # Arguments
+    /// * `serial_number` - The device serial number to commission
+    ///
+    /// # Returns
+    /// A Result containing the response or an error. The generic String type is ignored since response has no data field
     pub async fn commission_terminal(
         &self,
         serial_number: String,
@@ -214,10 +237,11 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
 
     /// Unlink your debug device from your integration
     ///
-    /// Take in the following:
-    ///     - `serial_number`: The device serial number
-    /// NB: The generic for the result here is a `String`, because there is no data field in the response from the API.
-    /// The string will be ignored because the underlying `data` field in the `response` is an `Option`.
+    /// # Arguments
+    /// * `serial_number` - The device serial number to decommission
+    ///
+    /// # Returns
+    /// A Result containing the response or an error. The generic String type is ignored since response has no data field
     pub async fn decommission_terminal(
         &self,
         serial_number: String,
