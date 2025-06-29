@@ -23,7 +23,14 @@ pub struct VirtualTerminalEndpoints<T: HttpClient + Default> {
 }
 
 impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
-    /// Constructor
+    /// Creates a new VirtualTerminalEndpoints instance
+    ///
+    /// # Arguments
+    /// * `key` - The Paystack API key
+    /// * `http` - The HTTP client implementation to use for API requests
+    ///
+    /// # Returns
+    /// A new VirtualTerminalEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> VirtualTerminalEndpoints<T> {
         let base_url = String::from("https://api.paystack.co/virtual_terminal");
         VirtualTerminalEndpoints {
@@ -33,10 +40,14 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
         }
     }
 
-    /// Create a Virtual Terminal on your integration.
+    /// Creates a virtual terminal on your integration
     ///
-    /// Takes in the following:
-    ///     - `VirtualTerminalRequestData`: The request data to create the virtual terminal. It is created with the `VirtualTerminalRequestDataBuilder` struct.
+    /// # Arguments
+    /// * `virtual_terminal_request` - The request data to create the virtual terminal.
+    ///   It should be created with the `VirtualTerminalRequestDataBuilder` struct.
+    ///
+    /// # Returns
+    /// A Result containing the virtual terminal response data or an error
     pub async fn create_virtual_terminal(
         &self,
         virtual_terminal_request: VirtualTerminalRequestData,
@@ -59,11 +70,14 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
         }
     }
 
-    /// List Virtual Terminals on your integration.
+    /// Lists virtual terminals available on your integration
     ///
-    /// Takes in the following:
-    ///     - `status`: Filter terminal by status.
-    ///     - `per_page`: Number of records per page.
+    /// # Arguments
+    /// * `status` - Filter terminal by status
+    /// * `per_page` - Number of records per page
+    ///
+    /// # Returns
+    /// A Result containing a vector of virtual terminal response data or an error
     pub async fn list_virtual_terminals(
         &self,
         status: VirtualTerminalStatus,
@@ -89,10 +103,13 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
         }
     }
 
-    /// Fetch a Virtual Terminal on your integration
+    /// Gets details of a virtual terminal on your integration
     ///
-    /// Takes in the following:
-    ///     - `code`: Code of the Virtual Terminal
+    /// # Arguments
+    /// * `code` - Code of the virtual terminal to fetch
+    ///
+    /// # Returns
+    /// A Result containing the virtual terminal response data or an error
     pub async fn fetch_virtual_terminal(
         self,
         code: String,
@@ -113,11 +130,14 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
         }
     }
 
-    /// Update a Virtual Terminal on your integration
+    /// Updates a virtual terminal on your integration
     ///
-    /// Takes in the following:
-    ///     - `code`: Code of the Virtual Terminal to update.
-    ///     - `name`: Name of the Virtual Terminal.
+    /// # Arguments
+    /// * `code` - Code of the virtual terminal to update
+    /// * `name` - New name for the virtual terminal
+    ///
+    /// # Returns
+    /// A Result containing the response or an error
     pub async fn update_virtual_terminal(
         &self,
         code: String,
@@ -142,10 +162,13 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
         }
     }
 
-    /// Deactivate a Virtual Terminal on your integration
+    /// Deactivates a virtual terminal on your integration
     ///
-    /// Takes in the following:
-    ///     - `code`: Code of the Virtual Terminal to deactivate.
+    /// # Arguments
+    /// * `code` - Code of the virtual terminal to deactivate
+    ///
+    /// # Returns
+    /// A Result containing the response or an error
     pub async fn deactivate_virtual_terminal(
         &self,
         code: String,
@@ -167,11 +190,14 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
         }
     }
 
-    /// Add a destination (WhatsApp number) to a Virtual Terminal on your integration
+    /// Adds a WhatsApp destination number to a virtual terminal
     ///
-    /// Takes in the following:
-    ///     - `code`: Code of the Virtual Terminal
-    ///     - `destinations`: A vector of `DestinationRequest` containing the notification recipients for payments to the Virtual Terminal.
+    /// # Arguments
+    /// * `code` - Code of the virtual terminal
+    /// * `destinations` - Vector of destination requests containing notification recipients
+    ///
+    /// # Returns
+    /// A Result containing a vector of destination responses or an error
     pub async fn assign_virtual_terminal_destination(
         &self,
         code: String,
@@ -196,11 +222,14 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
         }
     }
 
-    /// Unassign a destination (WhatsApp Number) summary of transactions from a Virtual Terminal on your integration
+    /// Removes a WhatsApp destination number from a virtual terminal
     ///
-    /// Takes in the following:
-    ///     - `code`: Code of the Virtual Terminal.
-    ///     - `targets`: A vector of destination targets to unassign.
+    /// # Arguments
+    /// * `code` - Code of the virtual terminal
+    /// * `targets` - Vector of destination targets to unassign
+    ///
+    /// # Returns
+    /// A Result containing the response or an error
     pub async fn unassign_virtual_terminal_destination(
         &self,
         code: String,
@@ -225,11 +254,14 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
         }
     }
 
-    /// Add a split code to a Virtual Terminal on your integration
+    /// Adds a split payment code to a virtual terminal
     ///
-    /// Takes in the following:
-    ///     - `code`: Code of the Virtual Terminal
-    ///     - `split_code`: Split code to be added to the Virtual Terminal
+    /// # Arguments
+    /// * `code` - Code of the virtual terminal
+    /// * `split_code` - Split code to add
+    ///
+    /// # Returns
+    /// A Result containing the transaction split response data or an error
     pub async fn add_split_code_to_virtual_terminal(
         &self,
         code: String,
@@ -254,11 +286,14 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
         }
     }
 
-    /// Remove a split code from a Virtual Terminal on your integration
+    /// Removes a split payment code from a virtual terminal
     ///
-    /// Takes in the following:
-    ///     - `code`: Code of the Virtual Terminal
-    ///     - `split_code`: Split code to be removed from the Virtual Terminal
+    /// # Arguments
+    /// * `code` - Code of the virtual terminal
+    /// * `split_code` - Split code to remove
+    ///
+    /// # Returns
+    /// A Result containing the response or an error
     pub async fn remove_split_code_from_virtual_terminal(
         &self,
         code: String,

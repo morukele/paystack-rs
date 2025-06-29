@@ -21,7 +21,14 @@ pub struct TransactionSplitEndpoints<T: HttpClient + Default> {
 }
 
 impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
-    /// Constructor
+    /// Creates a new TransactionSplitEndpoints instance
+    ///
+    /// # Arguments
+    /// * `key` - The Paystack API key
+    /// * `http` - The HTTP client implementation to use for API requests
+    ///
+    /// # Returns
+    /// A new TransactionSplitEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> TransactionSplitEndpoints<T> {
         let base_url = String::from("https://api.paystack.co/split");
         TransactionSplitEndpoints {
@@ -31,9 +38,14 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
         }
     }
 
-    /// Create a split payment on your integration.
+    /// Creates a split payment on your integration
     ///
-    /// This method takes a `TransactionSplitRequest` object as a parameter.
+    /// # Arguments
+    /// * `split_body` - The request data to create the split payment.
+    ///   It should be created with a `TransactionSplitRequest` struct.
+    ///
+    /// # Returns
+    /// A Result containing the transaction split response data or an error
     pub async fn create_transaction_split(
         &self,
         split_body: TransactionSplitRequest,
@@ -55,11 +67,14 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
         }
     }
 
-    /// List the transaction splits available on your integration
+    /// Lists transaction splits available on your integration
     ///
-    /// Takes in the following parameters:
-    ///     - `split_name`: (Optional) name of the split to retrieve.
-    ///     - `split_active`: (Optional) status of the split to retrieve.
+    /// # Arguments
+    /// * `split_name` - Optional name of the split to retrieve
+    /// * `split_active` - Optional status of the split to retrieve
+    ///
+    /// # Returns
+    /// A Result containing a vector of transaction split response data or an error
     pub async fn list_transaction_splits(
         &self,
         split_name: Option<&str>,
@@ -92,10 +107,13 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
         }
     }
 
-    /// Get details of a split on your integration.
+    /// Gets details of a split on your integration
     ///
-    /// Takes in the following parameter:
-    ///     - `split_id`:  ID of the transaction split.
+    /// # Arguments
+    /// * `split_id` - ID of the transaction split to fetch
+    ///
+    /// # Returns
+    /// A Result containing the transaction split response data or an error
     pub async fn fetch_transaction_split(
         &self,
         split_id: &str,
@@ -116,11 +134,15 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
         }
     }
 
-    /// Update a transaction split details on your integration.
+    /// Updates a transaction split's details on your integration
     ///
-    /// Takes in a
-    /// - `update_body` as a `UpdateTransactionSplitRequest` struct which is created from the `UpdateTransactionSplitRequestBuilder` struct
-    /// - `split_id`, the ID of the split to update
+    /// # Arguments
+    /// * `split_id` - ID of the split to update
+    /// * `update_body` - The update data for the transaction split.
+    ///   It should be created with the `UpdateTransactionSplitRequestBuilder` struct.
+    ///
+    /// # Returns
+    /// A Result containing the updated transaction split response data or an error
     pub async fn update_transaction_split(
         &self,
         split_id: &str,
@@ -143,11 +165,15 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
         }
     }
 
-    /// Add a Subaccount to a Transaction Split, or update the share of an existing Subaccount in a Transaction Split
+    /// Adds a subaccount to a transaction split or updates an existing subaccount's share
     ///
-    /// Takes in the following parameters:
-    ///     - `split_id`: Id of the transaction split to update.
-    ///     - `body`: Subaccount to add to the transaction split.
+    /// # Arguments
+    /// * `split_id` - ID of the transaction split to update
+    /// * `body` - The subaccount data to add or update.
+    ///   It should be created with a `SubaccountBody` struct.
+    ///
+    /// # Returns
+    /// A Result containing the transaction split response data or an error
     pub async fn add_or_update_subaccount_split(
         &self,
         split_id: &str,
@@ -171,11 +197,15 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
         }
     }
 
-    /// Remove a subaccount from a transaction split.
+    /// Removes a subaccount from a transaction split
     ///
-    /// Takes in the following parameters
-    ///     - split_id: Id of the transaction split
-    ///     - subaccount: subaccount code to remove
+    /// # Arguments
+    /// * `split_id` - ID of the transaction split
+    /// * `subaccount` - The subaccount data to remove.
+    ///   It should be created with a `DeleteSubAccountBody` struct.
+    ///
+    /// # Returns
+    /// A Result containing a success message or an error
     pub async fn remove_subaccount_from_transaction_split(
         &self,
         split_id: &str,

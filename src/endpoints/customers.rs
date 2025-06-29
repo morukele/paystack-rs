@@ -23,7 +23,14 @@ pub struct CustomersEndpoints<T: HttpClient + Default> {
 }
 
 impl<T: HttpClient + Default> CustomersEndpoints<T> {
-    /// Constructor
+    /// Creates a new CustomersEndpoints instance
+    ///
+    /// # Arguments
+    /// * `key` - The Paystack API key
+    /// * `http` - The HTTP client implementation to use for API requests
+    ///
+    /// # Returns
+    /// A new CustomersEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> CustomersEndpoints<T> {
         let base_url = String::from("https://api.paystack.co/customer");
         CustomersEndpoints {
@@ -35,9 +42,12 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
 
     /// Create customer on your integration
     ///
-    /// It takes the following parameters:
-    ///     - create_customer_request: contains the information about the customer to be created.
-    ///     It should be built with `CreateCustomerRequestBuilder`.
+    /// # Arguments
+    /// * `create_customer_request` - Contains the information about the customer to be created.
+    ///   It should be built with `CreateCustomerRequestBuilder`.
+    ///
+    /// # Returns
+    /// A Result containing the customer response data or an error
     pub async fn create_customer(
         &self,
         create_customer_request: CreateCustomerRequest,
@@ -60,11 +70,14 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
         }
     }
 
-    /// List customers available on your integration
+    /// Lists customers available on your integration
     ///
-    /// It takes the following parameters:
-    ///     - `per_page`: Specify how many records you want to retreive per page. If not specified, default value of 50.
-    ///     - `page`: Specify exactly waht page you want to retreive. If not specified, default value of 1.
+    /// # Arguments
+    /// * `per_page` - Optional number of records to retrieve per page. Default is 50
+    /// * `page` - Optional page number to retrieve. Default is 1
+    ///
+    /// # Returns
+    /// A Result containing a vector of customer response data or an error
     pub async fn list_customers(
         &self,
         per_page: Option<u8>,
@@ -90,10 +103,13 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
         }
     }
 
-    /// Get details of a customer on your integration.
+    /// Gets details of a customer on your integration
     ///
-    /// It takes the following parameters:
-    ///     - `email_or_code`: An `email`or `customer code` for the customer you want to fetch.
+    /// # Arguments
+    /// * `email_or_code` - Email or customer code for the customer to fetch
+    ///
+    /// # Returns
+    /// A Result containing the customer response data or an error
     pub async fn fetch_customer(
         &self,
         email_or_code: String,
@@ -114,12 +130,15 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
         }
     }
 
-    /// Update a customer's details on your integration
+    /// Updates a customer's details on your integration
     ///
-    /// It takes the following parameters:
-    ///     - `customer_code`: The customer's code
-    ///     - `update_customer_request`: The data to update the customer with.
-    ///     It should be created with the `UpdateCustomerRequestBuilder` struct.
+    /// # Arguments
+    /// * `customer_code` - The customer's code
+    /// * `update_customer_request` - The data to update the customer with.
+    ///   Should be created with the UpdateCustomerRequestBuilder struct
+    ///
+    /// # Returns
+    /// A Result containing the updated customer response data or an error
     pub async fn update_customer(
         &self,
         customer_code: String,
@@ -143,12 +162,15 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
         }
     }
 
-    /// Validate a customer's identity
+    /// Validates a customer's identity
     ///
-    /// It takes in the following parameters:
-    ///     - `customer_code`: email, or customer code of customer to be identified.
-    ///     - `customer_validation_request`: The data to validate the customer with.
-    /// It should be created with the `ValidateCustomerRequestBuilder` struct.
+    /// # Arguments
+    /// * `customer_code` - Email or customer code of customer to be identified
+    /// * `customer_validation_request` - The data to validate the customer with.
+    ///   Should be created with the ValidateCustomerRequestBuilder struct
+    ///
+    /// # Returns
+    /// A Result containing the validation response or an error
     pub async fn validate_customer(
         &self,
         customer_code: String,
@@ -172,11 +194,14 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
         }
     }
 
-    /// Whitelist or blacklist a customer on your integration
+    /// Whitelists or blacklists a customer on your integration
     ///
-    /// It takes in the following parameters:
-    ///     - `customer_code`: Customer's code, or email address.
-    ///     - `risk_action`: One of the possible risk actions for the customer.
+    /// # Arguments
+    /// * `customer_code` - Customer's code or email address
+    /// * `risk_action` - The risk action to apply to the customer
+    ///
+    /// # Returns
+    /// A Result containing the updated customer response data or an error
     pub async fn whitelist_or_blacklist_customer(
         &self,
         customer_code: String,
@@ -202,10 +227,13 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
         }
     }
 
-    /// Deactivate an authorization when the card needs to be forgotten
+    /// Deactivates an authorization when the card needs to be forgotten
     ///
-    /// It takes the following parameters:
-    ///     - `authorization_code`: Authorization code to be deactivated.
+    /// # Arguments
+    /// * `authorization_code` - Authorization code to be deactivated
+    ///
+    /// # Returns
+    /// A Result containing the deactivation response or an error
     pub async fn deactivate_authorization(
         &self,
         authorization_code: String,
