@@ -81,6 +81,14 @@ pub struct Assignment {
     pub assinged_at: String,
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct BankProviderData {
+    pub provider_slug: String,
+    pub bank_id: u64,
+    pub bank_name: String,
+    pub id: u64,
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize, Default, Builder)]
 pub struct ListDedicatedAccountFilter {
     /// Status of the dedicated virtual account

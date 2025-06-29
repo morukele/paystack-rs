@@ -7,8 +7,8 @@ use std::{marker::PhantomData, sync::Arc};
 use serde_json::json;
 
 use crate::{
-    DedicatedVirtualAccountRequest, DedicatedVirtualAccountResponseData, HttpClient,
-    ListDedicatedAccountFilter, PaystackAPIError, PaystackResult, Response,
+    BankProviderData, DedicatedVirtualAccountRequest, DedicatedVirtualAccountResponseData,
+    HttpClient, ListDedicatedAccountFilter, PaystackAPIError, PaystackResult, Response,
     SplitDedicatedAccountTransactionRequest,
 };
 
@@ -295,6 +295,30 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
         match response {
             Ok(response) => {
                 let parsed_response: Response<DedicatedVirtualAccountResponseData> =
+                    serde_json::from_str(&response)
+                        .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+
+                Ok(parsed_response)
+            }
+            Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
+        }
+    }
+
+    /// Get available bank providers for a dedicated virtual account
+    ///
+    /// # Arguments
+    /// None
+    ///
+    /// # Returns
+    /// A Result containing a vector of bank provider data or an error
+    pub async fn fetch_bank_providers(&self) -> PaystackResult<Vec<BankProviderData>> {
+        let url = format!("{}/available_providers", self.base_url);
+
+        let response = self.http.get(&url, &self.key, None).await;
+
+        match response {
+            Ok(response) => {
+                let parsed_response: Response<Vec<BankProviderData>> =
                     serde_json::from_str(&response)
                         .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
