@@ -1,3 +1,4 @@
+pub mod apple_pay;
 pub mod customers;
 pub mod dedicated_virtual_account;
 pub mod subaccount;
@@ -7,6 +8,7 @@ pub mod transaction_split;
 pub mod virtual_terminal;
 
 // public re-export
+pub use apple_pay::*;
 pub use customers::*;
 pub use dedicated_virtual_account::*;
 pub use subaccount::*;

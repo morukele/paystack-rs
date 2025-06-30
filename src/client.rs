@@ -2,8 +2,9 @@
 //! =========
 //! This file contains the Paystack API client, and it associated endpoints.
 use crate::{
-    CustomersEndpoints, DedicatedVirtualAccountEndpoints, HttpClient, SubaccountEndpoints,
-    TerminalEndpoints, TransactionEndpoints, TransactionSplitEndpoints, VirtualTerminalEndpoints,
+    ApplePayEndpoints, CustomersEndpoints, DedicatedVirtualAccountEndpoints, HttpClient,
+    SubaccountEndpoints, TerminalEndpoints, TransactionEndpoints, TransactionSplitEndpoints,
+    VirtualTerminalEndpoints,
 };
 use std::sync::Arc;
 
@@ -24,6 +25,8 @@ pub struct PaystackClient<T: HttpClient + Default> {
     pub customers: CustomersEndpoints<T>,
     /// Dedicated Virtual Account API route
     pub dedicated_virtual_account: DedicatedVirtualAccountEndpoints<T>,
+    /// Apple Pay API route
+    pub apple_pay: ApplePayEndpoints<T>,
 }
 
 impl<T: HttpClient + Default> PaystackClient<T> {
@@ -41,6 +44,7 @@ impl<T: HttpClient + Default> PaystackClient<T> {
                 Arc::clone(&key),
                 Arc::clone(&http),
             ),
+            apple_pay: ApplePayEndpoints::new(Arc::clone(&key), Arc::clone(&http)),
         }
     }
 }
