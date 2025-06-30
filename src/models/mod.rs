@@ -1,3 +1,4 @@
+pub mod apple_pay;
 pub mod authorization;
 pub mod bearer;
 pub mod channel;
@@ -16,6 +17,7 @@ pub mod transaction_split;
 pub mod virtual_terminal;
 
 // public re-export
+pub use apple_pay::*;
 pub use authorization::*;
 pub use bearer::*;
 pub use channel::*;

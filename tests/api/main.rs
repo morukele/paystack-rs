@@ -1,3 +1,4 @@
+pub mod apple_pay;
 pub mod charge;
 pub mod customer;
 pub mod dedicated_virtual_account;
