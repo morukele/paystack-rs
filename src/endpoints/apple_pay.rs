@@ -5,7 +5,7 @@ use std::{marker::PhantomData, sync::Arc};
 
 use serde_json::json;
 
-use crate::{ApplePayResponseData, HttpClient, PaystackAPIError, PaystackResult, Response};
+use crate::{ApplePayResponseData, HttpClient, PaystackAPIError, PaystackResult};
 
 #[derive(Debug, Clone)]
 pub struct ApplePayEndpoints<T: HttpClient + Default> {
@@ -52,18 +52,16 @@ impl<T: HttpClient + Default> ApplePayEndpoints<T> {
             "domainName": domain_name
         });
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<PhantomData<String>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
+        let parsed_response = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::ApplePay(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Lists all domains registered on your integration
@@ -73,20 +71,25 @@ impl<T: HttpClient + Default> ApplePayEndpoints<T> {
     pub async fn list_domains(&self) -> PaystackResult<ApplePayResponseData> {
         let url = format!("{}", self.base_url);
 
-        let response = self.http.get(&url, &self.key, None).await;
+        let response = self
+            .http
+            .get(&url, &self.key, None)
+            .await
+            .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<ApplePayResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
+        let parsed_response = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::ApplePay(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
+    /// Unregister a top-level domain or subdomain previously used for your Apple Pay integration.
+    ///
+    /// # Arguments
+    /// * `domain_name` - The name of the domain to unregister
+    ///
+    /// # Returns
+    /// A result containing a success message without data.
     pub async fn unregister_domain(
         &self,
         domain_name: String,
@@ -96,17 +99,15 @@ impl<T: HttpClient + Default> ApplePayEndpoints<T> {
             "domainName": domain_name
         });
 
-        let response = self.http.delete(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .delete(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<PhantomData<String>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
+        let parsed_response = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::ApplePay(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 }

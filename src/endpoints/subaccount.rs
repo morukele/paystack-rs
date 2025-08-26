@@ -54,16 +54,14 @@ impl<T: HttpClient + Default> SubaccountEndpoints<T> {
         let body = serde_json::to_value(subaccount_request)
             .map_err(|e| PaystackAPIError::Subaccount(e.to_string()))?;
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::Subaccount(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<SubaccountsResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Subaccount(e.to_string()))?;
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Subaccount(e.to_string())),
-        }
+        let parsed_response: Response<SubaccountsResponseData> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Subaccount(e.to_string()))?;
+        Ok(parsed_response)
     }
 }

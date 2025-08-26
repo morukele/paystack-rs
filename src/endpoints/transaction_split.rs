@@ -54,17 +54,16 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
         let body = serde_json::to_value(split_body)
             .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<TransactionSplitResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::TransactionSplit(e.to_string())),
-        }
+        let parsed_response: Response<TransactionSplitResponseData> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
+        Ok(parsed_response)
     }
 
     /// Lists transaction splits available on your integration
@@ -93,18 +92,17 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
             ("active", &split_active),
         ];
 
-        let response = self.http.get(&url, &self.key, Some(&query)).await;
+        let response = self
+            .http
+            .get(&url, &self.key, Some(&query))
+            .await
+            .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<Vec<TransactionSplitResponseData>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
+        let parsed_response: Response<Vec<TransactionSplitResponseData>> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::TransactionSplit(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Gets details of a split on your integration
@@ -120,18 +118,17 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
     ) -> PaystackResult<TransactionSplitResponseData> {
         let url = format!("{}/{}", self.base_url, split_id);
 
-        let response = self.http.get(&url, &self.key, None).await;
+        let response = self
+            .http
+            .get(&url, &self.key, None)
+            .await
+            .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<TransactionSplitResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
+        let parsed_response: Response<TransactionSplitResponseData> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::TransactionSplit(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Updates a transaction split's details on your integration
@@ -152,17 +149,16 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
         let body = serde_json::to_value(update_body)
             .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
 
-        let response = self.http.put(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .put(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<TransactionSplitResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::TransactionSplit(e.to_string())),
-        }
+        let parsed_response: Response<TransactionSplitResponseData> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
+        Ok(parsed_response)
     }
 
     /// Adds a subaccount to a transaction split or updates an existing subaccount's share
@@ -183,18 +179,17 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
         let body = serde_json::to_value(body)
             .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<TransactionSplitResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
+        let parsed_response: Response<TransactionSplitResponseData> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::TransactionSplit(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Removes a subaccount from a transaction split
@@ -215,16 +210,15 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
         let body = serde_json::to_value(subaccount)
             .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<String> = serde_json::from_str(&response)
-                    .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
+        let parsed_response: Response<String> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::TransactionSplit(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 }

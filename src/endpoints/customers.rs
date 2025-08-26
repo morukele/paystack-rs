@@ -56,18 +56,16 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
         let body = serde_json::to_value(create_customer_request)
             .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<CustomerResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+        let parsed_response: Response<CustomerResponseData> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Customer(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Lists customers available on your integration
@@ -89,18 +87,16 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
         let page = page.unwrap_or(1).to_string();
         let query = vec![("perPage", per_page.as_str()), ("page", page.as_str())];
 
-        let response = self.http.get(&url, &self.key, Some(&query)).await;
+        let response = self
+            .http
+            .get(&url, &self.key, Some(&query))
+            .await
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<Vec<CustomerResponseData>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+        let parsed_response: Response<Vec<CustomerResponseData>> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Customer(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Gets details of a customer on your integration
@@ -116,18 +112,16 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
     ) -> PaystackResult<CustomerResponseData> {
         let url = format!("{}/{}", self.base_url, email_or_code);
 
-        let response = self.http.get(&url, &self.key, None).await;
+        let response = self
+            .http
+            .get(&url, &self.key, None)
+            .await
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<CustomerResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+        let parsed_response: Response<CustomerResponseData> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Customer(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Updates a customer's details on your integration
@@ -148,18 +142,16 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
         let body = serde_json::to_value(update_customer_request)
             .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-        let response = self.http.put(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .put(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<CustomerResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+        let parsed_response: Response<CustomerResponseData> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Customer(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Validates a customer's identity
@@ -180,18 +172,16 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
         let body = serde_json::to_value(customer_validation_request)
             .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<PhantomData<String>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+        let parsed_response: Response<PhantomData<String>> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Customer(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Whitelists or blacklists a customer on your integration
@@ -213,18 +203,16 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
             "risk_action": risk_action
         });
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<CustomerResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+        let parsed_response: Response<CustomerResponseData> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Customer(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Deactivates an authorization when the card needs to be forgotten
@@ -243,17 +231,15 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
             "authorization_code": authorization_code
         });
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<PhantomData<String>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+        let parsed_response: Response<PhantomData<String>> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Customer(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 }

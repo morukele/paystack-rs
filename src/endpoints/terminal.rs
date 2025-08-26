@@ -56,18 +56,16 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
         let body = serde_json::to_value(event_request)
             .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<SendEventResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
+        let parsed_response: Response<SendEventResponseData> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Terminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Check the status of an event sent to the Paystack Terminal
@@ -85,18 +83,17 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
     ) -> PaystackResult<FetchEventStatusResponseData> {
         let url = format!("{}/{}/event/{}", self.base_url, terminal_id, event_id);
 
-        let response = self.http.get(&url, &self.key, None).await;
+        let response = self
+            .http
+            .get(&url, &self.key, None)
+            .await
+            .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<FetchEventStatusResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
+        let parsed_response: Response<FetchEventStatusResponseData> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Terminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Check the availiability of a Terminal before sending an event to it
@@ -112,18 +109,17 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
     ) -> PaystackResult<FetchTerminalStatusResponseData> {
         let url = format!("{}/{}/presence", self.base_url, terminal_id);
 
-        let response = self.http.get(&url, &self.key, None).await;
+        let response = self
+            .http
+            .get(&url, &self.key, None)
+            .await
+            .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<FetchTerminalStatusResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
+        let parsed_response: Response<FetchTerminalStatusResponseData> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Terminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// List the Terminals available on your integration
@@ -138,17 +134,16 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
         let per_page = per_page.unwrap_or(50).to_string();
         let query = vec![("perPage", per_page.as_str())];
 
-        let response = self.http.get(&url, &self.key, Some(&query)).await;
+        let response = self
+            .http
+            .get(&url, &self.key, Some(&query))
+            .await
+            .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<Vec<TerminalData>> = serde_json::from_str(&response)
-                    .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
+        let parsed_response: Response<Vec<TerminalData>> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Terminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Get the details of a Terminal
@@ -161,17 +156,16 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
     pub async fn fetch_terminal(&self, terminal_id: String) -> PaystackResult<TerminalData> {
         let url = format!("{}/{}", self.base_url, terminal_id);
 
-        let response = self.http.get(&url, &self.key, None).await;
+        let response = self
+            .http
+            .get(&url, &self.key, None)
+            .await
+            .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<TerminalData> = serde_json::from_str(&response)
-                    .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
+        let parsed_response: Response<TerminalData> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Terminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Update the details of a Terminal
@@ -191,18 +185,16 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
         let body = serde_json::to_value(update_request)
             .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-        let response = self.http.put(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .put(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<PhantomData<String>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
+        let parsed_response: Response<PhantomData<String>> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Terminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Activate your debug device by linking it to your integration
@@ -221,18 +213,16 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
             "serial_number": serial_number
         });
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<PhantomData<String>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
+        let parsed_response: Response<PhantomData<String>> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Terminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Unlink your debug device from your integration
@@ -251,17 +241,15 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
             "serial_number": serial_number
         });
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<PhantomData<String>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
+        let parsed_response: Response<PhantomData<String>> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Terminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 }

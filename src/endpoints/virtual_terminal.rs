@@ -56,18 +56,17 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
         let body = serde_json::to_value(virtual_terminal_request)
             .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<VirtualTerminalResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+        let parsed_response: Response<VirtualTerminalResponseData> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Lists virtual terminals available on your integration
@@ -89,18 +88,17 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
 
         let query = vec![("status", status.as_str()), ("perPage", per_page.as_str())];
 
-        let response = self.http.get(&url, &self.key, Some(&query)).await;
+        let response = self
+            .http
+            .get(&url, &self.key, Some(&query))
+            .await
+            .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<Vec<VirtualTerminalResponseData>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+        let parsed_response: Response<Vec<VirtualTerminalResponseData>> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Gets details of a virtual terminal on your integration
@@ -116,18 +114,17 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
     ) -> PaystackResult<VirtualTerminalResponseData> {
         let url = format!("{}/{}", self.base_url, code);
 
-        let response = self.http.get(&url, &self.key, None).await;
+        let response = self
+            .http
+            .get(&url, &self.key, None)
+            .await
+            .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<VirtualTerminalResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+        let parsed_response: Response<VirtualTerminalResponseData> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Updates a virtual terminal on your integration
@@ -148,18 +145,16 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
             "name": name
         });
 
-        let response = self.http.put(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .put(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<PhantomData<String>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+        let parsed_response: Response<PhantomData<String>> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Deactivates a virtual terminal on your integration
@@ -176,18 +171,16 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
         let url = format!("{}/{}/deactivate", self.base_url, code);
         let body = json!({}); // empty body cause the route takes none
 
-        let response = self.http.put(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .put(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<PhantomData<String>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+        let parsed_response: Response<PhantomData<String>> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Adds a WhatsApp destination number to a virtual terminal
@@ -208,18 +201,17 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
             "destinations": destinations
         });
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<Vec<DestinationResponse>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+        let parsed_response: Response<Vec<DestinationResponse>> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Removes a WhatsApp destination number from a virtual terminal
@@ -240,18 +232,16 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
             "targets": targets
         });
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<PhantomData<String>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+        let parsed_response: Response<PhantomData<String>> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Adds a split payment code to a virtual terminal
@@ -272,18 +262,17 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
             "split_code": split_code
         });
 
-        let response = self.http.put(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .put(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<TransactionSplitResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+        let parsed_response: Response<TransactionSplitResponseData> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Removes a split payment code from a virtual terminal
@@ -304,17 +293,15 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
             "split_code": split_code
         });
 
-        let response = self.http.delete(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .delete(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<PhantomData<String>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
+        let parsed_response: Response<PhantomData<String>> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::VirtualTerminal(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 }

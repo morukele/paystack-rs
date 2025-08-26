@@ -55,20 +55,15 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
         let body = serde_json::to_value(transaction_request)
             .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<TransactionResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
-                Ok(parsed_response)
-            }
-            Err(e) => {
-                // convert the error to a transaction error
-                Err(PaystackAPIError::Transaction(e.to_string()))
-            }
-        }
+        let parsed_response: Response<TransactionResponseData> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+        Ok(parsed_response)
     }
 
     /// Verifies the status of a transaction
@@ -84,18 +79,16 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
     ) -> PaystackResult<TransactionStatusData> {
         let url = format!("{}/verify/{}", self.base_url, reference);
 
-        let response = self.http.get(&url, &self.key, None).await;
+        let response = self
+            .http
+            .get(&url, &self.key, None)
+            .await
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<TransactionStatusData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+        let parsed_response: Response<TransactionStatusData> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Transaction(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Lists transactions carried out on your integration
@@ -117,18 +110,16 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
         let status = status.unwrap_or(Status::Success).to_string();
         let query = vec![("perPage", per_page.as_str()), ("status", status.as_str())];
 
-        let response = self.http.get(&url, &self.key, Some(&query)).await;
+        let response = self
+            .http
+            .get(&url, &self.key, Some(&query))
+            .await
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<Vec<TransactionStatusData>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+        let parsed_response: Response<Vec<TransactionStatusData>> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Transaction(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Gets details of a specific transaction
@@ -144,18 +135,16 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
     ) -> PaystackResult<TransactionStatusData> {
         let url = format!("{}/{}", self.base_url, transaction_id);
 
-        let response = self.http.get(&url, &self.key, None).await;
+        let response = self
+            .http
+            .get(&url, &self.key, None)
+            .await
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<TransactionStatusData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+        let parsed_response: Response<TransactionStatusData> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Transaction(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Charges a reusable authorization
@@ -174,17 +163,16 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
         let body = serde_json::to_value(charge_request)
             .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<ChargeResponseData> = serde_json::from_str(&response)
-                    .map_err(|e| PaystackAPIError::Charge(e.to_string()))?;
+        let parsed_response: Response<ChargeResponseData> =
+            serde_json::from_str(&response).map_err(|e| PaystackAPIError::Charge(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Transaction(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Views the timeline of a transaction
@@ -207,18 +195,16 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
             }
         }?; // propagate the error upstream
 
-        let response = self.http.get(&url, &self.key, None).await;
+        let response = self
+            .http
+            .get(&url, &self.key, None)
+            .await
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<TransactionTimelineData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+        let parsed_response: Response<TransactionTimelineData> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Transaction(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Gets the total amount received on your account
@@ -228,18 +214,16 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
     pub async fn total_transactions(&self) -> PaystackResult<TransactionTotalData> {
         let url = format!("{}/totals", self.base_url);
 
-        let response = self.http.get(&url, &self.key, None).await;
+        let response = self
+            .http
+            .get(&url, &self.key, None)
+            .await
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<TransactionTotalData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+        let parsed_response: Response<TransactionTotalData> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Transaction(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Exports a list of transactions
@@ -274,17 +258,16 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
             ("settled", settled.as_str()),
         ];
 
-        let response = self.http.get(&url, &self.key, Some(&query)).await;
+        let response = self
+            .http
+            .get(&url, &self.key, Some(&query))
+            .await
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response = serde_json::from_str(&response)
-                    .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+        let parsed_response = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Transaction(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Performs a partial debit on a transaction
@@ -303,17 +286,15 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
         let body = serde_json::to_value(partial_debit_transaction_request)
             .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<TransactionStatusData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
+        let parsed_response: Response<TransactionStatusData> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::Transaction(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 }
