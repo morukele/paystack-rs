@@ -18,4 +18,4 @@ pub use transaction_split::*;
 pub use virtual_terminal::*;
 
 // Const for the base url, since it is used multiple times
-pub const BASE_URL: &str = "https://api.paystack.co";
+pub const PAYSTACK_BASE_URL: &str = "https://api.paystack.co";

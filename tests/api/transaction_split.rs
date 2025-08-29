@@ -4,9 +4,9 @@ use fake::{
     Fake,
 };
 use paystack::{
-    Currency, DeleteSubAccountBody, PaystackClient, ReqwestClient, SubaccountBody,
-    SubaccountBodyBuilder, SubaccountRequestBuilder, TransactionSplitRequest,
-    TransactionSplitRequestBuilder, UpdateTransactionSplitRequestBuilder,
+    CreateSubaccountRequestBuilder, Currency, DeleteSubAccountBody, PaystackClient, ReqwestClient,
+    SubaccountBody, SubaccountBodyBuilder, TransactionSplitRequest, TransactionSplitRequestBuilder,
+    UpdateTransactionSplitRequestBuilder,
 };
 
 async fn create_subaccount_body(
@@ -19,7 +19,7 @@ async fn create_subaccount_body(
     let business_name: String = CompanyName().fake();
     let description: String = Sentence(5..10).fake();
 
-    let body = SubaccountRequestBuilder::default()
+    let body = CreateSubaccountRequestBuilder::default()
         .business_name(business_name)
         .settlement_bank(bank_code.clone())
         .account_number(account_number.clone())
@@ -334,6 +334,7 @@ async fn remove_a_subaccount_from_a_transaction_split_passes_with_valid_data() {
         .create_transaction_split(split_body)
         .await
         .expect("Failed to create transaction split");
+
     let data = transaction_split.data.unwrap();
     let split_id = data.id.to_string();
 

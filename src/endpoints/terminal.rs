@@ -9,7 +9,7 @@ use crate::{
 };
 use std::{marker::PhantomData, sync::Arc};
 
-use super::BASE_URL;
+use super::PAYSTACK_BASE_URL;
 
 /// A struct to hold all the functions of the terminal API endpoint
 #[derive(Debug, Clone)]
@@ -32,7 +32,7 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
     /// # Returns
     /// A new TerminalEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> TerminalEndpoints<T> {
-        let base_url = format!("{}/terminal", BASE_URL);
+        let base_url = format!("{}/terminal", PAYSTACK_BASE_URL);
         TerminalEndpoints {
             key: key.to_string(),
             base_url,

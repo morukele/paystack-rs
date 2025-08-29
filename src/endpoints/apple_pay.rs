@@ -1,7 +1,7 @@
 //! Apple Pay
 //! THe Apple Pay API allows you register your application's top-level domain or subdomain.
 
-use super::BASE_URL;
+use super::PAYSTACK_BASE_URL;
 use crate::{ApplePayResponseData, HttpClient, PaystackAPIError, PaystackResult};
 use serde_json::json;
 use std::{marker::PhantomData, sync::Arc};
@@ -27,7 +27,7 @@ impl<T: HttpClient + Default> ApplePayEndpoints<T> {
     /// # Returns
     /// A new ApplePayEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> ApplePayEndpoints<T> {
-        let base_url = format!("{}/apple-pay/domain", BASE_URL);
+        let base_url = format!("{}/apple-pay/domain", PAYSTACK_BASE_URL);
         ApplePayEndpoints {
             key: key.to_string(),
             base_url,

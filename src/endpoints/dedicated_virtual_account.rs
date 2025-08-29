@@ -2,7 +2,7 @@
 //! =========================
 //! The Dedicated Virtual Account API enables Nigerian and Ghanaian merchants to manage unique payment accounts of their customers.
 
-use super::BASE_URL;
+use super::PAYSTACK_BASE_URL;
 use crate::{
     BankProviderData, DedicatedVirtualAccountRequest, DedicatedVirtualAccountResponseData,
     HttpClient, ListDedicatedAccountFilter, PaystackAPIError, PaystackResult, Response,
@@ -29,7 +29,7 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
     /// # Returns
     /// A new DedicatedVirtualAccountEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> DedicatedVirtualAccountEndpoints<T> {
-        let base_url = format!("{}/dedicated_account", BASE_URL);
+        let base_url = format!("{}/dedicated_account", PAYSTACK_BASE_URL);
         DedicatedVirtualAccountEndpoints {
             key: key.to_string(),
             base_url,

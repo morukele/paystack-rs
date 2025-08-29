@@ -3,9 +3,9 @@
 //! The Subaccounts API allows you to create and manage subaccounts on your integration.
 //! Subaccounts can be used to split payment between two accounts (your main account and a subaccount).
 
-use super::BASE_URL;
+use super::PAYSTACK_BASE_URL;
 use crate::{
-    HttpClient, PaystackAPIError, PaystackResult, Response, SubaccountRequest,
+    CreateSubaccountRequest, HttpClient, PaystackAPIError, PaystackResult, Response,
     SubaccountsResponseData,
 };
 use std::sync::Arc;
@@ -31,7 +31,7 @@ impl<T: HttpClient + Default> SubaccountEndpoints<T> {
     /// # Returns
     /// A new SubaccountEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> SubaccountEndpoints<T> {
-        let base_url = format!("{}/subaccount", BASE_URL);
+        let base_url = format!("{}/subaccount", PAYSTACK_BASE_URL);
         SubaccountEndpoints {
             key: key.to_string(),
             base_url,
@@ -43,13 +43,13 @@ impl<T: HttpClient + Default> SubaccountEndpoints<T> {
     ///
     /// # Arguments
     /// * `subaccount_request` - The request data to create the subaccount.
-    ///   It should be created with the `SubaccountRequestBuilder` struct.
+    ///   It should be created with the `CreateSubaccountRequestBuilder` struct.
     ///
     /// # Returns
     /// A Result containing the subaccount response data or an error
     pub async fn create_subaccount(
         &self,
-        subaccount_request: SubaccountRequest,
+        subaccount_request: CreateSubaccountRequest,
     ) -> PaystackResult<SubaccountsResponseData> {
         let url = &self.base_url;
         let body = serde_json::to_value(subaccount_request)
@@ -80,6 +80,76 @@ impl<T: HttpClient + Default> SubaccountEndpoints<T> {
         page: Option<u32>,
     ) -> PaystackResult<Vec<SubaccountsResponseData>> {
         let url = self.base_url.to_string();
-        todo!()
+
+        let per_page = per_page.unwrap_or(50).to_string();
+        let page = page.unwrap_or(1).to_string();
+        let query = vec![("perPage", per_page.as_str()), ("page", page.as_str())];
+
+        let response = self
+            .http
+            .get(&url, &self.key, Some(&query))
+            .await
+            .map_err(|e| PaystackAPIError::Subaccount(e.to_string()))?;
+
+        let parsed_response: Response<Vec<SubaccountsResponseData>> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::Subaccount(e.to_string()))?;
+
+        Ok(parsed_response)
+    }
+
+    /// Get the details of a subaccount on your integration
+    ///
+    /// # Arguments
+    /// * `id_or_code` - The subaccount ID or code you want to fetch
+    ///
+    /// # Returns
+    /// A Result containing the details of the subaccount or an error.
+    pub async fn fetch_subaccount(
+        &self,
+        id_or_code: String,
+    ) -> PaystackResult<SubaccountsResponseData> {
+        let url = format!("{}/{}", self.base_url, id_or_code);
+
+        let response = self
+            .http
+            .get(&url, &self.key, None)
+            .await
+            .map_err(|e| PaystackAPIError::Subaccount(e.to_string()))?;
+
+        let parsed_response: Response<SubaccountsResponseData> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Subaccount(e.to_string()))?;
+
+        Ok(parsed_response)
+    }
+
+    /// Update a subaccount details in your integration
+    ///
+    /// # Arguments
+    /// * `id_or_code` - Subaccount's ID or code
+    /// * `update_request` - The request data to update the subaccount.
+    ///   It should be created with the `CreateSubaccountRequestBuilder` struct.
+    ///
+    /// # Returns
+    /// A Result containing the updated subaccount response data or an error
+    pub async fn update_subaccount(
+        &self,
+        id_or_code: String,
+        update_request: CreateSubaccountRequest,
+    ) -> PaystackResult<SubaccountsResponseData> {
+        let url = format!("{}/{}", self.base_url, id_or_code);
+        let body = serde_json::to_value(update_request)
+            .map_err(|e| PaystackAPIError::Subaccount(e.to_string()))?;
+
+        let response = self
+            .http
+            .put(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::Subaccount(e.to_string()))?;
+
+        let parsed_response: Response<SubaccountsResponseData> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::Subaccount(e.to_string()))?;
+
+        Ok(parsed_response)
     }
 }

@@ -3,7 +3,7 @@
 //! The Transaction Splits API enables merchants split the settlement for a
 //! transaction across their payout account, and one or more subaccounts.
 
-use super::BASE_URL;
+use super::PAYSTACK_BASE_URL;
 use crate::{
     DeleteSubAccountBody, HttpClient, PaystackAPIError, PaystackResult, Response, SubaccountBody,
     TransactionSplitRequest, TransactionSplitResponseData, UpdateTransactionSplitRequest,
@@ -31,7 +31,7 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
     /// # Returns
     /// A new TransactionSplitEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> TransactionSplitEndpoints<T> {
-        let base_url = format!("{}/split", BASE_URL);
+        let base_url = format!("{}/split", PAYSTACK_BASE_URL);
         TransactionSplitEndpoints {
             key: key.to_string(),
             base_url,

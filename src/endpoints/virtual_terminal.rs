@@ -2,7 +2,7 @@
 //! ================
 //! The Virtual Terminal API allows you to accept in-person payments without a POS device.
 
-use super::BASE_URL;
+use super::PAYSTACK_BASE_URL;
 use crate::{
     DestinationRequest, DestinationResponse, HttpClient, PaystackAPIError, PaystackResult,
     Response, TransactionSplitResponseData, VirtualTerminalRequestData,
@@ -31,7 +31,7 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
     /// # Returns
     /// A new VirtualTerminalEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> VirtualTerminalEndpoints<T> {
-        let base_url = format!("{}/virtual_terminal", BASE_URL);
+        let base_url = format!("{}/virtual_terminal", PAYSTACK_BASE_URL);
         VirtualTerminalEndpoints {
             key: key.to_string(),
             base_url,

@@ -2,40 +2,54 @@
 //! ==============
 //! This file contains the models for working with the subaccounts endpoint.
 
+use super::Currency;
+use crate::utils::bool_from_int_or_bool;
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
-
-use super::Currency;
 
 /// This struct is used to create the body for creating a subaccount on your integration.
 /// Use the `SubaccountRequestBuilder` to create this object.
 #[derive(Serialize, Debug, Builder, Default)]
-pub struct SubaccountRequest {
+pub struct CreateSubaccountRequest {
     /// Name of business for subaccount
-    business_name: String,
+    #[builder(setter(strip_option), default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    business_name: Option<String>,
     /// Bank Code for the bank.
     /// You can get the list of Bank Codes by calling the List Banks endpoint.
-    settlement_bank: String,
+    #[builder(setter(strip_option), default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    settlement_bank: Option<String>,
     /// Bank Account Number
-    account_number: String,
+    #[builder(setter(strip_option), default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    account_number: Option<String>,
     /// The default percentage charged when receiving on behalf of this subaccount
-    percentage_charge: f32,
+    #[builder(setter(strip_option), default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    percentage_charge: Option<f32>,
     /// A description for this subaccount
-    description: String,
+    #[builder(setter(strip_option), default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    description: Option<String>,
     /// A contact email for the subaccount
     #[builder(setter(strip_option), default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     primary_contact_email: Option<String>,
     /// A name for the contact person for this subaccount
     #[builder(setter(strip_option), default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     primary_contact_name: Option<String>,
     /// A phone number to call for this subaccount
     #[builder(setter(strip_option), default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     primary_contact_phone: Option<String>,
     /// Stringified JSON object.
     /// Add a custom_fields attribute which has an array of objects if you would like the fields to be
     /// added to your transaction when displayed on the dashboard.
     /// Sample: {"custom_fields":[{"display_name":"Cart ID","variable_name": "cart_id","value": "8393"}]}
     #[builder(setter(strip_option), default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     metadata: Option<String>,
 }
 
@@ -94,6 +108,7 @@ pub struct SubaccountsResponseData {
     /// Currency of the subaccount
     pub currency: Option<Currency>,
     /// If the account is active or not, should be 1 for active and 0 for inactive
+    #[serde(default, deserialize_with = "bool_from_int_or_bool")]
     pub active: Option<bool>,
     /// Settlement schedule of subaccount.
     pub settlement_schedule: Option<String>,
@@ -105,17 +120,8 @@ pub struct SubaccountsResponseData {
     /// Last update time of subaccount.
     #[serde(rename = "updatedAt")]
     pub updated_at: Option<String>,
-}
-
-/// Represents the JSON response for fetch subaccount.
-#[derive(Debug, Deserialize, Serialize, Default)]
-pub struct FetchSubaccountResponse {
-    /// The status of the JSON response.
-    pub status: bool,
-    /// The message associated with the JSON response.
-    pub message: String,
-    /// Fetch Subaccount response data.
-    pub data: SubaccountsResponseData,
+    pub product: Option<String>,
+    pub managed_by_integration: Option<u32>,
 }
 
 /// This struct is used to create the body for deleting a subaccount on your integration.

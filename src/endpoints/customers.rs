@@ -2,7 +2,7 @@
 //! =========
 //! Thse Customers API allows you to create and maange customers on your integration
 
-use super::BASE_URL;
+use super::PAYSTACK_BASE_URL;
 use crate::{
     CreateCustomerRequest, CustomerResponseData, HttpClient, PaystackAPIError, PaystackResult,
     Response, RiskAction, UpdateCustomerRequest, ValidateCustomerRequest,
@@ -31,7 +31,7 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
     /// # Returns
     /// A new CustomersEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> CustomersEndpoints<T> {
-        let base_url = format!("{}/customer", BASE_URL);
+        let base_url = format!("{}/customer", PAYSTACK_BASE_URL);
         CustomersEndpoints {
             key: key.to_string(),
             base_url,
