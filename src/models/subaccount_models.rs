@@ -5,6 +5,8 @@
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
+use super::Currency;
+
 /// This struct is used to create the body for creating a subaccount on your integration.
 /// Use the `SubaccountRequestBuilder` to create this object.
 #[derive(Serialize, Debug, Builder, Default)]
@@ -85,8 +87,14 @@ pub struct SubaccountsResponseData {
     pub is_verified: Option<bool>,
     /// The name of the settlement bank for the subaccount.
     pub settlement_bank: String,
+    /// The id of the settlement bank for the subaccount.
+    pub bank_id: Option<u32>,
     /// The account number of the subaccount.
     pub account_number: String,
+    /// Currency of the subaccount
+    pub currency: Option<Currency>,
+    /// If the account is active or not, should be 1 for active and 0 for inactive
+    pub active: Option<bool>,
     /// Settlement schedule of subaccount.
     pub settlement_schedule: Option<String>,
     /// The ID of the subaccount.

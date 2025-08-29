@@ -2,13 +2,14 @@
 //! ========
 //! The Terminal API allows you to build delightful in-person payment experiences.
 
-use std::{marker::PhantomData, sync::Arc};
-
 use crate::{
     EventRequest, FetchEventStatusResponseData, FetchTerminalStatusResponseData, HttpClient,
     PaystackAPIError, PaystackResult, Response, SendEventResponseData, TerminalData,
     UpdateTerminalRequest,
 };
+use std::{marker::PhantomData, sync::Arc};
+
+use super::BASE_URL;
 
 /// A struct to hold all the functions of the terminal API endpoint
 #[derive(Debug, Clone)]
@@ -31,7 +32,7 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
     /// # Returns
     /// A new TerminalEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> TerminalEndpoints<T> {
-        let base_url = String::from("https://api.paystack.co/terminal");
+        let base_url = format!("{}/terminal", BASE_URL);
         TerminalEndpoints {
             key: key.to_string(),
             base_url,
@@ -130,7 +131,7 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
     /// # Returns
     /// A Result containing a vector of terminal data or an error
     pub async fn list_terminals(&self, per_page: Option<i32>) -> PaystackResult<Vec<TerminalData>> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
         let per_page = per_page.unwrap_or(50).to_string();
         let query = vec![("perPage", per_page.as_str())];
 

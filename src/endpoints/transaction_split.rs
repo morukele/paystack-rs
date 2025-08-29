@@ -3,6 +3,7 @@
 //! The Transaction Splits API enables merchants split the settlement for a
 //! transaction across their payout account, and one or more subaccounts.
 
+use super::BASE_URL;
 use crate::{
     DeleteSubAccountBody, HttpClient, PaystackAPIError, PaystackResult, Response, SubaccountBody,
     TransactionSplitRequest, TransactionSplitResponseData, UpdateTransactionSplitRequest,
@@ -30,7 +31,7 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
     /// # Returns
     /// A new TransactionSplitEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> TransactionSplitEndpoints<T> {
-        let base_url = String::from("https://api.paystack.co/split");
+        let base_url = format!("{}/split", BASE_URL);
         TransactionSplitEndpoints {
             key: key.to_string(),
             base_url,
@@ -50,7 +51,7 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
         &self,
         split_body: TransactionSplitRequest,
     ) -> PaystackResult<TransactionSplitResponseData> {
-        let url = self.base_url.to_string();
+        let url = &self.base_url;
         let body = serde_json::to_value(split_body)
             .map_err(|e| PaystackAPIError::TransactionSplit(e.to_string()))?;
 
@@ -79,7 +80,7 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
         split_name: Option<&str>,
         split_active: Option<bool>,
     ) -> PaystackResult<Vec<TransactionSplitResponseData>> {
-        let url = self.base_url.to_string();
+        let url = &self.base_url;
 
         // Specify a default option for active splits
         let split_active = match split_active {
@@ -195,7 +196,7 @@ impl<T: HttpClient + Default> TransactionSplitEndpoints<T> {
     /// Removes a subaccount from a transaction split
     ///
     /// # Arguments
-    /// * `split_id` - ID of the transaction split
+    /// * `split_id` - ID of the transaction split.
     /// * `subaccount` - The subaccount data to remove.
     ///   It should be created with a `DeleteSubAccountBody` struct.
     ///

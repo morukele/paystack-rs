@@ -2,15 +2,14 @@
 //! =========================
 //! The Dedicated Virtual Account API enables Nigerian and Ghanaian merchants to manage unique payment accounts of their customers.
 
-use std::{marker::PhantomData, sync::Arc};
-
-use serde_json::json;
-
+use super::BASE_URL;
 use crate::{
     BankProviderData, DedicatedVirtualAccountRequest, DedicatedVirtualAccountResponseData,
     HttpClient, ListDedicatedAccountFilter, PaystackAPIError, PaystackResult, Response,
     SplitDedicatedAccountTransactionRequest,
 };
+use serde_json::json;
+use std::{marker::PhantomData, sync::Arc};
 
 #[derive(Debug, Clone)]
 pub struct DedicatedVirtualAccountEndpoints<T: HttpClient + Default> {
@@ -30,7 +29,7 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
     /// # Returns
     /// A new DedicatedVirtualAccountEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> DedicatedVirtualAccountEndpoints<T> {
-        let base_url = String::from("https://api.paystack.co/dedicated_account");
+        let base_url = format!("{}/dedicated_account", BASE_URL);
         DedicatedVirtualAccountEndpoints {
             key: key.to_string(),
             base_url,
@@ -50,7 +49,7 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
         &self,
         create_dedicated_virtual_account_request: DedicatedVirtualAccountRequest,
     ) -> PaystackResult<DedicatedVirtualAccountResponseData> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
         let body = serde_json::to_value(create_dedicated_virtual_account_request)
             .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
@@ -79,7 +78,7 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
         &self,
         assign_dedicated_virtual_account_request: DedicatedVirtualAccountRequest,
     ) -> PaystackResult<PhantomData<String>> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
         let body = serde_json::to_value(assign_dedicated_virtual_account_request)
             .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
@@ -107,7 +106,7 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
         &self,
         filter: Option<ListDedicatedAccountFilter>,
     ) -> PaystackResult<Vec<DedicatedVirtualAccountResponseData>> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
         let mut query = vec![];
         // Build the query vec with the value in the filter struct
         if let Some(filter) = filter {
@@ -248,7 +247,7 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
         &self,
         split_dedocated_account_transaction_request: SplitDedicatedAccountTransactionRequest,
     ) -> PaystackResult<DedicatedVirtualAccountResponseData> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
         let body = serde_json::to_value(split_dedocated_account_transaction_request)
             .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
@@ -276,7 +275,7 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
         &self,
         account_number: String,
     ) -> PaystackResult<DedicatedVirtualAccountResponseData> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
         let body = json!({
             "account_number": account_number
         });

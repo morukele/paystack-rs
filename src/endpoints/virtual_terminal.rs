@@ -2,15 +2,14 @@
 //! ================
 //! The Virtual Terminal API allows you to accept in-person payments without a POS device.
 
-use std::{marker::PhantomData, sync::Arc};
-
-use serde_json::json;
-
+use super::BASE_URL;
 use crate::{
     DestinationRequest, DestinationResponse, HttpClient, PaystackAPIError, PaystackResult,
     Response, TransactionSplitResponseData, VirtualTerminalRequestData,
     VirtualTerminalResponseData, VirtualTerminalStatus,
 };
+use serde_json::json;
+use std::{marker::PhantomData, sync::Arc};
 
 #[derive(Debug, Clone)]
 pub struct VirtualTerminalEndpoints<T: HttpClient + Default> {
@@ -32,7 +31,7 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
     /// # Returns
     /// A new VirtualTerminalEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> VirtualTerminalEndpoints<T> {
-        let base_url = String::from("https://api.paystack.co/virtual_terminal");
+        let base_url = format!("{}/virtual_terminal", BASE_URL);
         VirtualTerminalEndpoints {
             key: key.to_string(),
             base_url,
@@ -52,7 +51,7 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
         &self,
         virtual_terminal_request: VirtualTerminalRequestData,
     ) -> PaystackResult<VirtualTerminalResponseData> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
         let body = serde_json::to_value(virtual_terminal_request)
             .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
@@ -82,7 +81,7 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
         status: VirtualTerminalStatus,
         per_page: i32,
     ) -> PaystackResult<Vec<VirtualTerminalResponseData>> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
         let status = status.to_string();
         let per_page = per_page.to_string();
 

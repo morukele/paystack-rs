@@ -2,14 +2,13 @@
 //! =========
 //! Thse Customers API allows you to create and maange customers on your integration
 
-use std::{marker::PhantomData, sync::Arc};
-
-use serde_json::json;
-
+use super::BASE_URL;
 use crate::{
     CreateCustomerRequest, CustomerResponseData, HttpClient, PaystackAPIError, PaystackResult,
     Response, RiskAction, UpdateCustomerRequest, ValidateCustomerRequest,
 };
+use serde_json::json;
+use std::{marker::PhantomData, sync::Arc};
 
 /// A struct to hold all the functions of the customers API endpoint
 #[derive(Debug, Clone)]
@@ -32,7 +31,7 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
     /// # Returns
     /// A new CustomersEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> CustomersEndpoints<T> {
-        let base_url = String::from("https://api.paystack.co/customer");
+        let base_url = format!("{}/customer", BASE_URL);
         CustomersEndpoints {
             key: key.to_string(),
             base_url,
@@ -52,7 +51,7 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
         &self,
         create_customer_request: CreateCustomerRequest,
     ) -> PaystackResult<CustomerResponseData> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
         let body = serde_json::to_value(create_customer_request)
             .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
@@ -81,7 +80,7 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
         per_page: Option<u8>,
         page: Option<u8>,
     ) -> PaystackResult<Vec<CustomerResponseData>> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
 
         let per_page = per_page.unwrap_or(50).to_string();
         let page = page.unwrap_or(1).to_string();

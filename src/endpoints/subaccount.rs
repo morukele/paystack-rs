@@ -3,6 +3,7 @@
 //! The Subaccounts API allows you to create and manage subaccounts on your integration.
 //! Subaccounts can be used to split payment between two accounts (your main account and a subaccount).
 
+use super::BASE_URL;
 use crate::{
     HttpClient, PaystackAPIError, PaystackResult, Response, SubaccountRequest,
     SubaccountsResponseData,
@@ -30,7 +31,7 @@ impl<T: HttpClient + Default> SubaccountEndpoints<T> {
     /// # Returns
     /// A new SubaccountEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> SubaccountEndpoints<T> {
-        let base_url = String::from("https://api.paystack.co/subaccount");
+        let base_url = format!("{}/subaccount", BASE_URL);
         SubaccountEndpoints {
             key: key.to_string(),
             base_url,
@@ -50,7 +51,7 @@ impl<T: HttpClient + Default> SubaccountEndpoints<T> {
         &self,
         subaccount_request: SubaccountRequest,
     ) -> PaystackResult<SubaccountsResponseData> {
-        let url = self.base_url.to_string();
+        let url = &self.base_url;
         let body = serde_json::to_value(subaccount_request)
             .map_err(|e| PaystackAPIError::Subaccount(e.to_string()))?;
 
@@ -63,5 +64,22 @@ impl<T: HttpClient + Default> SubaccountEndpoints<T> {
         let parsed_response: Response<SubaccountsResponseData> = serde_json::from_str(&response)
             .map_err(|e| PaystackAPIError::Subaccount(e.to_string()))?;
         Ok(parsed_response)
+    }
+
+    /// List subaccounts available on your integration.
+    ///
+    /// # Arguments
+    /// * `per_page` - Optional number of subaccounts to return per page. Defaults to 50 if None.
+    /// * `page` - Specify exactly what page you want to retrieve. Defaults to 1 if None.
+    ///
+    /// # Returns
+    /// A Result containing a vector of subaccount data or an error.
+    pub async fn list_subaccounts(
+        &self,
+        per_page: Option<u32>,
+        page: Option<u32>,
+    ) -> PaystackResult<Vec<SubaccountsResponseData>> {
+        let url = self.base_url.to_string();
+        todo!()
     }
 }

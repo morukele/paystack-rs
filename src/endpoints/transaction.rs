@@ -2,6 +2,7 @@
 //! =============
 //! The Transaction route allows to create and manage payments on your integration.
 
+use super::BASE_URL;
 use crate::{
     ChargeRequest, ChargeResponseData, Currency, ExportTransactionData, HttpClient,
     PartialDebitTransactionRequest, PaystackAPIError, PaystackResult, Response, Status,
@@ -31,7 +32,7 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
     /// # Returns
     /// A new TransactionEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> TransactionEndpoints<T> {
-        let base_url = String::from("https://api.paystack.co/transaction");
+        let base_url = format!("{}/transaction", BASE_URL);
         TransactionEndpoints {
             key: key.to_string(),
             base_url,
@@ -104,7 +105,7 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
         per_page: Option<u32>,
         status: Option<Status>,
     ) -> PaystackResult<Vec<TransactionStatusData>> {
-        let url = self.base_url.to_string();
+        let url = &self.base_url;
 
         let per_page = per_page.unwrap_or(10).to_string();
         let status = status.unwrap_or(Status::Success).to_string();
