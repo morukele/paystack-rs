@@ -8,6 +8,13 @@ All notable changes to this project will be documented in this file.
 
 - Added support for apple pay endpoints
 - Added support for apple pay endpoints
+- Added support for the subaccounts api route
+
+### ⚙️ Miscellaneous Tasks
+
+- Added better error handling to all the routes in the create - goal is to reduce use of match statements
+- Made base url a constant and moved it to the mod.rs file for top level access
+- Release paystack-rs version 1.4.0
 
 ## [1.3.0] - 2025-06-29
 
