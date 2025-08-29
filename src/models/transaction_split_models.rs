@@ -44,6 +44,7 @@ pub struct TransactionSplitResponseData {
     /// The split code of the percentage split.
     pub split_code: String,
     /// Indicates whether the percentage split is active or not.
+    #[serde(default)]
     pub active: Option<bool>,
     /// The bearer type of the percentage split.
     pub bearer_type: String,

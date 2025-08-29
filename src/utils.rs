@@ -1,4 +1,6 @@
 use serde::de::Error;
+use serde::{Deserialize, Deserializer};
+use serde_json::Value;
 use std::fmt::Formatter;
 use std::str::FromStr;
 
@@ -151,4 +153,23 @@ where
     }
 
     deserializer.deserialize_option(OptionStringOrNumberVisitor)
+}
+
+pub fn bool_from_int_or_bool<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let v: Option<Value> = Option::deserialize(deserializer)?;
+    match v {
+        Some(Value::Bool(b)) => Ok(Some(b)),
+        Some(Value::Number(n)) => {
+            if let Some(i) = n.as_i64() {
+                Ok(Some(i != 0))
+            } else {
+                Err(serde::de::Error::custom("Invalid number for bool"))
+            }
+        }
+        Some(Value::Null) | None => Ok(None),
+        _ => Err(serde::de::Error::custom("Expected bool or int")),
+    }
 }
