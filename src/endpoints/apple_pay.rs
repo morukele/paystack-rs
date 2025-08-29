@@ -1,11 +1,10 @@
 //! Apple Pay
 //! THe Apple Pay API allows you register your application's top-level domain or subdomain.
 
-use std::{marker::PhantomData, sync::Arc};
-
+use super::PAYSTACK_BASE_URL;
+use crate::{ApplePayResponseData, HttpClient, PaystackAPIError, PaystackResult};
 use serde_json::json;
-
-use crate::{ApplePayResponseData, HttpClient, PaystackAPIError, PaystackResult, Response};
+use std::{marker::PhantomData, sync::Arc};
 
 #[derive(Debug, Clone)]
 pub struct ApplePayEndpoints<T: HttpClient + Default> {
@@ -28,7 +27,7 @@ impl<T: HttpClient + Default> ApplePayEndpoints<T> {
     /// # Returns
     /// A new ApplePayEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> ApplePayEndpoints<T> {
-        let base_url = String::from("https://api.paystack.co/apple-pay/domain");
+        let base_url = format!("{}/apple-pay/domain", PAYSTACK_BASE_URL);
         ApplePayEndpoints {
             key: key.to_string(),
             base_url,
@@ -47,23 +46,21 @@ impl<T: HttpClient + Default> ApplePayEndpoints<T> {
         &self,
         domain_name: String,
     ) -> PaystackResult<PhantomData<String>> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
         let body = json!({
             "domainName": domain_name
         });
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<PhantomData<String>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
+        let parsed_response = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::ApplePay(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Lists all domains registered on your integration
@@ -71,42 +68,45 @@ impl<T: HttpClient + Default> ApplePayEndpoints<T> {
     /// # Returns
     /// A Result containing the list of registered domains or an error
     pub async fn list_domains(&self) -> PaystackResult<ApplePayResponseData> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
 
-        let response = self.http.get(&url, &self.key, None).await;
+        let response = self
+            .http
+            .get(&url, &self.key, None)
+            .await
+            .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<ApplePayResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
+        let parsed_response = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::ApplePay(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
+    /// Unregister a top-level domain or subdomain previously used for your Apple Pay integration.
+    ///
+    /// # Arguments
+    /// * `domain_name` - The name of the domain to unregister
+    ///
+    /// # Returns
+    /// A result containing a success message without data.
     pub async fn unregister_domain(
         &self,
         domain_name: String,
     ) -> PaystackResult<PhantomData<String>> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
         let body = json!({
             "domainName": domain_name
         });
 
-        let response = self.http.delete(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .delete(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<PhantomData<String>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
+        let parsed_response = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::ApplePay(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 }

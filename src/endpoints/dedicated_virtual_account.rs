@@ -2,15 +2,14 @@
 //! =========================
 //! The Dedicated Virtual Account API enables Nigerian and Ghanaian merchants to manage unique payment accounts of their customers.
 
-use std::{marker::PhantomData, sync::Arc};
-
-use serde_json::json;
-
+use super::PAYSTACK_BASE_URL;
 use crate::{
     BankProviderData, DedicatedVirtualAccountRequest, DedicatedVirtualAccountResponseData,
     HttpClient, ListDedicatedAccountFilter, PaystackAPIError, PaystackResult, Response,
     SplitDedicatedAccountTransactionRequest,
 };
+use serde_json::json;
+use std::{marker::PhantomData, sync::Arc};
 
 #[derive(Debug, Clone)]
 pub struct DedicatedVirtualAccountEndpoints<T: HttpClient + Default> {
@@ -30,7 +29,7 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
     /// # Returns
     /// A new DedicatedVirtualAccountEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> DedicatedVirtualAccountEndpoints<T> {
-        let base_url = String::from("https://api.paystack.co/dedicated_account");
+        let base_url = format!("{}/dedicated_account", PAYSTACK_BASE_URL);
         DedicatedVirtualAccountEndpoints {
             key: key.to_string(),
             base_url,
@@ -50,22 +49,21 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
         &self,
         create_dedicated_virtual_account_request: DedicatedVirtualAccountRequest,
     ) -> PaystackResult<DedicatedVirtualAccountResponseData> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
         let body = serde_json::to_value(create_dedicated_virtual_account_request)
             .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<DedicatedVirtualAccountResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+        let parsed_response: Response<DedicatedVirtualAccountResponseData> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Creates a customer, validates them and assigns a dedicated virtual account.
@@ -80,22 +78,20 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
         &self,
         assign_dedicated_virtual_account_request: DedicatedVirtualAccountRequest,
     ) -> PaystackResult<PhantomData<String>> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
         let body = serde_json::to_value(assign_dedicated_virtual_account_request)
             .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<PhantomData<String>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+        let parsed_response: Response<PhantomData<String>> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Lists dedicated virtual accounts available on your integration.
@@ -110,7 +106,7 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
         &self,
         filter: Option<ListDedicatedAccountFilter>,
     ) -> PaystackResult<Vec<DedicatedVirtualAccountResponseData>> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
         let mut query = vec![];
         // Build the query vec with the value in the filter struct
         if let Some(filter) = filter {
@@ -133,18 +129,17 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
 
         // Transform String to &str using iter
         let query: Vec<(&str, &str)> = query.iter().map(|(k, v)| (*k, v.as_str())).collect();
-        let response = self.http.get(&url, &self.key, Some(&query)).await;
+        let response = self
+            .http
+            .get(&url, &self.key, Some(&query))
+            .await
+            .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<Vec<DedicatedVirtualAccountResponseData>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+        let parsed_response: Response<Vec<DedicatedVirtualAccountResponseData>> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Gets details of a dedicated virtual account on your integration
@@ -160,18 +155,17 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
     ) -> PaystackResult<DedicatedVirtualAccountResponseData> {
         let url = format!("{}/{}", self.base_url, dedicated_account_id);
 
-        let response = self.http.get(&url, &self.key, None).await;
+        let response = self
+            .http
+            .get(&url, &self.key, None)
+            .await
+            .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<DedicatedVirtualAccountResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+        let parsed_response: Response<DedicatedVirtualAccountResponseData> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Requery Dedicated Virtual Account for new transactions
@@ -201,18 +195,16 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
         // convert Vec<(&str, String)> to Vec<(&str, &str)>
         let query: Vec<(&str, &str)> = query.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        let response = self.http.get(&url, &self.key, Some(&query)).await;
+        let response = self
+            .http
+            .get(&url, &self.key, Some(&query))
+            .await
+            .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<PhantomData<String>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+        let parsed_response: Response<PhantomData<String>> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Deactivate a dedicated virtual account on your integration
@@ -229,18 +221,17 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
         let url = format!("{}/{}", self.base_url, dedicated_account_id);
         let body = json!({}); // empty body since the route takes none.
 
-        let response = self.http.delete(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .delete(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<DedicatedVirtualAccountResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+        let parsed_response: Response<DedicatedVirtualAccountResponseData> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Split a dedicated virtual account transaction with one or more accounts.
@@ -256,22 +247,21 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
         &self,
         split_dedocated_account_transaction_request: SplitDedicatedAccountTransactionRequest,
     ) -> PaystackResult<DedicatedVirtualAccountResponseData> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
         let body = serde_json::to_value(split_dedocated_account_transaction_request)
             .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-        let response = self.http.post(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<DedicatedVirtualAccountResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+        let parsed_response: Response<DedicatedVirtualAccountResponseData> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// If you've previously set up split payment for transactions on a dedicated virtual account, you can remove it with this endpoint
@@ -285,23 +275,22 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
         &self,
         account_number: String,
     ) -> PaystackResult<DedicatedVirtualAccountResponseData> {
-        let url = format!("{}", self.base_url);
+        let url = &self.base_url;
         let body = json!({
             "account_number": account_number
         });
 
-        let response = self.http.delete(&url, &self.key, &body).await;
+        let response = self
+            .http
+            .delete(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<DedicatedVirtualAccountResponseData> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+        let parsed_response: Response<DedicatedVirtualAccountResponseData> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 
     /// Get available bank providers for a dedicated virtual account
@@ -314,17 +303,15 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
     pub async fn fetch_bank_providers(&self) -> PaystackResult<Vec<BankProviderData>> {
         let url = format!("{}/available_providers", self.base_url);
 
-        let response = self.http.get(&url, &self.key, None).await;
+        let response = self
+            .http
+            .get(&url, &self.key, None)
+            .await
+            .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-        match response {
-            Ok(response) => {
-                let parsed_response: Response<Vec<BankProviderData>> =
-                    serde_json::from_str(&response)
-                        .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
+        let parsed_response: Response<Vec<BankProviderData>> = serde_json::from_str(&response)
+            .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
-                Ok(parsed_response)
-            }
-            Err(e) => Err(PaystackAPIError::DedicatedVirtualAccount(e.to_string())),
-        }
+        Ok(parsed_response)
     }
 }
