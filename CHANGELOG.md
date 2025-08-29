@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2025-06-30
+
+### 🚀 Features
+
+- Added support for apple pay endpoints
+- Added support for apple pay endpoints
+
 ## [1.3.0] - 2025-06-29
 
 ### 🚀 Features
@@ -19,6 +26,10 @@ All notable changes to this project will be documented in this file.
 ### 📚 Documentation
 
 - Updated the doc strings for the different modules
+
+### ⚙️ Miscellaneous Tasks
+
+- Release paystack-rs version 1.3.0
 
 ## [1.2.0] - 2025-06-28
 
