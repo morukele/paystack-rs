@@ -32,7 +32,7 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
     /// # Returns
     /// A new TerminalEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> TerminalEndpoints<T> {
-        let base_url = format!("{}/terminal", PAYSTACK_BASE_URL);
+        let base_url = format!("{PAYSTACK_BASE_URL}/terminal");
         TerminalEndpoints {
             key: key.to_string(),
             base_url,
@@ -137,7 +137,7 @@ impl<T: HttpClient + Default> TerminalEndpoints<T> {
 
         let response = self
             .http
-            .get(&url, &self.key, Some(&query))
+            .get(url, &self.key, Some(&query))
             .await
             .map_err(|e| PaystackAPIError::Terminal(e.to_string()))?;
 

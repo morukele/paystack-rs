@@ -60,6 +60,6 @@ impl fmt::Display for Currency {
             Currency::ZAR => "ZAR",
             Currency::EMPTY => "",
         };
-        write!(f, "{}", currency)
+        write!(f, "{currency}")
     }
 }

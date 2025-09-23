@@ -48,6 +48,6 @@ impl fmt::Display for Status {
             Status::Abandoned => "abandoned",
             Status::Failed => "failed",
         };
-        write!(f, "{}", lowercase_string)
+        write!(f, "{lowercase_string}")
     }
 }

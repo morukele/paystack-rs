@@ -84,7 +84,7 @@ impl fmt::Display for VirtualTerminalStatus {
             VirtualTerminalStatus::Active => "active",
             VirtualTerminalStatus::Inactive => "inactive",
         };
-        write!(f, "{}", lowercase_string)
+        write!(f, "{lowercase_string}")
     }
 }
 
@@ -129,7 +129,7 @@ mod tests {
             .expect("unable to build virtual terminal request");
 
         assert_eq!(request.name, "Some name");
-        assert!(request.destinations.len() > 0);
+        assert!(!request.destinations.is_empty());
         assert!(request.currency.is_some());
         assert!(request.custom_field.is_some());
         assert!(request.metadata.is_none());

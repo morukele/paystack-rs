@@ -31,7 +31,7 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
     /// # Returns
     /// A new VirtualTerminalEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> VirtualTerminalEndpoints<T> {
-        let base_url = format!("{}/virtual_terminal", PAYSTACK_BASE_URL);
+        let base_url = format!("{PAYSTACK_BASE_URL}/virtual_terminal");
         VirtualTerminalEndpoints {
             key: key.to_string(),
             base_url,
@@ -57,7 +57,7 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
 
         let response = self
             .http
-            .post(&url, &self.key, &body)
+            .post(url, &self.key, &body)
             .await
             .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 
@@ -89,7 +89,7 @@ impl<T: HttpClient + Default> VirtualTerminalEndpoints<T> {
 
         let response = self
             .http
-            .get(&url, &self.key, Some(&query))
+            .get(url, &self.key, Some(&query))
             .await
             .map_err(|e| PaystackAPIError::VirtualTerminal(e.to_string()))?;
 

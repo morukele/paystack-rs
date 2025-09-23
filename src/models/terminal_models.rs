@@ -54,7 +54,7 @@ impl fmt::Display for TerminalAction {
             TerminalAction::Print => "print",
             TerminalAction::View => "view",
         };
-        write!(f, "{}", action)
+        write!(f, "{action}")
     }
 }
 
@@ -64,7 +64,7 @@ impl fmt::Display for EventType {
             EventType::Invoice => "invoice",
             EventType::Transaction => "transaction",
         };
-        write!(f, "{}", event)
+        write!(f, "{event}")
     }
 }
 

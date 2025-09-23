@@ -31,7 +31,7 @@ where
             if v <= u8::MAX as u64 {
                 Ok(v as u8)
             } else {
-                Err(E::custom(format!("u64 value {} is out of range for u8", v)))
+                Err(E::custom(format!("u64 value {v} is out of range for u8")))
             }
         }
     }
@@ -66,10 +66,7 @@ where
             if v <= u16::MAX as u64 {
                 Ok(v as u16)
             } else {
-                Err(E::custom(format!(
-                    "u64 value {} is out of range for u16",
-                    v
-                )))
+                Err(E::custom(format!("u64 value {v} is out of range for u16")))
             }
         }
     }

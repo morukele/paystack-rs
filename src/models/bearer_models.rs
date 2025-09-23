@@ -55,6 +55,6 @@ impl fmt::Display for BearerType {
             BearerType::AllProportional => "all-proportional",
             BearerType::All => "all",
         };
-        write!(f, "{}", lowercase_string)
+        write!(f, "{lowercase_string}")
     }
 }
