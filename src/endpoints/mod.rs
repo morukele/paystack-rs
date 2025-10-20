@@ -1,6 +1,7 @@
 pub mod apple_pay;
 pub mod customers;
 pub mod dedicated_virtual_account;
+pub mod plans;
 pub mod subaccount;
 pub mod terminal;
 pub mod transaction;
@@ -11,6 +12,7 @@ pub mod virtual_terminal;
 pub use apple_pay::*;
 pub use customers::*;
 pub use dedicated_virtual_account::*;
+pub use plans::*;
 pub use subaccount::*;
 pub use terminal::*;
 pub use transaction::*;

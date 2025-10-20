@@ -15,7 +15,7 @@ use std::sync::Arc;
 pub struct SubaccountEndpoints<T: HttpClient + Default> {
     /// Paystack API Key
     key: String,
-    /// Base URL for the transaction route
+    /// Base URL for the subaccount route
     base_url: String,
     /// Http client for the route
     http: Arc<T>,
