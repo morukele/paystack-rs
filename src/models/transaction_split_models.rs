@@ -2,7 +2,7 @@
 //! ========================
 //! This file contains the models for working with the transaction splits endpoint.
 
-use crate::{BearerType, Currency, SplitType, SubaccountBody, SubaccountData};
+use crate::{BearerType, Currency, Domain, SplitType, SubaccountBody, SubaccountData};
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
@@ -40,7 +40,7 @@ pub struct TransactionSplitResponseData {
     /// The integration associated with the percentage split.
     pub integration: u32,
     /// The domain associated with the percentage split.
-    pub domain: String,
+    pub domain: Domain,
     /// The split code of the percentage split.
     pub split_code: String,
     /// Indicates whether the percentage split is active or not.

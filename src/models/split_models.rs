@@ -44,6 +44,6 @@ impl fmt::Display for SplitType {
             SplitType::Percentage => "percentage",
             SplitType::Flat => "flat",
         };
-        write!(f, "{}", lowercase_string)
+        write!(f, "{lowercase_string}")
     }
 }
