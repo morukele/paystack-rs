@@ -3,7 +3,7 @@
 //! This file contains the models for working with the subaccounts endpoint.
 
 use super::Currency;
-use crate::{utils::bool_from_int_or_bool, Domain};
+use crate::utils::bool_from_int_or_bool;
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
@@ -80,7 +80,7 @@ pub struct SubaccountsResponseData {
     /// Integration ID of subaccount.
     pub integration: Option<u32>,
     /// Subaccount domain.
-    pub domain: Option<Domain>,
+    pub domain: Option<String>,
     /// The code of the subaccount.
     pub subaccount_code: String,
     /// The name of the business associated with the subaccount.

@@ -1,6 +1,6 @@
 //! Status
 //! ===============
-//! This file contains the status options for the transactions in the paystack API.
+//! This file contains the status options for the paystack API.
 
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -48,6 +48,6 @@ impl fmt::Display for Status {
             Status::Abandoned => "abandoned",
             Status::Failed => "failed",
         };
-        write!(f, "{lowercase_string}")
+        write!(f, "{}", lowercase_string)
     }
 }

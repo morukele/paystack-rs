@@ -27,7 +27,7 @@ impl<T: HttpClient + Default> ApplePayEndpoints<T> {
     /// # Returns
     /// A new ApplePayEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> ApplePayEndpoints<T> {
-        let base_url = format!("{PAYSTACK_BASE_URL}/apple-pay/domain");
+        let base_url = format!("{}/apple-pay/domain", PAYSTACK_BASE_URL);
         ApplePayEndpoints {
             key: key.to_string(),
             base_url,
@@ -53,7 +53,7 @@ impl<T: HttpClient + Default> ApplePayEndpoints<T> {
 
         let response = self
             .http
-            .post(url, &self.key, &body)
+            .post(&url, &self.key, &body)
             .await
             .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
 
@@ -72,7 +72,7 @@ impl<T: HttpClient + Default> ApplePayEndpoints<T> {
 
         let response = self
             .http
-            .get(url, &self.key, None)
+            .get(&url, &self.key, None)
             .await
             .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
 
@@ -100,7 +100,7 @@ impl<T: HttpClient + Default> ApplePayEndpoints<T> {
 
         let response = self
             .http
-            .delete(url, &self.key, &body)
+            .delete(&url, &self.key, &body)
             .await
             .map_err(|e| PaystackAPIError::ApplePay(e.to_string()))?;
 

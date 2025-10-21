@@ -3,8 +3,6 @@ use std::fmt;
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
-use crate::Domain;
-
 use super::Currency;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Builder, Default)]
@@ -49,7 +47,7 @@ pub struct VirtualTerminalResponseData {
     pub id: u64,
     pub name: String,
     pub integration: u64,
-    pub domain: Domain,
+    pub domain: String,
     pub code: String,
     pub payment_methods: Option<Vec<String>>,
     pub active: bool,
@@ -86,7 +84,7 @@ impl fmt::Display for VirtualTerminalStatus {
             VirtualTerminalStatus::Active => "active",
             VirtualTerminalStatus::Inactive => "inactive",
         };
-        write!(f, "{lowercase_string}")
+        write!(f, "{}", lowercase_string)
     }
 }
 
@@ -131,7 +129,7 @@ mod tests {
             .expect("unable to build virtual terminal request");
 
         assert_eq!(request.name, "Some name");
-        assert!(!request.destinations.is_empty());
+        assert!(request.destinations.len() > 0);
         assert!(request.currency.is_some());
         assert!(request.custom_field.is_some());
         assert!(request.metadata.is_none());

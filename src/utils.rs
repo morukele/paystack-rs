@@ -31,7 +31,7 @@ where
             if v <= u8::MAX as u64 {
                 Ok(v as u8)
             } else {
-                Err(E::custom(format!("u64 value {v} is out of range for u8")))
+                Err(E::custom(format!("u64 value {} is out of range for u8", v)))
             }
         }
     }
@@ -66,42 +66,10 @@ where
             if v <= u16::MAX as u64 {
                 Ok(v as u16)
             } else {
-                Err(E::custom(format!("u64 value {v} is out of range for u16")))
-            }
-        }
-    }
-
-    deserializer.deserialize_any(StringOrNumberVisitor)
-}
-
-pub fn string_or_number_to_u32<'de, D>(deserializer: D) -> Result<u32, D::Error>
-where
-    D: serde::Deserializer<'de>,
-{
-    struct StringOrNumberVisitor;
-
-    impl<'de> serde::de::Visitor<'de> for StringOrNumberVisitor {
-        type Value = u32;
-
-        fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-            formatter.write_str("a string or an integer")
-        }
-
-        fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
-        where
-            E: Error,
-        {
-            u32::from_str(v).map_err(serde::de::Error::custom)
-        }
-
-        fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
-        where
-            E: Error,
-        {
-            if v <= u32::MAX as u64 {
-                Ok(v as u32)
-            } else {
-                Err(E::custom(format!("u64 value {v} is out of range for u32")))
+                Err(E::custom(format!(
+                    "u64 value {} is out of range for u16",
+                    v
+                )))
             }
         }
     }

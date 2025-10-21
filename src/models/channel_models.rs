@@ -71,6 +71,6 @@ impl fmt::Display for Channel {
             Channel::BankTransfer => "bank_transfer",
             Channel::ApplePay => "mobile_money",
         };
-        write!(f, "{lower_case}")
+        write!(f, "{}", lower_case)
     }
 }

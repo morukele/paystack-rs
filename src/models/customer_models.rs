@@ -3,8 +3,6 @@ use std::fmt;
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
-use crate::Domain;
-
 use super::{Authorization, Subscription, TransactionStatusData};
 
 /// This struct represents the Paystack customer data
@@ -12,7 +10,7 @@ use super::{Authorization, Subscription, TransactionStatusData};
 pub struct CustomerResponseData {
     pub id: u64,
     pub integration: Option<u64>,
-    pub domain: Option<Domain>,
+    pub domain: Option<String>,
     pub identified: Option<bool>,
     pub first_name: Option<String>,
     pub last_name: Option<String>,
@@ -112,7 +110,7 @@ impl fmt::Display for IdentificationType {
         let identification_type = match self {
             IdentificationType::BankAccount => "bank_account",
         };
-        write!(f, "{identification_type}")
+        write!(f, "{}", identification_type)
     }
 }
 
@@ -132,7 +130,7 @@ impl fmt::Display for RiskAction {
             RiskAction::Default => "default",
             RiskAction::Deny => "deny",
         };
-        write!(f, "{risk_action}")
+        write!(f, "{}", risk_action)
     }
 }
 
