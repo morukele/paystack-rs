@@ -3,6 +3,8 @@ use std::fmt;
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
+use crate::Domain;
+
 use super::{Authorization, Subscription, TransactionStatusData};
 
 /// This struct represents the Paystack customer data
@@ -10,7 +12,7 @@ use super::{Authorization, Subscription, TransactionStatusData};
 pub struct CustomerResponseData {
     pub id: u64,
     pub integration: Option<u64>,
-    pub domain: Option<String>,
+    pub domain: Option<Domain>,
     pub identified: Option<bool>,
     pub first_name: Option<String>,
     pub last_name: Option<String>,

@@ -8,7 +8,7 @@ use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
 use crate::utils::string_or_number_to_u32;
-use crate::Currency;
+use crate::{Currency, Domain, Subscription};
 
 /// Request body to create a plan on your integration.
 /// Should be created via `PlanRequestBuilder`
@@ -22,7 +22,8 @@ pub struct PlanRequest {
     /// Interval in words, Use the `Interval` Enum for valid options.
     pub interval: Interval,
     /// A description of this plan
-    #[builder(setter(strip_option), default)]
+    #[builder(setter(strip_option))]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     /// Set to false if you don't want invoices to be sent to your customers
     #[builder(setter(strip_option), default)]
@@ -49,43 +50,69 @@ pub struct PlanRequest {
 #[derive(Debug, Serialize, Deserialize, Clone, Default, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Interval {
-    DAILY,
-    WEEKLY,
+    Daily,
+    Weekly,
     #[default]
-    MONTHLY,
-    QUARTERLY,
+    Monthly,
+    Quarterly,
     /// Every 6 months
-    BIANNUALLY,
-    ANNUALLY,
+    Biannually,
+    Annually,
 }
 
 impl fmt::Display for Interval {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let interval = match self {
-            Interval::DAILY => "daily",
-            Interval::WEEKLY => "weekly",
-            Interval::MONTHLY => "monthly",
-            Interval::QUARTERLY => "quarterly",
-            Interval::BIANNUALLY => "biannually",
-            Interval::ANNUALLY => "annually",
+            Interval::Daily => "daily",
+            Interval::Weekly => "weekly",
+            Interval::Monthly => "monthly",
+            Interval::Quarterly => "quarterly",
+            Interval::Biannually => "biannually",
+            Interval::Annually => "annually",
         };
         write!(f, "{interval}")
+    }
+}
+
+// TODO: figure out the the other plan status
+#[derive(Debug, Serialize, Deserialize, Clone, Default, PartialEq)]
+#[serde(rename_all = "lowercase")]
+#[non_exhaustive]
+pub enum PlanStatus {
+    #[default]
+    Active,
+    Archived,
+    Deleted,
+}
+
+impl fmt::Display for PlanStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let plan_status = match self {
+            PlanStatus::Active => "Active",
+            PlanStatus::Archived => "Archived",
+            PlanStatus::Deleted => "Deleted",
+        };
+        write!(f, "{plan_status}")
     }
 }
 
 /// This struct represents the data of the create plan response.
 #[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct PlanResponseData {
+    pub subscriptions: Option<Vec<Subscription>>,
     pub name: String,
     #[serde(deserialize_with = "string_or_number_to_u32")]
     pub amount: u32,
     pub interval: Interval,
     pub integration: u32,
-    pub domain: String,
+    pub domain: Domain,
     pub plan_code: String,
-    pub send_invoice: Option<bool>,
+    pub description: Option<String>,
+    pub send_invoices: Option<bool>,
     pub send_sms: bool,
     pub hosted_page: bool,
+    pub hosted_page_url: Option<String>,
+    pub hosted_page_summary: Option<String>,
     pub currency: Currency,
     pub id: u32,
     #[serde(rename = "createdAt")]
@@ -104,13 +131,13 @@ mod tests {
         let plan = PlanRequestBuilder::default()
             .name("test plan".to_string())
             .amount("100000".to_string())
-            .interval(Interval::MONTHLY)
+            .interval(Interval::Monthly)
             .description("some description".to_string())
             .build()?;
 
         assert_eq!(plan.name, "test plan");
         assert_eq!(plan.amount, "100000");
-        assert_eq!(plan.interval, Interval::MONTHLY);
+        assert_eq!(plan.interval, Interval::Monthly);
         assert_eq!(plan.description, Some("some description".to_string()));
 
         Ok(())
