@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.0] - 2025-10-21
+
+### 🚀 Features
+
+- *(currency)* Added support for Kenya Shilling and West African CFA Franc in the currency models
+- *(plan)* Added support for creating plans
+- *(plan)* Added support for listing plans in the integration
+- *(plan)* Added support for modifying plans in the integration
+- *(plan)* Added support for modifying plans in the integration
+
+### ⚙️ Miscellaneous Tasks
+
+- *(clippy)* Fixed clippy warning to optimise the code performance
+- *(CI/CD)* Removed duplicate checks
+- *(CI/CD)* Fixed duplicate test to ensure only one test on main
+
+## [1.5.0] - 2025-08-29
+
+### ⚙️ Miscellaneous Tasks
+
+- Release paystack-rs version 1.5.0
+
 ## [1.4.0] - 2025-06-30
 
 ### 🚀 Features
