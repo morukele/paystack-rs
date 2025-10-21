@@ -21,7 +21,7 @@ The client currently covers the following section of the API, and the sections t
 - [x] Dedicated Virtual Account
 - [x] Apple Pay
 - [x] Subaccounts
-- [x] Plans
+- [ ] Plans
 - [ ] Subscriptions
 - [ ] Transfer Recipients
 - [ ] Transfers
