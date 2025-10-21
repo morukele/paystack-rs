@@ -32,7 +32,7 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
     /// # Returns
     /// A new TransactionEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> TransactionEndpoints<T> {
-        let base_url = format!("{}/transaction", PAYSTACK_BASE_URL);
+        let base_url = format!("{PAYSTACK_BASE_URL}/transaction");
         TransactionEndpoints {
             key: key.to_string(),
             base_url,
@@ -113,7 +113,7 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
 
         let response = self
             .http
-            .get(&url, &self.key, Some(&query))
+            .get(url, &self.key, Some(&query))
             .await
             .map_err(|e| PaystackAPIError::Transaction(e.to_string()))?;
 
@@ -152,7 +152,7 @@ impl<T: HttpClient + Default> TransactionEndpoints<T> {
     ///
     /// # Arguments
     /// * `charge_request` - The charge request data containing authorization details.
-    ///     Should be created with the `ChargeRequestBuilder` struct.
+    ///   Should be created with the `ChargeRequestBuilder` struct.
     ///
     /// # Returns
     /// A Result containing the charge response data or an error

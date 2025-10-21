@@ -29,7 +29,7 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
     /// # Returns
     /// A new DedicatedVirtualAccountEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> DedicatedVirtualAccountEndpoints<T> {
-        let base_url = format!("{}/dedicated_account", PAYSTACK_BASE_URL);
+        let base_url = format!("{PAYSTACK_BASE_URL}/dedicated_account");
         DedicatedVirtualAccountEndpoints {
             key: key.to_string(),
             base_url,
@@ -55,7 +55,7 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
 
         let response = self
             .http
-            .post(&url, &self.key, &body)
+            .post(url, &self.key, &body)
             .await
             .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
@@ -84,7 +84,7 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
 
         let response = self
             .http
-            .post(&url, &self.key, &body)
+            .post(url, &self.key, &body)
             .await
             .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
@@ -131,7 +131,7 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
         let query: Vec<(&str, &str)> = query.iter().map(|(k, v)| (*k, v.as_str())).collect();
         let response = self
             .http
-            .get(&url, &self.key, Some(&query))
+            .get(url, &self.key, Some(&query))
             .await
             .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
@@ -188,8 +188,8 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
             ("account_number", account_number),
             ("provider_slug", provider_slug),
         ];
-        if date.is_some() {
-            query.push(("date", date.unwrap()));
+        if let Some(value) = date {
+            query.push(("date", value));
         }
 
         // convert Vec<(&str, String)> to Vec<(&str, &str)>
@@ -242,7 +242,6 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
     ///
     /// # Returns
     /// A Result containing the dedicated virtual account response data or an error
-
     pub async fn split_dedicated_account_transaction(
         &self,
         split_dedocated_account_transaction_request: SplitDedicatedAccountTransactionRequest,
@@ -253,7 +252,7 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
 
         let response = self
             .http
-            .post(&url, &self.key, &body)
+            .post(url, &self.key, &body)
             .await
             .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 
@@ -282,7 +281,7 @@ impl<T: HttpClient + Default> DedicatedVirtualAccountEndpoints<T> {
 
         let response = self
             .http
-            .delete(&url, &self.key, &body)
+            .delete(url, &self.key, &body)
             .await
             .map_err(|e| PaystackAPIError::DedicatedVirtualAccount(e.to_string()))?;
 

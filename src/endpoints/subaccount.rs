@@ -15,7 +15,7 @@ use std::sync::Arc;
 pub struct SubaccountEndpoints<T: HttpClient + Default> {
     /// Paystack API Key
     key: String,
-    /// Base URL for the transaction route
+    /// Base URL for the subaccount route
     base_url: String,
     /// Http client for the route
     http: Arc<T>,
@@ -31,7 +31,7 @@ impl<T: HttpClient + Default> SubaccountEndpoints<T> {
     /// # Returns
     /// A new SubaccountEndpoints instance
     pub fn new(key: Arc<String>, http: Arc<T>) -> SubaccountEndpoints<T> {
-        let base_url = format!("{}/subaccount", PAYSTACK_BASE_URL);
+        let base_url = format!("{PAYSTACK_BASE_URL}/subaccount");
         SubaccountEndpoints {
             key: key.to_string(),
             base_url,
@@ -57,7 +57,7 @@ impl<T: HttpClient + Default> SubaccountEndpoints<T> {
 
         let response = self
             .http
-            .post(&url, &self.key, &body)
+            .post(url, &self.key, &body)
             .await
             .map_err(|e| PaystackAPIError::Subaccount(e.to_string()))?;
 
