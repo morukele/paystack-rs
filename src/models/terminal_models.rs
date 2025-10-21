@@ -6,8 +6,6 @@ use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-use crate::Domain;
-
 /// The request body to send an event from your application to the Paystack Terminal
 #[derive(Debug, Clone, Builder, Serialize, Deserialize)]
 pub struct EventRequest {
@@ -56,7 +54,7 @@ impl fmt::Display for TerminalAction {
             TerminalAction::Print => "print",
             TerminalAction::View => "view",
         };
-        write!(f, "{action}")
+        write!(f, "{}", action)
     }
 }
 
@@ -66,7 +64,7 @@ impl fmt::Display for EventType {
             EventType::Invoice => "invoice",
             EventType::Transaction => "transaction",
         };
-        write!(f, "{event}")
+        write!(f, "{}", event)
     }
 }
 
@@ -108,7 +106,7 @@ pub struct TerminalData {
     pub device_make: Option<String>,
     pub terminal_id: String,
     pub integration: u64,
-    pub domain: Domain,
+    pub domain: String,
     pub name: String,
     pub address: Option<String>,
     pub status: String,

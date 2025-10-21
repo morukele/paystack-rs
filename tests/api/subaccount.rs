@@ -53,7 +53,7 @@ async fn list_all_subaccounts_in_the_integration() {
     // Assert
     assert!(res.status);
     assert_eq!(res.message, "Subaccounts retrieved");
-    assert!(!res.data.unwrap().is_empty());
+    assert!(res.data.unwrap().len() > 0);
 }
 
 #[tokio::test]
@@ -69,7 +69,7 @@ async fn fetch_subaccount() {
         .expect("unable to get exisiting subaccounts");
     let sub_account_data = sub_account.data.unwrap();
     assert!(
-        !sub_account_data.is_empty(),
+        sub_account_data.len() > 0,
         "No exisiting subaccounts, create one and try again"
     );
 

@@ -35,6 +35,4 @@ pub enum PaystackAPIError {
     DedicatedVirtualAccount(String),
     #[error("Apple Pay Error: {0}")]
     ApplePay(String),
-    #[error("Plan Error: {0}")]
-    Plan(String),
 }

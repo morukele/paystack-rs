@@ -143,7 +143,7 @@ async fn list_transaction_splits_in_the_integration() {
         let data = res.data.unwrap();
         assert!(res.status);
         assert_eq!(res.message, "Split retrieved".to_string());
-        assert!(!data.is_empty());
+        assert!(data.len() > 0);
 
         let transaction_split = data.first().unwrap();
         assert_eq!(
