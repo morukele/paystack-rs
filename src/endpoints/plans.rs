@@ -1,9 +1,9 @@
-use std::sync::Arc;
+use std::{marker::PhantomData, sync::Arc};
 
 use super::PAYSTACK_BASE_URL;
 use crate::{
     HttpClient, Interval, PaystackAPIError, PaystackResult, PlanRequest, PlanResponseData,
-    PlanStatus, Response,
+    PlanStatus, PlanUpdateRequest, Response,
 };
 
 pub struct PlansEndpoints<T: HttpClient + Default> {
@@ -40,7 +40,7 @@ impl<T: HttpClient + Default> PlansEndpoints<T> {
     ///   Should be created with a `PlanRequestBuilder` struct.
     ///
     /// # Returns
-    /// A result containing the plan response data or an error  
+    /// A Result containing the plan response data or an error  
     pub async fn create_plan(&self, plan_request: PlanRequest) -> PaystackResult<PlanResponseData> {
         let url = &self.base_url;
         let body = serde_json::to_value(plan_request)
@@ -66,6 +66,9 @@ impl<T: HttpClient + Default> PlansEndpoints<T> {
     /// * `status` - Optional parameter to filter list by plans with specified status
     /// * `interval` - Optional parameter to filter list by plans with specified interval
     /// * `amount`- Optional parameter to filter list by plans with specified amount using the supported currency
+    ///
+    /// # Returns
+    /// A Result containing a vector of plan response data or an error
     pub async fn list_plans(
         &self,
         per_page: Option<u8>,
@@ -98,8 +101,6 @@ impl<T: HttpClient + Default> PlansEndpoints<T> {
         // TODO: there has to be a cleaner way of doing this
         let query: Vec<(&str, &str)> = query.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        dbg!("{:?}", &query);
-
         let response = self
             .http
             .get(url, &self.key, Some(&query))
@@ -112,11 +113,55 @@ impl<T: HttpClient + Default> PlansEndpoints<T> {
         Ok(parsed_response)
     }
 
-    pub async fn fetch_plan() {
-        todo!()
+    /// Get details of a plan on your integration
+    ///
+    /// # Arguments
+    /// * `id_or_code` - the plan `ID` or `code` you want to fetch
+    ///
+    /// # Returns
+    /// A Result containing the plan response data or an error
+    pub async fn fetch_plan(&self, id_or_code: String) -> PaystackResult<PlanResponseData> {
+        let url = format!("{}/{}", &self.base_url, id_or_code);
+
+        let response = self
+            .http
+            .get(&url, &self.key, None)
+            .await
+            .map_err(|e| PaystackAPIError::Plan(e.to_string()))?;
+
+        let parsed_response: Response<PlanResponseData> =
+            serde_json::from_str(&response).map_err(|e| PaystackAPIError::Plan(e.to_string()))?;
+
+        Ok(parsed_response)
     }
 
-    pub async fn update_plan() {
-        todo!()
+    /// Update a plan details on your integration
+    ///
+    /// # Arguments
+    /// * `id_or_code` - the plan `ID` or `code` you want to update
+    /// * `plan_update_request` - The request data to update the plan with.
+    ///   Should be created with a `PlanUpdateRequestBuilder` struct.
+    ///
+    /// # Returns
+    /// A Result containing a success message if the plan has been updated
+    pub async fn update_plan(
+        &self,
+        id_or_code: String,
+        plan_update_request: PlanUpdateRequest,
+    ) -> PaystackResult<PhantomData<String>> {
+        let url = format!("{}/{}", self.base_url, id_or_code);
+        let body = serde_json::to_value(plan_update_request)
+            .map_err(|e| PaystackAPIError::Plan(e.to_string()))?;
+
+        let response = self
+            .http
+            .put(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::Plan(e.to_string()))?;
+
+        let parsed_response: Response<PhantomData<String>> =
+            serde_json::from_str(&response).map_err(|e| PaystackAPIError::Plan(e.to_string()))?;
+
+        Ok(parsed_response)
     }
 }

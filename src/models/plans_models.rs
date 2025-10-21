@@ -17,7 +17,6 @@ pub struct PlanRequest {
     /// Name of plan
     pub name: String,
     /// Amount for the plan. Should be in the subunit of the supported currency
-    // NB: accepting string here to be consistent with the api.
     pub amount: String,
     /// Interval in words, Use the `Interval` Enum for valid options.
     pub interval: Interval,
@@ -28,7 +27,7 @@ pub struct PlanRequest {
     /// Set to false if you don't want invoices to be sent to your customers
     #[builder(setter(strip_option), default)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub send_invoice: Option<bool>,
+    pub send_invoices: Option<bool>,
     /// Set to false if you don't want text messages to be sent to your customers
     // NB: docs says string, but should be bool.
     #[builder(setter(strip_option), default)]
@@ -94,6 +93,42 @@ impl fmt::Display for PlanStatus {
         };
         write!(f, "{plan_status}")
     }
+}
+
+/// Request body to update a plan on your integration.
+/// Should be created via `PlanUpdateRequestBuilder`
+#[derive(Debug, Clone, Default, Serialize, Deserialize, Builder)]
+#[builder(setter(strip_option), default)]
+pub struct PlanUpdateRequest {
+    /// Name of plan
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    /// Amount for the plan. Should be in the subunit of the supported currency
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub amount: Option<String>,
+    /// Interval in words, Use the `Interval` Enum for valid options.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub interval: Option<Interval>,
+    /// A description of this plan
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    /// Set to false if you don't want invoices to be sent to your customers
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub send_invoices: Option<bool>,
+    /// Set to false if you don't want text messages to be sent to your customers
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub send_sms: Option<bool>,
+    /// Currency in which the amount is set.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub currency: Option<Currency>,
+    /// Number of invoices to raise during subscription to this plan.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub invoice_limit: Option<u8>,
+    /// Set to `true` if you want the existing subscriptions to use the new changes
+    /// Set to `false` and only new subscriptions will be changed.
+    /// Defaults to true when not set.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub update_existing_subscriptions: Option<bool>,
 }
 
 /// This struct represents the data of the create plan response.
