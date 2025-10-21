@@ -18,8 +18,6 @@ use std::fmt;
 /// - `GHS`: Ghanaian Cedis.
 /// - `USD`: American Dollar.
 /// - `ZAR`: South African Rands.
-/// - `KES`: Kenya Shilling.
-/// - `XOF`: West African CFA Franc.
 /// - `EMPTY`: Used when the currency can be empty.
 ///
 /// # Examples
@@ -31,8 +29,6 @@ use std::fmt;
 /// let ghs = Currency::GHS;
 /// let usd = Currency::USD;
 /// let zar = Currency::ZAR;
-/// let kes = Currency::KES;
-/// let xof = Currency::XOF;
 /// let empty = Currency::EMPTY;
 ///
 /// println!("{:?}", ngn); // Prints: NGN
@@ -51,10 +47,6 @@ pub enum Currency {
     USD,
     /// South African Rands
     ZAR,
-    /// Kenya Shilling
-    KES,
-    /// West African CFA Franc
-    XOF,
     /// Used when currency can be empty.
     EMPTY,
 }
@@ -66,10 +58,8 @@ impl fmt::Display for Currency {
             Currency::GHS => "GHS",
             Currency::USD => "USD",
             Currency::ZAR => "ZAR",
-            Currency::KES => "KES",
-            Currency::XOF => "XOF",
             Currency::EMPTY => "",
         };
-        write!(f, "{currency}")
+        write!(f, "{}", currency)
     }
 }

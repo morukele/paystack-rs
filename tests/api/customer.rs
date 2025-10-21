@@ -62,7 +62,7 @@ async fn can_list_customers_in_integration() {
     // Assert
     assert!(res.status);
     assert!(res.message.contains("Customers retrieved"));
-    assert!(!res.data.unwrap().is_empty());
+    assert!(res.data.unwrap().len() > 0);
 }
 
 #[tokio::test]
@@ -80,7 +80,7 @@ async fn can_list_customers_in_integration_with_defaults() {
     // Assert
     assert!(res.status);
     assert!(res.message.contains("Customers retrieved"));
-    assert!(!res.data.unwrap().is_empty());
+    assert!(res.data.unwrap().len() > 0);
 }
 
 #[tokio::test]
