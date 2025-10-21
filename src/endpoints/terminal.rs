@@ -16,7 +16,7 @@ use super::PAYSTACK_BASE_URL;
 pub struct TerminalEndpoints<T: HttpClient + Default> {
     /// Paystack API Key
     key: String,
-    /// Base URL for the transaction route
+    /// Base URL for the terminal route
     base_url: String,
     /// Http client for the route
     http: Arc<T>,

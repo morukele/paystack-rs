@@ -15,7 +15,7 @@ use std::{marker::PhantomData, sync::Arc};
 pub struct VirtualTerminalEndpoints<T: HttpClient + Default> {
     /// Paystack API key
     key: String,
-    /// Base URL for the transaction route
+    /// Base URL for the virtual terminal route
     base_url: String,
     /// Http client for the route
     http: Arc<T>,

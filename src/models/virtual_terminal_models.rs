@@ -3,6 +3,8 @@ use std::fmt;
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
+use crate::Domain;
+
 use super::Currency;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Builder, Default)]
@@ -47,7 +49,7 @@ pub struct VirtualTerminalResponseData {
     pub id: u64,
     pub name: String,
     pub integration: u64,
-    pub domain: String,
+    pub domain: Domain,
     pub code: String,
     pub payment_methods: Option<Vec<String>>,
     pub active: bool,

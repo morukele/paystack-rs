@@ -1,6 +1,6 @@
 //! Status
 //! ===============
-//! This file contains the status options for the paystack API.
+//! This file contains the status options for the transactions in the paystack API.
 
 use serde::{Deserialize, Serialize};
 use std::fmt;
