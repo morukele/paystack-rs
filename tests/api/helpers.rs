@@ -1,6 +1,7 @@
 use dotenv::dotenv;
 use paystack::http::reqwest::ReqwestClient;
 use paystack::PaystackClient;
+use rand::Rng;
 use std::env;
 
 /// A function to get the bank information for the Paystack API
@@ -33,4 +34,11 @@ pub fn get_paystack_client() -> PaystackClient<ReqwestClient> {
     let api_key = get_api_key();
 
     PaystackClient::<ReqwestClient>::new(api_key)
+}
+
+/// A function to generate a random value between the range start and end (inclusive)
+pub fn generate_random_value(start: i32, end: i32) -> i32 {
+    assert!(end > start, "start cannot be greater than end");
+    let mut rng = rand::rng();
+    rng.random_range(start..=end)
 }

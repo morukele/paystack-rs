@@ -3,19 +3,17 @@ use fake::{
     Fake,
 };
 use paystack::{Interval, PlanRequestBuilder, PlanUpdateRequestBuilder};
-use rand::Rng;
 
-use crate::helpers::get_paystack_client;
+use crate::helpers::{generate_random_value, get_paystack_client};
 
 #[tokio::test]
 async fn create_plan_valid() {
     // Arrange
     let client = get_paystack_client();
-    let mut rng = rand::rng();
 
     // Act
     let name: String = Name().fake();
-    let amount: String = rng.random_range(100..=100_000).to_string();
+    let amount: String = generate_random_value(100, 100_000).to_string();
     let interval = Interval::Monthly;
     let description: String = Sentence(4..10).fake();
     let body = PlanRequestBuilder::default()
@@ -44,11 +42,10 @@ async fn create_plan_valid() {
 async fn create_plan_fails_when_currency_is_not_supported_by_merchant() {
     // Arrange
     let client = get_paystack_client();
-    let mut rng = rand::rng();
 
     // Act
     let name: String = Name().fake();
-    let amount: String = rng.random_range(100..=100_000).to_string();
+    let amount: String = generate_random_value(100, 100_000).to_string();
     let interval = Interval::Monthly;
     let description: String = Sentence(4..10).fake();
     let body = PlanRequestBuilder::default()
@@ -91,10 +88,9 @@ async fn can_list_all_plans_in_the_integration_with_defaults() {
 async fn can_fetch_plan_with_id() {
     // Arrange
     let client = get_paystack_client();
-    let mut rng = rand::rng();
     // create plan
     let name: String = Name().fake();
-    let amount: String = rng.random_range(100..=100_000).to_string();
+    let amount: String = generate_random_value(100, 100_000).to_string();
     let interval = Interval::Monthly;
     let description: String = Sentence(4..10).fake();
     let body = PlanRequestBuilder::default()
@@ -129,10 +125,9 @@ async fn can_fetch_plan_with_id() {
 async fn can_fetch_plan_with_code() {
     // Arrange
     let client = get_paystack_client();
-    let mut rng = rand::rng();
     // create plan
     let name: String = Name().fake();
-    let amount: String = rng.random_range(100..=100_000).to_string();
+    let amount: String = generate_random_value(100, 100_000).to_string();
     let interval = Interval::Monthly;
     let description: String = Sentence(4..10).fake();
     let body = PlanRequestBuilder::default()
@@ -167,10 +162,10 @@ async fn can_fetch_plan_with_code() {
 async fn can_modify_plan_with_plan_code() {
     // Arrange
     let client = get_paystack_client();
-    let mut rng = rand::rng();
+
     // create plan
     let name: String = Name().fake();
-    let amount: String = rng.random_range(100..=100_000).to_string();
+    let amount: String = generate_random_value(100, 100_000).to_string();
     let interval = Interval::Monthly;
     let description: String = Sentence(4..10).fake();
     let body = PlanRequestBuilder::default()
@@ -190,7 +185,7 @@ async fn can_modify_plan_with_plan_code() {
     // Act
     // modify plan
     let new_name: String = Name().fake();
-    let new_amount: String = rng.random_range(100..=100_000).to_string();
+    let new_amount: String = generate_random_value(100, 100_000).to_string();
     let update_request = PlanUpdateRequestBuilder::default()
         .name(new_name)
         .amount(new_amount)
@@ -223,10 +218,9 @@ async fn can_modify_plan_with_plan_code() {
 async fn can_modify_plan_with_plan_id() {
     // Arrange
     let client = get_paystack_client();
-    let mut rng = rand::rng();
     // create plan
     let name: String = Name().fake();
-    let amount: String = rng.random_range(100..=100_000).to_string();
+    let amount: String = generate_random_value(100, 100_000).to_string();
     let interval = Interval::Monthly;
     let description: String = Sentence(4..10).fake();
     let body = PlanRequestBuilder::default()
@@ -246,7 +240,7 @@ async fn can_modify_plan_with_plan_id() {
     // Act
     // modify plan
     let new_name: String = Name().fake();
-    let new_amount: String = rng.random_range(100..=100_000).to_string();
+    let new_amount: String = generate_random_value(100, 100_000).to_string();
     let update_request = PlanUpdateRequestBuilder::default()
         .name(new_name)
         .amount(new_amount)

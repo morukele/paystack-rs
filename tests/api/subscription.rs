@@ -10,7 +10,7 @@ use fake::{
     Fake,
 };
 
-use crate::helpers::get_paystack_client;
+use crate::helpers::{generate_random_value, get_paystack_client};
 use paystack::{CreateCustomerRequest, CreateCustomerRequestBuilder};
 
 #[tokio::test]
@@ -38,10 +38,10 @@ async fn create_valid_subscription() {
         .create_customer(customer_body)
         .await
         .expect("unable to create customer");
+
     // 2. create plan
     let plan_name: String = Name().fake();
-    let mut rng = rand::rng();
-    
+    let amount: String = generate_random_value(100, 100_000).to_string();
 
     // 3. create subscription
 

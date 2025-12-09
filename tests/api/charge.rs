@@ -1,6 +1,5 @@
-use crate::helpers::get_paystack_client;
+use crate::helpers::{generate_random_value, get_paystack_client};
 use paystack::{Channel, ChargeRequestBuilder, Currency};
-use rand::Rng;
 use std::error::Error;
 
 /// Values are hardcoded in this test because of the nature of the test.
@@ -10,11 +9,10 @@ use std::error::Error;
 async fn charge_authorization_succeeds() -> Result<(), Box<dyn Error>> {
     // Arrange
     let client = get_paystack_client();
-    let mut rng = rand::rng();
 
     // Act
     // In this test, an already created customer in the integration is used
-    let amount = rng.random_range(100..=100000).to_string();
+    let amount = generate_random_value(100, 100_000).to_string();
     let charge = ChargeRequestBuilder::default()
         .email("susanna@example.net".to_string())
         .amount(amount)

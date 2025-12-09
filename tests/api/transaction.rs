@@ -1,21 +1,19 @@
-use crate::helpers::get_paystack_client;
+use crate::helpers::{generate_random_value, get_paystack_client};
 use fake::faker::internet::en::SafeEmail;
 use fake::Fake;
 use paystack::{
     Channel, Currency, PartialDebitTransactionRequestBuilder, Status, TransactionIdentifier,
     TransactionRequestBuilder,
 };
-use rand::Rng;
 
 #[tokio::test]
 async fn initialize_transaction_valid() {
     // Arrange
     let client = get_paystack_client();
-    let mut rng = rand::rng();
 
     // Act
     let email: String = SafeEmail().fake();
-    let amount: String = rng.random_range(100..=10_000).to_string();
+    let amount: String = generate_random_value(100, 100_000).to_string();
     let body = TransactionRequestBuilder::default()
         .amount(amount)
         .email(email)
@@ -44,11 +42,10 @@ async fn initialize_transaction_valid() {
 async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant() {
     // Arrange
     let client = get_paystack_client();
-    let mut rng = rand::rng();
 
     // Act
     let email: String = SafeEmail().fake();
-    let amount: String = rng.random_range(100..=100000).to_string();
+    let amount: String = generate_random_value(100, 100_000).to_string();
     let body = TransactionRequestBuilder::default()
         .amount(amount)
         .email(email)
@@ -77,11 +74,10 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant
 async fn valid_transaction_is_verified() {
     // Arrange
     let client = get_paystack_client();
-    let mut rng = rand::rng();
 
     // Act
     let email: String = SafeEmail().fake();
-    let amount: String = rng.random_range(100..=100000).to_string();
+    let amount: String = generate_random_value(100, 100_000).to_string();
     let body = TransactionRequestBuilder::default()
         .amount(amount)
         .email(email)
