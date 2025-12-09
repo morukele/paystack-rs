@@ -5,6 +5,7 @@ pub mod dedicated_virtual_account;
 pub mod helpers;
 pub mod plans;
 pub mod subaccount;
+pub mod subscription;
 pub mod terminal;
 pub mod transaction;
 pub mod transaction_split;

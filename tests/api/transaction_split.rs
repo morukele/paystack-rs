@@ -29,7 +29,7 @@ async fn create_subaccount_body(
         .unwrap();
 
     let subaccount = client
-        .subaccount
+        .subaccounts
         .create_subaccount(body)
         .await
         .expect("Unable to Create a subaccount");
@@ -78,7 +78,7 @@ async fn create_transaction_split_passes_with_valid_data() {
 
     // Act
     let res = client
-        .transaction_split
+        .transaction_splits
         .create_transaction_split(split_body)
         .await
         .expect("Failed to create transaction split");
@@ -107,7 +107,7 @@ async fn create_transaction_split_fails_with_invalid_data() {
 
     //Act
     let res = client
-        .transaction_split
+        .transaction_splits
         .create_transaction_split(body)
         .await;
 
@@ -127,14 +127,14 @@ async fn list_transaction_splits_in_the_integration() {
     // Act
     // Create transaction split
     client
-        .transaction_split
+        .transaction_splits
         .create_transaction_split(split_body)
         .await
         .expect("Failed to create transaction split");
 
     // Fetch the splits
     let res = client
-        .transaction_split
+        .transaction_splits
         .list_transaction_splits(Some(&split_name), None)
         .await;
 
@@ -163,14 +163,14 @@ async fn fetch_a_transaction_split_in_the_integration() {
 
     // Act
     let transaction_split = client
-        .transaction_split
+        .transaction_splits
         .create_transaction_split(split_body)
         .await
         .expect("Failed to create transaction split");
 
     let data = transaction_split.data.unwrap();
     let res = client
-        .transaction_split
+        .transaction_splits
         .fetch_transaction_split(&data.id.to_string())
         .await
         .unwrap();
@@ -187,7 +187,7 @@ async fn update_a_transaction_split_passes_with_valid_data() {
     //Arrange
     let client = get_paystack_client();
     let transaction_split = client
-        .transaction_split
+        .transaction_splits
         .list_transaction_splits(None, Some(true))
         .await
         .expect("Failed to create transaction split");
@@ -209,7 +209,7 @@ async fn update_a_transaction_split_passes_with_valid_data() {
     let data = transaction_split.data.unwrap();
     let split_id = data[0].id.to_string();
     let res = client
-        .transaction_split
+        .transaction_splits
         .update_transaction_split(&split_id, update_split_body)
         .await;
 
@@ -233,7 +233,7 @@ async fn update_a_transaction_split_fails_with_invalid_data() {
 
     // Act
     let transaction_split = client
-        .transaction_split
+        .transaction_splits
         .create_transaction_split(split_body)
         .await
         .expect("Failed to create transaction split");
@@ -250,7 +250,7 @@ async fn update_a_transaction_split_fails_with_invalid_data() {
     let data = transaction_split.data.unwrap();
     let split_id = data.id.to_string();
     let res = client
-        .transaction_split
+        .transaction_splits
         .update_transaction_split(&split_id, update_split_body)
         .await;
 
@@ -270,7 +270,7 @@ async fn add_a_transaction_split_subaccount_passes_with_valid_data() {
 
     // Act
     let transaction_split = client
-        .transaction_split
+        .transaction_splits
         .create_transaction_split(split_body)
         .await
         .expect("Failed to create transaction split");
@@ -280,7 +280,7 @@ async fn add_a_transaction_split_subaccount_passes_with_valid_data() {
     let data = transaction_split.data.unwrap();
     let split_id = data.id.to_string();
     let res = client
-        .transaction_split
+        .transaction_splits
         .add_or_update_subaccount_split(&split_id, new_subaccount_body.clone())
         .await
         .unwrap();
@@ -300,7 +300,7 @@ async fn add_a_transaction_split_subaccount_fails_with_invalid_data() {
 
     // Act
     let transaction_split = client
-        .transaction_split
+        .transaction_splits
         .create_transaction_split(split_body)
         .await
         .expect("Failed to create transaction split");
@@ -310,7 +310,7 @@ async fn add_a_transaction_split_subaccount_fails_with_invalid_data() {
     let data = transaction_split.data.unwrap();
     let split_id = data.id.to_string();
     let res = client
-        .transaction_split
+        .transaction_splits
         .add_or_update_subaccount_split(&split_id, new_subaccount_body.clone())
         .await;
 
@@ -330,7 +330,7 @@ async fn remove_a_subaccount_from_a_transaction_split_passes_with_valid_data() {
 
     // Act
     let transaction_split = client
-        .transaction_split
+        .transaction_splits
         .create_transaction_split(split_body)
         .await
         .expect("Failed to create transaction split");
@@ -345,7 +345,7 @@ async fn remove_a_subaccount_from_a_transaction_split_passes_with_valid_data() {
     let code = &subaccount_data.subaccount.subaccount_code;
     // Remove subaccount
     let res = client
-        .transaction_split
+        .transaction_splits
         .remove_subaccount_from_transaction_split(
             &split_id,
             DeleteSubAccountBody {
@@ -361,7 +361,7 @@ async fn remove_a_subaccount_from_a_transaction_split_passes_with_valid_data() {
 
     // Revalidate number of subaccounts attached
     let transaction_split = client
-        .transaction_split
+        .transaction_splits
         .fetch_transaction_split(&split_id)
         .await
         .unwrap();
@@ -385,7 +385,7 @@ async fn remove_a_subaccount_from_a_transaction_split_fails_with_invalid_data() 
 
     // Act
     let transaction_split = client
-        .transaction_split
+        .transaction_splits
         .create_transaction_split(split_body)
         .await
         .expect("Failed to create transaction split");
@@ -397,7 +397,7 @@ async fn remove_a_subaccount_from_a_transaction_split_fails_with_invalid_data() 
 
     // Remove subaccount
     let res = client
-        .transaction_split
+        .transaction_splits
         .remove_subaccount_from_transaction_split(
             &split_id,
             DeleteSubAccountBody {

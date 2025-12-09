@@ -10,11 +10,11 @@ use std::error::Error;
 async fn charge_authorization_succeeds() -> Result<(), Box<dyn Error>> {
     // Arrange
     let client = get_paystack_client();
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     // Act
     // In this test, an already created customer in the integration is used
-    let amount = rng.gen_range(100..=100000).to_string();
+    let amount = rng.random_range(100..=100000).to_string();
     let charge = ChargeRequestBuilder::default()
         .email("susanna@example.net".to_string())
         .amount(amount)

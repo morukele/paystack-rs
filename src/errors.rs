@@ -37,4 +37,6 @@ pub enum PaystackAPIError {
     ApplePay(String),
     #[error("Plan Error: {0}")]
     Plan(String),
+    #[error("Subscription Error: {0}")]
+    Subscription(String),
 }

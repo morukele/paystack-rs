@@ -8,7 +8,7 @@ use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
 use crate::utils::string_or_number_to_u32;
-use crate::{Currency, Domain, Subscription};
+use crate::{Currency, Domain, SubscriptionResponseData};
 
 /// Request body to create a plan on your integration.
 /// Should be created via `PlanRequestBuilder`
@@ -134,7 +134,7 @@ pub struct PlanUpdateRequest {
 /// This struct represents the data of the create plan response.
 #[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct PlanResponseData {
-    pub subscriptions: Option<Vec<Subscription>>,
+    pub subscriptions: Option<Vec<SubscriptionResponseData>>,
     pub name: String,
     #[serde(deserialize_with = "string_or_number_to_u32")]
     pub amount: u32,

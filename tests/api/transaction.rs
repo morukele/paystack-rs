@@ -11,11 +11,11 @@ use rand::Rng;
 async fn initialize_transaction_valid() {
     // Arrange
     let client = get_paystack_client();
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     // Act
     let email: String = SafeEmail().fake();
-    let amount: String = rng.gen_range(100..=10_000).to_string();
+    let amount: String = rng.random_range(100..=10_000).to_string();
     let body = TransactionRequestBuilder::default()
         .amount(amount)
         .email(email)
@@ -44,11 +44,11 @@ async fn initialize_transaction_valid() {
 async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant() {
     // Arrange
     let client = get_paystack_client();
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     // Act
     let email: String = SafeEmail().fake();
-    let amount: String = rng.gen_range(100..=100000).to_string();
+    let amount: String = rng.random_range(100..=100000).to_string();
     let body = TransactionRequestBuilder::default()
         .amount(amount)
         .email(email)
@@ -77,11 +77,11 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant
 async fn valid_transaction_is_verified() {
     // Arrange
     let client = get_paystack_client();
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     // Act
     let email: String = SafeEmail().fake();
-    let amount: String = rng.gen_range(100..=100000).to_string();
+    let amount: String = rng.random_range(100..=100000).to_string();
     let body = TransactionRequestBuilder::default()
         .amount(amount)
         .email(email)

@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::Domain;
 
-use super::{Authorization, Subscription, TransactionStatusData};
+use super::{Authorization, SubscriptionResponseData, TransactionStatusData};
 
 /// This struct represents the Paystack customer data
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
@@ -24,7 +24,7 @@ pub struct CustomerResponseData {
     pub international_format_phone: Option<String>,
     pub identification: Option<String>,
     pub transactions: Option<Vec<TransactionStatusData>>,
-    pub subscriptions: Option<Vec<Subscription>>,
+    pub subscriptions: Option<Vec<SubscriptionResponseData>>,
     pub authorizations: Option<Vec<Authorization>>,
     #[serde(rename = "createdAt")]
     pub created_at: Option<String>,

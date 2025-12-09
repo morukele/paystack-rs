@@ -25,7 +25,7 @@ async fn create_a_subaccount() {
         .expect("unable to build sub account request");
 
     let res = client
-        .subaccount
+        .subaccounts
         .create_subaccount(body)
         .await
         .expect("unable to create subaccount");
@@ -45,7 +45,7 @@ async fn list_all_subaccounts_in_the_integration() {
 
     // Act
     let res = client
-        .subaccount
+        .subaccounts
         .list_subaccounts(Some(5), None)
         .await
         .expect("unable to get list of subaccounts in the integration");
@@ -63,7 +63,7 @@ async fn fetch_subaccount() {
 
     // get an exisiting subaccount or error out
     let sub_account = client
-        .subaccount
+        .subaccounts
         .list_subaccounts(Some(1), None)
         .await
         .expect("unable to get exisiting subaccounts");
@@ -78,7 +78,7 @@ async fn fetch_subaccount() {
 
     // Act
     let res = client
-        .subaccount
+        .subaccounts
         .fetch_subaccount(sub_account_code)
         .await
         .expect("unable to fetch sub account with code");
@@ -99,7 +99,7 @@ async fn update_subaccount() {
 
     // get an exisiting subaccount or error out
     let sub_accounts = client
-        .subaccount
+        .subaccounts
         .list_subaccounts(Some(2), None)
         .await
         .expect("unable to get exisiting subaccounts");
@@ -121,7 +121,7 @@ async fn update_subaccount() {
 
     // Act
     let res = client
-        .subaccount
+        .subaccounts
         .update_subaccount(sub_account_code, update_request)
         .await
         .expect("unable to update subaccount");
