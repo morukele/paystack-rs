@@ -15,8 +15,13 @@ pub struct SubscriptionRequest {
     /// Plan code
     pub plan: String,
     /// If customer has multiple authorizations, you can set the desired authorization you wish to use for this subscription here. If this is not supplied, the customer's most recent authorization would be used
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[builder(setter(strip_option), default)]
     pub authorization: Option<String>,
     /// Set the date for the first debit. (ISO 8601 format) e.g. `2017-05-16T00:30:13+01:00`
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(with = "time::serde::rfc3339::option")]
+    #[builder(setter(strip_option), default)]
     pub start_data: Option<OffsetDateTime>,
 }
 

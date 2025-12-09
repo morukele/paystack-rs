@@ -25,7 +25,7 @@ serde = { version = "1.0.228", features = ["derive"] }
 log = "0.4.29"
 async-trait = "0.1.89"
 derive_builder = "0.20.2"
-time = { version = "0.3", features = ["macros", "serde"] }
+time = { version = "0.3", features = ["macros", "serde", "formatting"] }
 
 [dev-dependencies]
 fake = "4.4.0"

@@ -47,6 +47,8 @@ impl<T: HttpClient + Default> SubscriptionEndpoints<T> {
         let body = serde_json::to_value(subscription_request)
             .map_err(|e| PaystackAPIError::Subscription(e.to_string()))?;
 
+        dbg!("body: {:?}", &body);
+
         let response = self
             .http
             .post(&url, &self.key, &body)
