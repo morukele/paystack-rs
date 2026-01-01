@@ -39,7 +39,7 @@ impl ReqwestClient {
         request = add_data(request);
 
         // Performing the request
-        log::info!("Making request: {:?}", request);
+        // log::info!("Making request: {:?}", request);
         let response = request.send().await?;
 
         // Checking that we get a 200 range response

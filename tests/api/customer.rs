@@ -283,4 +283,15 @@ async fn can_blacklist_and_whitelist_a_customer() {
     assert_eq!(res.data.unwrap().risk_action, Some(RiskAction::Default));
 }
 
-// TODO: make test for dea
+#[tokio::test]
+async fn can_initialize_authorization() {
+    // Arrange
+
+    // Act
+    // 1. create a customer
+    // 2. initialize the authroization
+
+    // Assert
+    // 1. verify request is successful
+    // 2. Check message
+}

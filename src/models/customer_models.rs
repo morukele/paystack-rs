@@ -3,7 +3,7 @@ use std::fmt;
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
-use crate::Domain;
+use crate::{Channel, Domain};
 
 use super::{Authorization, SubscriptionResponseData, TransactionStatusData};
 
@@ -134,6 +134,53 @@ impl fmt::Display for RiskAction {
         };
         write!(f, "{risk_action}")
     }
+}
+
+/// Response data for the initialise authorization route.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CustomerAuthroizationResponseData {
+    pub redirect_url: String,
+    pub access_code: String,
+    pub reference: String,
+}
+
+/// This struct is used to create a initialize authorization request body for adding an authorization to a customer.
+/// This struct is build using the `InitializeAuthorizationRequestBuilder` struct.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, Builder)]
+pub struct InitializeAuthroizationRequest {
+    /// Customer's email address
+    pub email: String,
+    /// Channel for the payment. Direct-debit is the only supported option for now
+    pub channel: Channel,
+    /// Fully qualified url (e.g. https://example.com/) to redirect your customer to.
+    #[builder(setter(strip_option), default)]
+    pub callback_url: Option<String>,
+    /// Holds the customer's account details.
+    #[builder(setter(strip_option), default)]
+    pub account: Option<CustomerAccount>,
+    /// Represents the customer's address.
+    #[builder(setter(strip_option), default)]
+    pub address: Option<CustomerAddress>,
+}
+
+/// This struct represents the customer bank account information.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CustomerAccount {
+    /// The customer's account number.
+    pub number: String,
+    /// The code representing the customer's bank.
+    pub bank_code: String,
+}
+
+/// This struct represents the customer address information
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CustomerAddress {
+    /// The customer's street
+    pub street: String,
+    /// The customer's city
+    pub city: String,
+    /// The customer's state
+    pub state: String,
 }
 
 #[cfg(test)]

@@ -4,8 +4,9 @@
 
 use super::PAYSTACK_BASE_URL;
 use crate::{
-    CreateCustomerRequest, CustomerResponseData, HttpClient, PaystackAPIError, PaystackResult,
-    Response, RiskAction, UpdateCustomerRequest, ValidateCustomerRequest,
+    CreateCustomerRequest, CustomerAuthroizationResponseData, CustomerResponseData, HttpClient,
+    InitializeAuthroizationRequest, PaystackAPIError, PaystackResult, Response, RiskAction,
+    UpdateCustomerRequest, ValidateCustomerRequest,
 };
 use serde_json::json;
 use std::{marker::PhantomData, sync::Arc};
@@ -210,6 +211,28 @@ impl<T: HttpClient + Default> CustomersEndpoints<T> {
 
         let parsed_response: Response<CustomerResponseData> = serde_json::from_str(&response)
             .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+
+        Ok(parsed_response)
+    }
+
+    /// Initiate a request to create a reusable authorization code for recurring transactions
+    pub async fn initialize_authorisation(
+        &self,
+        initialize_authorization_request: InitializeAuthroizationRequest,
+    ) -> PaystackResult<CustomerAuthroizationResponseData> {
+        let url = format!("{}/initialize", self.base_url);
+        let body = serde_json::to_value(initialize_authorization_request)
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+
+        let response = self
+            .http
+            .post(&url, &self.key, &body)
+            .await
+            .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
+
+        let parsed_response: Response<CustomerAuthroizationResponseData> =
+            serde_json::from_str(&response)
+                .map_err(|e| PaystackAPIError::Customer(e.to_string()))?;
 
         Ok(parsed_response)
     }

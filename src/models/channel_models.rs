@@ -58,6 +58,8 @@ pub enum Channel {
     BankTransfer,
     /// Payment with Apple Pay
     ApplePay,
+    /// Payment with direct debit
+    DirectDebit,
 }
 
 impl fmt::Display for Channel {
@@ -70,6 +72,7 @@ impl fmt::Display for Channel {
             Channel::MobileMoney => "mobile_money",
             Channel::BankTransfer => "bank_transfer",
             Channel::ApplePay => "mobile_money",
+            Channel::DirectDebit => "direct-debit",
         };
         write!(f, "{lower_case}")
     }
