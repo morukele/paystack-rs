@@ -4,25 +4,17 @@ use fake::{
 };
 use paystack::CreateSubaccountRequestBuilder;
 
-use crate::helpers::{get_bank_account_number_and_code, get_paystack_client};
+use crate::helpers::{create_subaccount_request_object, get_paystack_client};
 
 #[tokio::test]
 async fn create_a_subaccount() {
     // Arrange
     let client = get_paystack_client();
-    let (account_number, bank_code, _) = get_bank_account_number_and_code();
 
     // Act
     let business_name: String = CompanyName().fake();
     let description: String = Sentence(5..10).fake();
-    let body = CreateSubaccountRequestBuilder::default()
-        .business_name(business_name.clone())
-        .settlement_bank(bank_code.clone())
-        .account_number(account_number)
-        .percentage_charge(30.0)
-        .description(description.clone())
-        .build()
-        .expect("unable to build sub account request");
+    let (body, business_name, description) = create_subaccount_request_object(30.0);
 
     let res = client
         .subaccounts

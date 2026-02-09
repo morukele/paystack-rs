@@ -7,7 +7,7 @@ use fake::{
     },
     Fake,
 };
-use time::{macros::offset, OffsetDateTime, UtcOffset};
+use time::{macros::offset, OffsetDateTime};
 
 use crate::helpers::{generate_random_value, get_paystack_client};
 use paystack::{

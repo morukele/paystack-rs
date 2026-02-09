@@ -1,4 +1,6 @@
-use crate::helpers::{generate_random_value, get_paystack_client};
+use crate::helpers::{
+    create_transaction_request_object, generate_random_value, get_paystack_client,
+};
 use fake::faker::internet::en::SafeEmail;
 use fake::Fake;
 use paystack::{
@@ -12,20 +14,13 @@ async fn initialize_transaction_valid() {
     let client = get_paystack_client();
 
     // Act
-    let email: String = SafeEmail().fake();
-    let amount: String = generate_random_value(100, 100_000).to_string();
-    let body = TransactionRequestBuilder::default()
-        .amount(amount)
-        .email(email)
-        .currency(Currency::NGN)
-        .channel(vec![
-            Channel::Card,
-            Channel::ApplePay,
-            Channel::BankTransfer,
-            Channel::Bank,
-        ])
-        .build()
-        .unwrap();
+    let channels = vec![
+        Channel::Card,
+        Channel::ApplePay,
+        Channel::BankTransfer,
+        Channel::Bank,
+    ];
+    let body = create_transaction_request_object(channels, Currency::NGN);
 
     let res = client
         .transactions
@@ -44,19 +39,9 @@ async fn initialize_transaction_fails_when_currency_is_not_supported_by_merchant
     let client = get_paystack_client();
 
     // Act
-    let email: String = SafeEmail().fake();
-    let amount: String = generate_random_value(100, 100_000).to_string();
-    let body = TransactionRequestBuilder::default()
-        .amount(amount)
-        .email(email)
-        .currency(Currency::GHS)
-        .channel(vec![
-            Channel::ApplePay,
-            Channel::BankTransfer,
-            Channel::Bank,
-        ])
-        .build()
-        .expect("unable to build Transaction Request");
+    let channels = vec![Channel::ApplePay, Channel::BankTransfer, Channel::Bank];
+
+    let body = create_transaction_request_object(channels, Currency::GHS);
 
     let res = client.transactions.initialize_transaction(body).await;
 
@@ -76,19 +61,8 @@ async fn valid_transaction_is_verified() {
     let client = get_paystack_client();
 
     // Act
-    let email: String = SafeEmail().fake();
-    let amount: String = generate_random_value(100, 100_000).to_string();
-    let body = TransactionRequestBuilder::default()
-        .amount(amount)
-        .email(email)
-        .currency(Currency::NGN)
-        .channel(vec![
-            Channel::ApplePay,
-            Channel::BankTransfer,
-            Channel::Bank,
-        ])
-        .build()
-        .unwrap();
+    let channels = vec![Channel::ApplePay, Channel::BankTransfer, Channel::Bank];
+    let body = create_transaction_request_object(channels, Currency::NGN);
 
     let content = client
         .transactions

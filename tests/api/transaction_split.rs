@@ -1,11 +1,8 @@
-use crate::helpers::{get_bank_account_number_and_code, get_paystack_client};
-use fake::{
-    faker::{company::en::CompanyName, lorem::en::Sentence, name::en::FirstName},
-    Fake,
-};
+use crate::helpers::{create_subaccount_request_object, get_paystack_client};
+use fake::{faker::name::en::FirstName, Fake};
 use paystack::{
-    CreateSubaccountRequestBuilder, Currency, DeleteSubAccountBody, PaystackClient, ReqwestClient,
-    SubaccountBody, SubaccountBodyBuilder, TransactionSplitRequest, TransactionSplitRequestBuilder,
+    Currency, DeleteSubAccountBody, PaystackClient, ReqwestClient, SubaccountBody,
+    SubaccountBodyBuilder, TransactionSplitRequest, TransactionSplitRequestBuilder,
     UpdateTransactionSplitRequestBuilder,
 };
 
@@ -14,19 +11,7 @@ async fn create_subaccount_body(
     percentage_charge: f32,
     share: f32,
 ) -> SubaccountBody {
-    let (account_number, bank_code, _bank_name) = get_bank_account_number_and_code();
-
-    let business_name: String = CompanyName().fake();
-    let description: String = Sentence(5..10).fake();
-
-    let body = CreateSubaccountRequestBuilder::default()
-        .business_name(business_name)
-        .settlement_bank(bank_code.clone())
-        .account_number(account_number.clone())
-        .percentage_charge(percentage_charge)
-        .description(description)
-        .build()
-        .unwrap();
+    let (body, _, _) = create_subaccount_request_object(percentage_charge);
 
     let subaccount = client
         .subaccounts
